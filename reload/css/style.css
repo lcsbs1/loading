@@ -281,7 +281,7 @@ section { padding-block: var(--section); position: relative; }
 #acervo .section-grid {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 2rem;
 }
 #acervo .section-head {
   grid-column: auto;
@@ -290,7 +290,7 @@ section { padding-block: var(--section); position: relative; }
   align-items: baseline;
   justify-content: space-between;
   gap: .75rem 2rem;
-  padding-bottom: 1rem;
+  padding-bottom: 1.25rem;
   border-bottom: 1px solid var(--line);
 }
 #acervo .section-head-info {
@@ -316,8 +316,8 @@ section { padding-block: var(--section); position: relative; }
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem 1.75rem;
-  margin-bottom: 1.25rem;
+  gap: 1rem 2rem;
+  margin-bottom: 2rem;
 }
 .toolbar { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 0; }
 .status { min-height: 1.6em; margin-bottom: 0; font-size: var(--t-small); font-family: var(--mono); color: var(--muted); }
@@ -414,7 +414,7 @@ section { padding-block: var(--section); position: relative; }
   border: 1px solid var(--accent); padding: .25rem .45rem; border-radius: var(--radius);
   box-shadow: 0 0 10px var(--accent-glow); letter-spacing: .05em;
 }
-.more { margin-top: 1.75rem; text-align: center; }
+.more { margin-top: 2.5rem; text-align: center; }
 
 /* Dialog HUD */
 dialog {
