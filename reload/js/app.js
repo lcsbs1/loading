@@ -540,6 +540,7 @@
 
   /* ── Animação de fundo e transição no scroll ── */
   let scrollTicking = false;
+  let snakeEngine = null;
   const navLinks = document.querySelectorAll('.site-nav a[href^="#"]');
   const trackedSections = ['inicio', 'acervo', 'forum', 'manifesto'].map(id => document.getElementById(id)).filter(Boolean);
 
@@ -566,6 +567,11 @@
       a.classList.toggle('active', target === activeId);
     });
 
+    // Sincroniza o motor da cobrinha com a rolagem e o deslocamento da grade
+    if (snakeEngine) {
+      snakeEngine.onScroll(pct, parseFloat(offset));
+    }
+
     scrollTicking = false;
   }
 
@@ -576,6 +582,475 @@
     }
   }, { passive: true });
   updateScrollEffects();
+
+  /* ───────── Jogo da Cobrinha (Background Snake Engine) ───────── */
+  function initBackgroundSnake() {
+    const canvas = document.getElementById('snake-canvas');
+    if (!canvas) return null;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return null;
+
+    const CELL_SIZE = 48; // Grid sincronizado com .bg-grid-plane
+    const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    let width = 0;
+    let height = 0;
+    let dpr = 1;
+    let scrollOffset = 0;
+    let targetProgress = 0;
+    let currentProgress = 0;
+    let lastProgress = 0;
+    let rAFId = null;
+
+    // Carregador de Sprites (Paper / Higgsfield) com Fallback Vetorial Nativo
+    const sprites = {
+      head: new Image(),
+      body: new Image(),
+      seed: new Image(),
+      loaded: { head: false, body: false, seed: false },
+    };
+    sprites.head.onload = () => { sprites.loaded.head = true; };
+    sprites.body.onload = () => { sprites.loaded.body = true; };
+    sprites.seed.onload = () => { sprites.loaded.seed = true; };
+    sprites.head.src = 'assets/snake/head.svg';
+    sprites.body.src = 'assets/snake/body.svg';
+    sprites.seed.src = 'assets/snake/seed.svg';
+
+    // Sistema de Partículas Minimalistas (Particle Burst)
+    const particles = [];
+    function triggerBurst(x, y, color) {
+      for (let i = 0; i < 26; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 1.5 + Math.random() * 4.5;
+        particles.push({
+          x,
+          y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          size: 2 + Math.random() * 3,
+          life: 1.0,
+          decay: 0.02 + Math.random() * 0.025,
+          color,
+        });
+      }
+    }
+
+    // Leitura Dinâmica das Variáveis CSS do Tema
+    function getThemeColors() {
+      const s = getComputedStyle(document.documentElement);
+      return {
+        accent: s.getPropertyValue('--accent').trim() || '#00F0FF',
+        accentGlow: s.getPropertyValue('--accent-glow').trim() || 'rgba(0, 240, 255, 0.22)',
+        fg: s.getPropertyValue('--fg').trim() || '#E6EDF3',
+        line: s.getPropertyValue('--line').trim() || '#14171D',
+      };
+    }
+
+    // Waypoints e Sementes nas 4 Seções (Acervo, Fórum, Manifesto)
+    const waypoints = [
+      { id: 'acervo', pct: 0.28, collected: false, x: 0, y: 0 },
+      { id: 'forum', pct: 0.62, collected: false, x: 0, y: 0 },
+      { id: 'manifesto', pct: 0.88, collected: false, x: 0, y: 0 },
+    ];
+
+    function calculateSectionPcts() {
+      const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+      const acervoEl = document.getElementById('acervo');
+      const forumEl = document.getElementById('forum');
+      const manifestoEl = document.getElementById('manifesto');
+
+      if (acervoEl) waypoints[0].pct = Math.max(0.12, Math.min(0.42, (acervoEl.offsetTop - 140) / maxScroll));
+      if (forumEl) waypoints[1].pct = Math.max(0.44, Math.min(0.74, (forumEl.offsetTop - 140) / maxScroll));
+      if (manifestoEl) waypoints[2].pct = Math.max(0.76, Math.min(0.96, (manifestoEl.offsetTop - 140) / maxScroll));
+    }
+
+    // Geração do Caminho Ortogonal Rígido (curvas de 90° alinhadas a CELL_SIZE)
+    let pathSegments = [];
+    let totalPathLength = 0;
+
+    function buildOrthogonalPath() {
+      const cols = Math.max(6, Math.floor(width / CELL_SIZE));
+      const rows = Math.max(6, Math.floor(height / CELL_SIZE));
+      const maxC = Math.max(2, cols - 2);
+      const maxR = Math.max(2, rows - 2);
+      const c = (ratio) => Math.max(1, Math.min(maxC, Math.round(ratio * maxC)));
+      const r = (ratio) => Math.max(1, Math.min(maxR, Math.round(ratio * maxR)));
+
+      // Sequência de nós em coordenadas de grade ortogonal
+      const gridNodes = [
+        { c: c(0.08), r: r(0.06) },
+        { c: c(0.85), r: r(0.06) },
+        { c: c(0.85), r: r(0.22) },
+        { c: c(0.18), r: r(0.22) },
+        // Waypoint 1 (Acervo)
+        { c: c(0.18), r: r(0.42) },
+        { c: c(0.82), r: r(0.42) },
+        { c: c(0.82), r: r(0.58) },
+        // Waypoint 2 (Fórum)
+        { c: c(0.14), r: r(0.58) },
+        { c: c(0.14), r: r(0.76) },
+        { c: c(0.8),  r: r(0.76) },
+        // Waypoint 3 (Manifesto)
+        { c: c(0.8),  r: r(0.88) },
+        { c: c(0.22), r: r(0.88) },
+        { c: c(0.22), r: r(0.96) },
+        { c: c(0.88), r: r(0.96) },
+      ];
+
+      // Decompõe nós em pontos estritamente ortogonais (curvas 90°)
+      const orthogonalPoints = [];
+      for (let i = 0; i < gridNodes.length; i++) {
+        const curr = gridNodes[i];
+        if (i === 0) {
+          orthogonalPoints.push({
+            x: curr.c * CELL_SIZE + CELL_SIZE / 2,
+            y: curr.r * CELL_SIZE + CELL_SIZE / 2,
+          });
+        } else {
+          const prev = gridNodes[i - 1];
+          if (curr.c !== prev.c && curr.r !== prev.r) {
+            orthogonalPoints.push({
+              x: curr.c * CELL_SIZE + CELL_SIZE / 2,
+              y: prev.r * CELL_SIZE + CELL_SIZE / 2,
+            });
+          }
+          orthogonalPoints.push({
+            x: curr.c * CELL_SIZE + CELL_SIZE / 2,
+            y: curr.r * CELL_SIZE + CELL_SIZE / 2,
+          });
+        }
+      }
+
+      // Constrói segmentos com comprimento cumulativo para amostragem contínua
+      pathSegments = [];
+      totalPathLength = 0;
+      for (let i = 0; i < orthogonalPoints.length - 1; i++) {
+        const p1 = orthogonalPoints[i];
+        const p2 = orthogonalPoints[i + 1];
+        const dx = p2.x - p1.x;
+        const dy = p2.y - p1.y;
+        const len = Math.hypot(dx, dy);
+        if (len > 0) {
+          const angle = Math.atan2(dy, dx);
+          pathSegments.push({
+            p1,
+            p2,
+            length: len,
+            startDist: totalPathLength,
+            endDist: totalPathLength + len,
+            angle,
+          });
+          totalPathLength += len;
+        }
+      }
+
+      // Atualiza coordenadas físicas das sementes
+      waypoints.forEach(w => {
+        const d = w.pct * totalPathLength;
+        const pt = samplePath(d);
+        w.x = pt.x;
+        w.y = pt.y;
+      });
+    }
+
+    function samplePath(dist) {
+      if (pathSegments.length === 0) return { x: 0, y: 0, angle: 0 };
+      const d = Math.max(0, Math.min(totalPathLength, dist));
+      for (let i = 0; i < pathSegments.length; i++) {
+        const seg = pathSegments[i];
+        if (d >= seg.startDist && d <= seg.endDist) {
+          const t = seg.length > 0 ? (d - seg.startDist) / seg.length : 0;
+          return {
+            x: seg.p1.x + (seg.p2.x - seg.p1.x) * t,
+            y: seg.p1.y + (seg.p2.y - seg.p1.y) * t,
+            angle: seg.angle,
+          };
+        }
+      }
+      const lastSeg = pathSegments[pathSegments.length - 1];
+      return { x: lastSeg.p2.x, y: lastSeg.p2.y, angle: lastSeg.angle };
+    }
+
+    function resize() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = Math.floor(width * dpr);
+      canvas.height = Math.floor(height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      calculateSectionPcts();
+      buildOrthogonalPath();
+    }
+
+    window.addEventListener('resize', debounce(resize, 150));
+    resize();
+
+    // Renderização da Cabeça (Chanfro 45° tipo .btn--accent + HUD Neon)
+    function drawHead(x, y, angle, colors) {
+      ctx.save();
+      ctx.translate(x, y + scrollOffset);
+      ctx.rotate(angle);
+
+      if (sprites.loaded.head) {
+        ctx.shadowColor = colors.accent;
+        ctx.shadowBlur = 14;
+        ctx.drawImage(sprites.head, -24, -24, 48, 48);
+        ctx.restore();
+        return;
+      }
+
+      // Renderização Vetorial Nativa
+      ctx.shadowColor = colors.accent;
+      ctx.shadowBlur = 14;
+
+      // Casco principal chanfrado em 45°
+      ctx.beginPath();
+      ctx.moveTo(-16, -14);
+      ctx.lineTo(8, -14);
+      ctx.lineTo(18, -4);
+      ctx.lineTo(18, 14);
+      ctx.lineTo(-16, 14);
+      ctx.closePath();
+
+      ctx.fillStyle = '#040D14';
+      ctx.fill();
+      ctx.strokeStyle = colors.accent;
+      ctx.lineWidth = 1.75;
+      ctx.stroke();
+
+      // Viseira cibernética
+      ctx.beginPath();
+      ctx.moveTo(-6, -8);
+      ctx.lineTo(6, -8);
+      ctx.lineTo(12, -2);
+      ctx.lineTo(12, 4);
+      ctx.lineTo(-6, 4);
+      ctx.closePath();
+      ctx.fillStyle = colors.accent;
+      ctx.fill();
+
+      // Mira holográfica / HUD
+      ctx.strokeStyle = colors.fg;
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.moveTo(2, -18);
+      ctx.lineTo(2, -14);
+      ctx.moveTo(22, 6);
+      ctx.lineTo(26, 6);
+      ctx.stroke();
+
+      ctx.restore();
+    }
+
+    // Renderização de Segmento Modular
+    function drawSegment(x, y, angle, alpha, colors) {
+      ctx.save();
+      ctx.translate(x, y + scrollOffset);
+      ctx.rotate(angle);
+      ctx.globalAlpha = Math.max(0.12, Math.min(1.0, alpha));
+
+      if (sprites.loaded.body) {
+        ctx.shadowColor = colors.accent;
+        ctx.shadowBlur = 8 * alpha;
+        ctx.drawImage(sprites.body, -20, -20, 40, 40);
+        ctx.restore();
+        return;
+      }
+
+      // Geometria chanfrada octogonal
+      const s = 14;
+      const c = 5;
+      ctx.beginPath();
+      ctx.moveTo(-s + c, -s);
+      ctx.lineTo(s - c, -s);
+      ctx.lineTo(s, -s + c);
+      ctx.lineTo(s, s - c);
+      ctx.lineTo(s - c, s);
+      ctx.lineTo(-s + c, s);
+      ctx.lineTo(-s, s - c);
+      ctx.lineTo(-s, -s + c);
+      ctx.closePath();
+
+      ctx.fillStyle = '#030A10';
+      ctx.fill();
+      ctx.strokeStyle = colors.accent;
+      ctx.lineWidth = 1.25;
+      ctx.shadowColor = colors.accent;
+      ctx.shadowBlur = 8 * alpha;
+      ctx.stroke();
+
+      // Núcleo de energia interno
+      ctx.fillStyle = colors.accent;
+      ctx.fillRect(-3, -3, 6, 6);
+
+      ctx.restore();
+    }
+
+    // Renderização de Semente / Cubo de Energia
+    function drawSeed(seed, time, colors) {
+      ctx.save();
+      ctx.translate(seed.x, seed.y + scrollOffset);
+
+      const pulse = 1 + 0.15 * Math.sin(time * 0.005);
+      const rot = (time * 0.001) % (Math.PI * 2);
+
+      if (sprites.loaded.seed) {
+        ctx.shadowColor = colors.accent;
+        ctx.shadowBlur = 18 * pulse;
+        ctx.scale(pulse, pulse);
+        ctx.drawImage(sprites.seed, -24, -24, 48, 48);
+        ctx.restore();
+        return;
+      }
+
+      // Anel rotativo de contenção
+      ctx.save();
+      ctx.rotate(rot);
+      ctx.strokeStyle = colors.accent;
+      ctx.lineWidth = 1.25;
+      ctx.setLineDash([4, 3]);
+      ctx.strokeRect(-16, -16, 32, 32);
+      ctx.restore();
+
+      // Cubo de energia ciano pulsante em 45°
+      ctx.save();
+      ctx.rotate(Math.PI / 4);
+      ctx.scale(pulse, pulse);
+      ctx.shadowColor = colors.accent;
+      ctx.shadowBlur = 16;
+      ctx.fillStyle = colors.accent;
+      ctx.fillRect(-8, -8, 16, 16);
+      ctx.restore();
+
+      // Ponto quântico central
+      ctx.fillStyle = colors.fg;
+      ctx.beginPath();
+      ctx.arc(0, 0, 2, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.restore();
+    }
+
+    // Loop Principal de Animação com Lerp
+    function render(time) {
+      if (reducedMotionQuery.matches) {
+        ctx.clearRect(0, 0, width, height);
+        return;
+      }
+
+      // Lerp Suavizado do Scroll: currentProgress += (targetScrollPct - currentProgress) * 0.08
+      currentProgress += (targetProgress - currentProgress) * 0.08;
+
+      ctx.clearRect(0, 0, width, height);
+      const colors = getThemeColors();
+
+      // Atualiza estado das sementes e dispara particle burst ao atingir waypoint
+      let eatenCount = 0;
+      waypoints.forEach(w => {
+        const wasCollected = w.collected;
+        if (currentProgress >= w.pct) {
+          w.collected = true;
+          eatenCount++;
+          if (!wasCollected && lastProgress < w.pct) {
+            triggerBurst(w.x, w.y + scrollOffset, colors.accent);
+          }
+        } else {
+          // Reversibilidade: devolve a semente ao rolar para cima
+          w.collected = false;
+        }
+      });
+      lastProgress = currentProgress;
+
+      // Desenha sementes ativas (não coletadas)
+      waypoints.forEach(w => {
+        if (!w.collected) {
+          drawSeed(w, time, colors);
+        }
+      });
+
+      // Crescimento: 4 segmentos base + 3 por semente consumida
+      const numSegments = 4 + eatenCount * 3;
+      const headDist = currentProgress * totalPathLength;
+      const headPt = samplePath(headDist);
+
+      // Traçado sutil do caminho da cobrinha (guia cinético)
+      ctx.save();
+      ctx.beginPath();
+      for (let i = 0; i < pathSegments.length; i++) {
+        const s = pathSegments[i];
+        if (i === 0) ctx.moveTo(s.p1.x, s.p1.y + scrollOffset);
+        ctx.lineTo(s.p2.x, s.p2.y + scrollOffset);
+      }
+      ctx.strokeStyle = colors.line;
+      ctx.lineWidth = 1;
+      ctx.setLineDash([2, 5]);
+      ctx.stroke();
+      ctx.restore();
+
+      // Desenha segmentos do corpo (da cauda para o pescoço com gradiente de opacidade)
+      const SEG_SPACING = 30;
+      for (let i = numSegments; i >= 1; i--) {
+        const segDist = headDist - i * SEG_SPACING;
+        if (segDist >= 0) {
+          const pt = samplePath(segDist);
+          const alpha = 0.95 * Math.pow(1 - i / (numSegments + 1), 0.6) + 0.15;
+          drawSegment(pt.x, pt.y, pt.angle, alpha, colors);
+        }
+      }
+
+      // Desenha a cabeça
+      drawHead(headPt.x, headPt.y, headPt.angle, colors);
+
+      // Atualiza e renderiza partículas
+      if (particles.length > 0) {
+        ctx.save();
+        for (let i = particles.length - 1; i >= 0; i--) {
+          const p = particles[i];
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vx *= 0.95;
+          p.vy *= 0.95;
+          p.life -= p.decay;
+
+          if (p.life <= 0) {
+            particles.splice(i, 1);
+            continue;
+          }
+
+          ctx.globalAlpha = p.life;
+          ctx.fillStyle = p.color;
+          ctx.shadowColor = p.color;
+          ctx.shadowBlur = 8;
+          ctx.fillRect(p.x - p.size / 2, p.y - p.size / 2, p.size, p.size);
+        }
+        ctx.restore();
+      }
+
+      rAFId = requestAnimationFrame(render);
+    }
+
+    rAFId = requestAnimationFrame(render);
+
+    reducedMotionQuery.addEventListener('change', e => {
+      if (e.matches) {
+        if (rAFId) cancelAnimationFrame(rAFId);
+        ctx.clearRect(0, 0, width, height);
+      } else {
+        rAFId = requestAnimationFrame(render);
+      }
+    });
+
+    return {
+      onScroll(pct, offset) {
+        targetProgress = pct;
+        scrollOffset = offset;
+      },
+      recalculate() {
+        calculateSectionPcts();
+        buildOrthogonalPath();
+      },
+    };
+  }
 
   /* ── Revelação suave ── */
   const reveals = document.querySelectorAll('.reveal');
@@ -589,4 +1064,6 @@
   $('#year').textContent = new Date().getFullYear();
   renderTopics();
   loadGames();
+  snakeEngine = initBackgroundSnake();
+  updateScrollEffects();
 })();

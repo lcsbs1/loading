@@ -1,0 +1,20 @@
+{
+  "name": "loading",
+  "version": "1.0.0",
+  "description": "Loading... — Fórum e acervo de todos os jogos: do Atari ao PlayStation 5, do DOS à Steam. Sem anúncios, sem rastreadores.",
+  "main": "reload/index.html",
+  "scripts": {
+    "build": "node scripts/build.js",
+    "test": "node scripts/build.js",
+    "start": "node scripts/serve.js"
+  },
+  "keywords": [
+    "games",
+    "rawg",
+    "snake-game",
+    "minimalism",
+    "canvas"
+  ],
+  "author": "Loading...",
+  "license": "MIT"
+}
