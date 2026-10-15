@@ -130,19 +130,21 @@
       image: g.background_image,
       imageHover: hoverShot ? hoverShot.image : null,
       platforms: (g.parent_platforms || []).map(p => p.platform.name),
-      genres: (g.genres || []).map(x => x.name),
+      genres: (g.genres || []).map(x => (typeof I18N !== 'undefined' ? I18N.genre(x.name) : x.name)),
     };
   };
+
+  /* ── Otimização de imagens RAWG ── */
+  const rawgCrop = url => (url && url.startsWith('https://media.rawg.io/media/'))
+    ? url.replace(/\/media\/(games|screenshots)\//, '/media/crop/600/400/$1/')
+    : url;
 
   /* ── Cards ── */
   const cover = g => {
     if (g.image) {
-      const mainSrc = g.image.startsWith('https://media.rawg.io/media/games/')
-        ? g.image.replace('/media/games/', '/media/crop/600/400/games/')
-        : g.image;
       const mainImg = h('img', {
         class: 'cover-img cover-img--main',
-        src: mainSrc,
+        src: rawgCrop(g.image),
         alt: `Capa de ${g.name}`,
         loading: 'lazy',
         decoding: 'async',
@@ -151,12 +153,9 @@
       });
 
       if (g.imageHover) {
-        const hoverSrc = g.imageHover.startsWith('https://media.rawg.io/media/games/')
-          ? g.imageHover.replace('/media/games/', '/media/crop/600/400/games/')
-          : g.imageHover;
         const hoverImg = h('img', {
           class: 'cover-img cover-img--hover',
-          src: hoverSrc,
+          'data-src': rawgCrop(g.imageHover),
           alt: '',
           loading: 'lazy',
           decoding: 'async',
@@ -171,15 +170,30 @@
     return [h('span', { class: 'monogram', 'aria-hidden': 'true', text: initials(g.name) })];
   };
 
-  const card = g => h('li', { class: 'card' },
-    h('button', { class: 'card-hit', type: 'button', 'aria-haspopup': 'dialog', onclick: () => openGame(g) },
+  const card = g => {
+    const btn = h('button', { class: 'card-hit', type: 'button', 'aria-haspopup': 'dialog', onclick: () => openGame(g) },
       h('div', { class: 'cover' }, cover(g)),
       h('div', { class: 'card-body' },
         h('div', { class: 'card-top' },
           h('h3', { class: 'card-title', text: g.name }),
           g.metacritic ? h('span', { class: 'score', title: 'Metacritic', text: g.metacritic }) : null),
         h('p', { class: 'label', text: [year(g.released), g.platforms.slice(0, 4).join(' · ')].filter(Boolean).join(' — ') }),
-        g.genres.length ? h('p', { class: 'muted', style: 'font-size:var(--t-small)', text: g.genres.slice(0, 3).join(', ') }) : null)));
+        g.genres.length ? h('p', { class: 'muted', style: 'font-size:var(--t-small)', text: g.genres.slice(0, 3).join(', ') }) : null));
+
+    if (g.imageHover) {
+      const loadHover = () => {
+        const hoverImg = btn.querySelector('.cover-img--hover[data-src]');
+        if (hoverImg) {
+          hoverImg.src = hoverImg.dataset.src;
+          hoverImg.removeAttribute('data-src');
+        }
+      };
+      btn.addEventListener('pointerenter', loadHover, { once: true, passive: true });
+      btn.addEventListener('focusin', loadHover, { once: true, passive: true });
+    }
+
+    return h('li', { class: 'card' }, btn);
+  };
 
   const render = (list, append) => {
     const frag = document.createDocumentFragment();
@@ -201,6 +215,27 @@
       : 'Nenhum jogo na seleção local.', 'Ative o acervo completo →');
   }
 
+  /* ── Cache de requisições RAWG (memória + sessionStorage) ── */
+  const apiCache = new Map();
+  const getCache = key => {
+    if (apiCache.has(key)) return apiCache.get(key);
+    try {
+      const item = sessionStorage.getItem('rawg:' + key);
+      if (item) {
+        const parsed = JSON.parse(item);
+        apiCache.set(key, parsed);
+        return parsed;
+      }
+    } catch (_) {}
+    return null;
+  };
+  const setCache = (key, val) => {
+    apiCache.set(key, val);
+    try {
+      sessionStorage.setItem('rawg:' + key, JSON.stringify(val));
+    } catch (_) {}
+  };
+
   async function loadGames(append = false) {
     if (!state.key) return loadSeed();
     state.ctrl?.abort();
@@ -217,10 +252,14 @@
     setStatus('Carregando…');
     els.games.setAttribute('aria-busy', 'true');
     try {
-      const res = await fetch(url, { signal: state.ctrl.signal });
-      if (res.status === 401) throw Object.assign(new Error('key'), { code: 401 });
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      const data = await res.json();
+      let data = !append ? getCache(url) : null;
+      if (!data) {
+        const res = await fetch(url, { signal: state.ctrl.signal });
+        if (res.status === 401) throw Object.assign(new Error('key'), { code: 401 });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        data = await res.json();
+        setCache(url, data);
+      }
       state.next = data.next;
       render(data.results.map(fromRawg), append);
       els.more.hidden = !data.next;
@@ -238,8 +277,67 @@
   }
 
   /* ── Ficha do jogo ── */
-  const spec = (k, v) => v && (Array.isArray(v) ? v.length : true)
-    ? h('div', {}, h('dt', { class: 'label', text: k }), h('dd', { text: Array.isArray(v) ? v.join(', ') : v })) : null;
+  const spec = (k, v) => {
+    if (!v || (Array.isArray(v) && !v.length)) return null;
+    const val = v instanceof Node ? v : (Array.isArray(v) ? v.join(', ') : String(v));
+    return h('div', {}, h('dt', { class: 'label', text: k }), h('dd', {}, val));
+  };
+
+  /* ── Descrição com suporte a tradução e alternância de idioma ── */
+  function renderDescription(g) {
+    if (g.description == null) {
+      $('#g-desc').replaceChildren(h('p', { class: 'muted', text: 'Carregando descrição…' }));
+      return;
+    }
+    if (!g.description) {
+      $('#g-desc').replaceChildren(h('p', { class: 'muted', text: 'Sem descrição disponível.' }));
+      return;
+    }
+
+    const showTranslated = !!g.translatedDesc && !g.showOriginal;
+    const activeText = showTranslated ? g.translatedDesc : g.description;
+    const paras = activeText.split(/\n{2,}/).map(t => h('p', { text: t.trim() }));
+    const kids = [...paras];
+
+    if (g.isTranslating) {
+      kids.push(h('p', { class: 'label tr-note', text: 'Traduzindo para o português…' }));
+    } else if (g.translatedDesc) {
+      const toggleBtn = h('button', {
+        type: 'button',
+        class: 'tr-toggle link',
+        text: g.showOriginal ? 'Ver tradução em português' : 'Ver original em inglês',
+        onclick: () => {
+          g.showOriginal = !g.showOriginal;
+          if (state.current === g) renderDescription(g);
+        },
+      });
+      kids.push(h('div', { class: 'tr-bar' },
+        h('span', { class: 'label tr-note', text: showTranslated ? 'Traduzido automaticamente' : 'Texto original em inglês' }),
+        h('span', { class: 'muted', 'aria-hidden': 'true', text: '·' }),
+        toggleBtn
+      ));
+    }
+
+    $('#g-desc').replaceChildren(...kids);
+  }
+
+  async function translateGameDesc(g) {
+    if (!g.description || g.translatedDesc || g.source !== 'rawg' || typeof I18N === 'undefined') return;
+    g.isTranslating = true;
+    if (state.current === g) renderDescription(g);
+    try {
+      const res = await I18N.text(g.id, g.description);
+      if (res && res !== g.description) {
+        g.translatedDesc = res;
+        g.showOriginal = false;
+      }
+    } catch (err) {
+      console.warn('[I18N] Falha na tradução da descrição:', err);
+    } finally {
+      g.isTranslating = false;
+      if (state.current === g) renderDescription(g);
+    }
+  }
 
   function fillDialog(g) {
     const dlgCover = g.image ? [h('img', { src: g.image, alt: `Imagem de ${g.name}`, decoding: 'async' })] : [].concat(cover(g));
@@ -252,35 +350,43 @@
       spec('Gêneros', g.genres),
       spec('Desenvolvedor', g.developers),
       spec('Publicadora', g.publishers),
-      spec('Metacritic', g.metacritic ? String(g.metacritic) : null),
-      spec('Nota RAWG', g.rating ? `${g.rating.toFixed(2)} / 5` : null),
+      spec('Metacritic', g.metacritic ? h('span', { class: 'spec-badge', text: String(g.metacritic) }) : null),
+      spec('Nota RAWG', g.rating ? h('span', { class: 'spec-badge', text: `${g.rating.toFixed(2)} / 5` }) : null),
       g.website ? h('div', {}, h('dt', { class: 'label', text: 'Site oficial' }),
         h('dd', {}, h('a', { class: 'link', href: g.website, rel: 'noopener', target: '_blank', text: new URL(g.website).hostname + ' ↗' }))) : null,
     ].filter(Boolean));
-    const desc = g.description == null ? [h('p', { class: 'muted', text: 'Carregando descrição…' })]
-      : (g.description || 'Sem descrição disponível.').split(/\n{2,}/).map(t => h('p', { text: t.trim() }));
-    $('#g-desc').replaceChildren(...desc);
+    renderDescription(g);
   }
 
   async function openGame(g) {
     state.current = g;
-    const base = g.source === 'rawg' ? { ...g, description: null } : g;
+    const base = (g.source === 'rawg' && g.description == null) ? { ...g, description: null } : g;
     fillDialog(base);
     els.dlg.showModal();
-    if (g.source !== 'rawg') return;
-    try {
-      const res = await fetch(`${API}/games/${g.id}?key=${encodeURIComponent(state.key)}`);
-      if (!res.ok) throw new Error();
-      const d = await res.json();
-      if (state.current !== g) return;
-      const description = (d.description_raw || '').split(/\n\s*(Español|Русский|Deutsch|Français)\s*\n/)[0].trim();
-      Object.assign(g, {
-        description, developers: (d.developers || []).map(x => x.name), publishers: (d.publishers || []).map(x => x.name),
-        website: d.website || null, image: g.image || d.background_image,
-      });
-      fillDialog(g);
-    } catch {
-      if (state.current === g) $('#g-desc').replaceChildren(h('p', { class: 'muted', text: 'Não foi possível carregar a descrição.' }));
+
+    if (g.source === 'rawg') {
+      if (g.description == null) {
+        try {
+          const res = await fetch(`${API}/games/${g.id}?key=${encodeURIComponent(state.key)}`);
+          if (!res.ok) throw new Error();
+          const d = await res.json();
+          if (state.current !== g) return;
+          const description = (d.description_raw || '').split(/\n\s*(Español|Русский|Deutsch|Français)\s*\n/)[0].trim();
+          Object.assign(g, {
+            description,
+            developers: (d.developers || []).map(x => x.name),
+            publishers: (d.publishers || []).map(x => x.name),
+            genres: (d.genres && d.genres.length) ? d.genres.map(x => (typeof I18N !== 'undefined' ? I18N.genre(x.name) : x.name)) : g.genres,
+            website: d.website || null,
+            image: g.image || d.background_image,
+          });
+          fillDialog(g);
+        } catch {
+          if (state.current === g) $('#g-desc').replaceChildren(h('p', { class: 'muted', text: 'Não foi possível carregar a descrição.' }));
+          return;
+        }
+      }
+      translateGameDesc(g);
     }
   }
 
@@ -317,11 +423,13 @@
     if (!/^[a-f0-9]{32}$/i.test(v)) { $('#key-status').textContent = 'A chave RAWG tem 32 caracteres hexadecimais.'; return; }
     localStorage.setItem(LS.key, v); state.key = v;
     $('#key-status').textContent = 'Chave salva. Acervo completo ativado.';
+    apiCache.clear();
     loadGames();
   });
   $('#key-clear').addEventListener('click', () => {
     localStorage.removeItem(LS.key); keyInput.value = ''; state.key = RAWG_KEY;
     $('#key-status').textContent = 'Chave removida.';
+    apiCache.clear();
     loadGames();
   });
 
@@ -337,7 +445,15 @@
       body: 'Travei depois de Greenpath. Alguém tem uma sugestão de rota sem spoilers pesados?', at: now - 5 * H, replies: [] },
   ];
   const loadTopics = () => {
-    try { const t = JSON.parse(localStorage.getItem(LS.topics)); if (Array.isArray(t)) return t; } catch {}
+    try {
+      const t = JSON.parse(localStorage.getItem(LS.topics));
+      if (Array.isArray(t)) {
+        t.forEach(item => {
+          if (item && item.author === 'Reload') item.author = 'Loading...';
+        });
+        return t;
+      }
+    } catch {}
     return SEED_TOPICS;
   };
   let topics = loadTopics();
@@ -397,7 +513,10 @@
     }
   }
 
+  let lastDatalistSize = 0;
   function refreshDatalist() {
+    if (knownGames.size === lastDatalistSize) return;
+    lastDatalistSize = knownGames.size;
     els.gameList.replaceChildren(...[...knownGames].sort().slice(0, 300).map(v => h('option', { value: v })));
   }
 

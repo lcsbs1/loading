@@ -1,6 +1,6 @@
 /**
  * ====================================================================
- * RELOAD / LOADING... — Configurações e Chaves de API
+ * LOADING... — Configurações e Chaves de API
  * ====================================================================
  * 
  * Para ativar a busca e paginação em tempo real de +500.000 jogos na
@@ -18,7 +18,7 @@
 
 const CONFIG = {
   // Cole sua chave da API RAWG entre as aspas:
-  RAWG_KEY: '',
+  RAWG_KEY: '10fb0c58e08244639995c2976ac31800',
 
   // Endpoint base da API RAWG
   API_BASE_URL: 'https://api.rawg.io/api',
@@ -28,5 +28,13 @@ const CONFIG = {
     key: 'loading.rawgKey',
     topics: 'loading.topics',
     theme: 'loading.theme',
+    translations: 'loading.tr',
+  },
+
+  // Tradução automática de conteúdo em inglês (descrições da RAWG)
+  TRANSLATE: {
+    enabled: true,
+    target: 'pt-BR',
+    email: 'lamounierlucasramiro@icloud.com', // amplia cota do MyMemory para 50k caracteres/dia
   },
 };
