@@ -170,15 +170,32 @@
     return [h('span', { class: 'monogram', 'aria-hidden': 'true', text: initials(g.name) })];
   };
 
+  const shortPlat = p => {
+    const map = {
+      'Apple Macintosh': 'Mac',
+      'PlayStation': 'PS',
+      'Commodore / Amiga': 'Amiga',
+    };
+    return map[p] || p;
+  };
+
   const card = g => {
+    const shownPlats = g.platforms.slice(0, 3).map(p => h('span', { class: 'plat-tag', text: shortPlat(p) }));
+    if (g.platforms.length > 3) {
+      shownPlats.push(h('span', { class: 'plat-tag', text: `+${g.platforms.length - 3}` }));
+    }
+
     const btn = h('button', { class: 'card-hit', type: 'button', 'aria-haspopup': 'dialog', onclick: () => openGame(g) },
       h('div', { class: 'cover' }, cover(g)),
+      h('div', { class: 'card-hud-top' },
+        h('span', { class: 'card-year', text: year(g.released) }),
+        g.metacritic ? h('span', { class: 'score', title: 'Metacritic', text: g.metacritic }) : null),
       h('div', { class: 'card-body' },
-        h('div', { class: 'card-top' },
-          h('h3', { class: 'card-title', text: g.name }),
-          g.metacritic ? h('span', { class: 'score', title: 'Metacritic', text: g.metacritic }) : null),
-        h('p', { class: 'label', text: [year(g.released), g.platforms.slice(0, 4).join(' · ')].filter(Boolean).join(' — ') }),
-        g.genres.length ? h('p', { class: 'muted', style: 'font-size:var(--t-small)', text: g.genres.slice(0, 3).join(', ') }) : null));
+        shownPlats.length ? h('div', { class: 'card-platforms' }, shownPlats) : null,
+        h('h3', { class: 'card-title', text: g.name }),
+        h('div', { class: 'card-extra' },
+          h('span', { class: 'card-genres', text: g.genres.length ? g.genres.slice(0, 2).join(' · ') : 'Explorar' }),
+          h('span', { class: 'card-cta', 'aria-hidden': 'true', text: 'Ficha ↗' }))));
 
     if (g.imageHover) {
       const loadHover = () => {
