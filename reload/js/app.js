@@ -82,21 +82,52 @@
   const debounce = (fn, ms) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; };
 
   /* ── Estado ── */
-  const state = { key: localStorage.getItem(LS.key) || RAWG_KEY, query: '', platform: '', next: null, ctrl: null, current: null };
+  const state = {
+    key: localStorage.getItem(LS.key) || RAWG_KEY,
+    query: '',
+    platform: '',
+    next: null,
+    ctrl: null,
+    current: null,
+    backdropGame: SEED[2], // Elden Ring por padrão
+  };
   const knownGames = new Set(SEED.map(g => g.name));
+  const gameImageMap = new Map(SEED.map(g => [g.name.toLowerCase(), g.image]));
 
   const els = {
-    games: $('#games'), status: $('#status'), more: $('#more'), q: $('#q'), platforms: $('#platforms'),
-    dlg: $('#game-dialog'), topics: $('#topics'), form: $('#topic-form'), fErr: $('#f-err'),
-    forumQ: $('#forum-q'), gameList: $('#game-list'), themeBtn: $('#theme-btn'),
+    games: $('#games'),
+    featured: $('#featured-games'),
+    status: $('#status'),
+    more: $('#more'),
+    q: $('#q'),
+    platforms: $('#platforms'),
+    dlg: $('#game-dialog'),
+    topics: $('#topics'),
+    form: $('#topic-form'),
+    fErr: $('#f-err'),
+    forumQ: $('#forum-q'),
+    gameList: $('#game-list'),
+    themeBtn: $('#theme-btn'),
+    heroImg: $('#hero-backdrop-img'),
+    heroCreditBtn: $('#hero-credit-btn'),
+    heroCreditName: $('#hero-credit-name'),
   };
 
-  /* ── Tema manual (além do automático do sistema) ── */
-  let themeIdx = 0;
+  /* ── Tema manual (Escuro padrão estilo Letterboxd, Claro e Auto) ── */
+  let themeIdx = 2; // Escuro como padrão visual do Letterboxd
   const urlTheme = new URLSearchParams(location.search).get('theme');
-  const storedTheme = urlTheme || localStorage.getItem(LS.theme);
-  if (storedTheme === 'light') { themeIdx = 1; document.documentElement.dataset.theme = 'light'; }
-  else if (storedTheme === 'dark') { themeIdx = 2; document.documentElement.dataset.theme = 'dark'; }
+  const storedTheme = urlTheme || localStorage.getItem(LS.theme) || 'dark';
+  if (storedTheme === 'light') {
+    themeIdx = 1;
+    document.documentElement.dataset.theme = 'light';
+  } else if (storedTheme === 'auto') {
+    themeIdx = 0;
+    delete document.documentElement.dataset.theme;
+  } else {
+    themeIdx = 2;
+    document.documentElement.dataset.theme = 'dark';
+  }
+
   const updateThemeBtn = () => {
     const mode = ['Auto', 'Claro', 'Escuro'][themeIdx];
     if (els.themeBtn) els.themeBtn.textContent = `Tema: ${mode}`;
@@ -106,7 +137,7 @@
     themeIdx = (themeIdx + 1) % 3;
     if (themeIdx === 0) {
       delete document.documentElement.dataset.theme;
-      localStorage.removeItem(LS.theme);
+      localStorage.setItem(LS.theme, 'auto');
     } else if (themeIdx === 1) {
       document.documentElement.dataset.theme = 'light';
       localStorage.setItem(LS.theme, 'light');
@@ -139,30 +170,55 @@
     ? url.replace(/\/media\/(games|screenshots)\//, '/media/crop/600/400/$1/')
     : url;
 
-  /* ── Cards ── */
-  const cover = g => {
+  /* ── Hero Backdrop estilo Letterboxd ── */
+  function updateHeroBackdrop(list) {
+    if (!els.heroImg || !list || !list.length) return;
+    const candidate = list.find(g => g.name === 'Elden Ring') || list.find(g => g.imageHover || g.image) || list[0];
+    if (!candidate) return;
+    state.backdropGame = candidate;
+    const backdropUrl = candidate.imageHover || candidate.image;
+    if (backdropUrl && els.heroImg.src !== backdropUrl) {
+      els.heroImg.src = backdropUrl;
+      els.heroImg.alt = `Cena de ${candidate.name}`;
+    }
+    if (els.heroCreditName) {
+      const yr = year(candidate.released);
+      els.heroCreditName.textContent = yr !== '—' ? `${candidate.name} (${yr})` : candidate.name;
+    }
+  }
+
+  els.heroCreditBtn?.addEventListener('click', () => {
+    if (state.backdropGame) openGame(state.backdropGame);
+  });
+
+  /* ── Cards de Pôster 2:3 ── */
+  const cover = (g, isAboveFold = false) => {
     if (g.image) {
-      const mainImg = h('img', {
+      const mainProps = {
         class: 'cover-img cover-img--main',
         src: rawgCrop(g.image),
         alt: `Capa de ${g.name}`,
-        loading: 'lazy',
         decoding: 'async',
-        width: 600,
-        height: 338,
-      });
+        width: 400,
+        height: 600,
+      };
+      if (!isAboveFold) mainProps.loading = 'lazy';
+
+      const mainImg = h('img', mainProps);
 
       if (g.imageHover) {
-        const hoverImg = h('img', {
+        const hoverProps = {
           class: 'cover-img cover-img--hover',
           'data-src': rawgCrop(g.imageHover),
           alt: '',
           loading: 'lazy',
           decoding: 'async',
-          width: 600,
-          height: 338,
+          width: 400,
+          height: 600,
           'aria-hidden': 'true',
-        });
+        };
+        if (isAboveFold) hoverProps.fetchpriority = 'low';
+        const hoverImg = h('img', hoverProps);
         return [mainImg, hoverImg];
       }
       return [mainImg];
@@ -179,14 +235,14 @@
     return map[p] || p;
   };
 
-  const card = g => {
-    const shownPlats = g.platforms.slice(0, 3).map(p => h('span', { class: 'plat-tag', text: shortPlat(p) }));
-    if (g.platforms.length > 3) {
-      shownPlats.push(h('span', { class: 'plat-tag', text: `+${g.platforms.length - 3}` }));
+  const card = (g, isAboveFold = false) => {
+    const shownPlats = g.platforms.slice(0, 2).map(p => h('span', { class: 'plat-tag', text: shortPlat(p) }));
+    if (g.platforms.length > 2) {
+      shownPlats.push(h('span', { class: 'plat-tag', text: `+${g.platforms.length - 2}` }));
     }
 
     const btn = h('button', { class: 'card-hit', type: 'button', 'aria-haspopup': 'dialog', onclick: () => openGame(g) },
-      h('div', { class: 'cover' }, cover(g)),
+      h('div', { class: 'cover' }, cover(g, isAboveFold)),
       h('div', { class: 'card-hud-top' },
         h('span', { class: 'card-year', text: year(g.released) }),
         g.metacritic ? h('span', { class: 'score', title: 'Metacritic', text: g.metacritic }) : null),
@@ -195,7 +251,7 @@
         h('h3', { class: 'card-title', text: g.name }),
         h('div', { class: 'card-extra' },
           h('span', { class: 'card-genres', text: g.genres.length ? g.genres.slice(0, 2).join(' · ') : 'Explorar' }),
-          h('span', { class: 'card-cta', 'aria-hidden': 'true', text: 'Ficha ↗' }))));
+          h('span', { class: 'card-cta', 'aria-hidden': 'true', text: '★' }))));
 
     if (g.imageHover) {
       const loadHover = () => {
@@ -212,11 +268,28 @@
     return h('li', { class: 'card' }, btn);
   };
 
+  function renderFeaturedStrip(list) {
+    if (!els.featured || !list.length) return;
+    const topSix = list.slice(0, 6);
+    const frag = document.createDocumentFragment();
+    topSix.forEach(g => frag.append(card(g, true)));
+    els.featured.replaceChildren(frag);
+  }
+
   const render = (list, append) => {
     const frag = document.createDocumentFragment();
-    list.forEach(g => { frag.append(card(g)); knownGames.add(g.name); });
+    list.forEach(g => {
+      frag.append(card(g, false));
+      knownGames.add(g.name);
+      if (g.image) gameImageMap.set(g.name.toLowerCase(), g.image);
+    });
     append ? els.games.append(frag) : els.games.replaceChildren(frag);
+    if (!append && !state.query && !state.platform && list.length) {
+      renderFeaturedStrip(list);
+      updateHeroBackdrop(list);
+    }
     refreshDatalist();
+    renderTopics();
   };
 
   /* ── Carregamento ── */
@@ -228,8 +301,8 @@
     els.more.hidden = true;
     $('#fact-count').textContent = '500 mil+';
     setStatus(list.length
-      ? `Seleção local · ${list.length} jogo${list.length > 1 ? 's' : ''}.`
-      : 'Nenhum jogo na seleção local.', 'Ative o acervo completo →');
+      ? `Curadoria local · ${list.length} jogo${list.length > 1 ? 's' : ''}.`
+      : 'Nenhum jogo na curadoria local.', 'Ativar catálogo de 500 mil+ →');
   }
 
   /* ── Cache de requisições RAWG (memória + sessionStorage) ── */
@@ -266,7 +339,7 @@
       if (state.platform) p.set('parent_platforms', state.platform);
       url = `${API}/games?${p}`;
     }
-    setStatus('Carregando…');
+    setStatus('Carregando catálogo…');
     els.games.setAttribute('aria-busy', 'true');
     try {
       let data = !append ? getCache(url) : null;
@@ -281,13 +354,13 @@
       render(data.results.map(fromRawg), append);
       els.more.hidden = !data.next;
       setStatus(data.count
-        ? `${data.count.toLocaleString('pt-BR')} jogos encontrados${state.query ? ` para “${state.query}”` : ''}.`
+        ? `${data.count.toLocaleString('pt-BR')} jogos catalogados${state.query ? ` para “${state.query}”` : ''}.`
         : 'Nenhum jogo encontrado.');
       if (!state.query && !state.platform) $('#fact-count').textContent = data.count.toLocaleString('pt-BR');
     } catch (e) {
       if (e.name === 'AbortError') return;
       loadSeed();
-      setStatus(e.code === 401 ? 'Chave RAWG inválida. Mostrando a seleção local.' : 'Sem conexão com a RAWG. Mostrando a seleção local.', 'Verificar chave →');
+      setStatus(e.code === 401 ? 'Chave RAWG inválida. Exibindo curadoria local.' : 'Modo offline. Exibindo curadoria local.', 'Configurar chave →');
     } finally {
       els.games.removeAttribute('aria-busy');
     }
@@ -303,11 +376,11 @@
   /* ── Descrição com suporte a tradução e alternância de idioma ── */
   function renderDescription(g) {
     if (g.description == null) {
-      $('#g-desc').replaceChildren(h('p', { class: 'muted', text: 'Carregando descrição…' }));
+      $('#g-desc').replaceChildren(h('p', { class: 'muted', text: 'Carregando sinopse…' }));
       return;
     }
     if (!g.description) {
-      $('#g-desc').replaceChildren(h('p', { class: 'muted', text: 'Sem descrição disponível.' }));
+      $('#g-desc').replaceChildren(h('p', { class: 'muted', text: 'Sem sinopse disponível.' }));
       return;
     }
 
@@ -317,7 +390,7 @@
     const kids = [...paras];
 
     if (g.isTranslating) {
-      kids.push(h('p', { class: 'label tr-note', text: 'Traduzindo para o português…' }));
+      kids.push(h('p', { class: 'label tr-note', text: 'Traduzindo sinopse para o português…' }));
     } else if (g.translatedDesc) {
       const toggleBtn = h('button', {
         type: 'button',
@@ -368,7 +441,7 @@
       spec('Desenvolvedor', g.developers),
       spec('Publicadora', g.publishers),
       spec('Metacritic', g.metacritic ? h('span', { class: 'spec-badge', text: String(g.metacritic) }) : null),
-      spec('Nota RAWG', g.rating ? h('span', { class: 'spec-badge', text: `${g.rating.toFixed(2)} / 5` }) : null),
+      spec('Nota RAWG', g.rating ? h('span', { class: 'spec-badge', text: `★ ${g.rating.toFixed(2)} / 5` }) : null),
       g.website ? h('div', {}, h('dt', { class: 'label', text: 'Site oficial' }),
         h('dd', {}, h('a', { class: 'link', href: g.website, rel: 'noopener', target: '_blank', text: new URL(g.website).hostname + ' ↗' }))) : null,
     ].filter(Boolean));
@@ -450,16 +523,16 @@
     loadGames();
   });
 
-  /* ── Fórum ── */
+  /* ── Avaliações & Fórum (Estilo Popular Reviews do Letterboxd) ── */
   const now = Date.now(), H = 3600e3;
   const SEED_TOPICS = [
-    { id: 't1', pinned: true, author: 'Loading...', game: 'Geral', title: 'Boas-vindas: como usar o fórum',
-      body: 'Abra a ficha de qualquer jogo no acervo e use “Discutir no fórum” para criar um tópico já marcado com o jogo.\nSeja direto, cite a plataforma e evite spoilers no título.', at: now - 72 * H, replies: [] },
+    { id: 't1', pinned: true, author: 'Loading...', game: 'Elden Ring', title: 'Boas-vindas: compartilhe suas avaliações e listas',
+      body: 'Abra a ficha de qualquer jogo no acervo e clique em “Escrever avaliação no fórum” para publicar sua análise.\nCite a plataforma em que jogou e evite spoilers no título.', at: now - 72 * H, replies: [] },
     { id: 't2', author: 'ana_retro', game: 'Half-Life 2', title: 'Half-Life 2 ainda se sustenta em 2026?',
       body: 'Rejoguei no PC e a física continua impressionante. O ritmo de Ravenholm é o melhor da série pra mim.', at: now - 20 * H,
       replies: [{ author: 'gordon', body: 'Envelheceu muito bem. Os episódios valem a pena logo depois.', at: now - 18 * H }] },
-    { id: 't3', author: 'lucas', game: 'Hollow Knight', title: 'Ordem recomendada de áreas para iniciantes',
-      body: 'Travei depois de Greenpath. Alguém tem uma sugestão de rota sem spoilers pesados?', at: now - 5 * H, replies: [] },
+    { id: 't3', author: 'lucas', game: 'Hollow Knight', title: 'Direção de arte impecável e mapa interconectado',
+      body: 'A transição de Dirtmouth para Greenpath com a trilha de Christopher Larkin é um dos momentos mais marcantes dos jogos independentes.', at: now - 5 * H, replies: [] },
   ];
   const loadTopics = () => {
     try {
@@ -486,10 +559,20 @@
   const clean = (s, max) => String(s || '').replace(/\s+\n/g, '\n').trim().slice(0, max);
   const lastActivity = t => Math.max(t.at, ...t.replies.map(r => r.at));
 
+  function findPosterForGame(gameName) {
+    if (!gameName) return null;
+    const key = gameName.toLowerCase().trim();
+    if (gameImageMap.has(key)) return gameImageMap.get(key);
+    for (const [k, url] of gameImageMap.entries()) {
+      if (k.includes(key) || key.includes(k)) return url;
+    }
+    return null;
+  }
+
   function topicEl(t) {
     const replyForm = h('form', { class: 'reply-form', novalidate: true },
       h('label', { class: 'sr-only', for: `r-${t.id}`, text: `Responder a ${t.title}` }),
-      h('textarea', { class: 'input', id: `r-${t.id}`, name: 'body', maxlength: '1000', required: true, placeholder: 'Sua resposta…' }),
+      h('textarea', { class: 'input', id: `r-${t.id}`, name: 'body', maxlength: '1000', required: true, placeholder: 'Comentar nesta avaliação…' }),
       h('div', {}, h('button', { class: 'btn', type: 'submit', text: 'Responder' })));
     replyForm.addEventListener('submit', e => {
       e.preventDefault();
@@ -500,20 +583,40 @@
       t.replies.push({ author, body, at: Date.now() });
       saveTopics(); renderTopics(t.id);
     });
+
     const n = t.replies.length;
+    const gameLabel = t.game || 'Geral';
+    const posterUrl = findPosterForGame(gameLabel);
+    const posterNode = h('div', { class: 'topic-poster', 'aria-hidden': 'true' },
+      posterUrl
+        ? h('img', { src: rawgCrop(posterUrl), alt: '', loading: 'lazy', decoding: 'async', width: 68, height: 102 })
+        : h('span', { class: 'monogram', text: initials(gameLabel) })
+    );
+
     return h('article', { class: 'topic', id: `topic-${t.id}`, 'aria-labelledby': `th-${t.id}` },
-      h('h3', { id: `th-${t.id}` }, t.pinned ? h('span', { class: 'pin', text: 'Fixado · ' }) : null, t.title),
-      h('p', { class: 'label topic-meta' },
-        h('span', { class: 'tag', text: t.game || 'Geral' }),
-        h('span', { text: t.author }),
-        h('time', { datetime: new Date(t.at).toISOString(), text: ago(t.at) })),
-      h('p', { class: 'topic-body', text: t.body }),
-      h('details', {},
-        h('summary', { text: n ? `${n} resposta${n > 1 ? 's' : ''}` : 'Responder' }),
-        n ? h('ol', { class: 'replies' }, t.replies.map(r => h('li', { class: 'reply' },
-          h('p', { class: 'label' }, `${r.author} · `, h('time', { datetime: new Date(r.at).toISOString(), text: ago(r.at) })),
-          h('p', { text: r.body })))) : null,
-        replyForm));
+      posterNode,
+      h('div', { class: 'topic-content' },
+        h('div', { class: 'topic-header' },
+          h('span', { class: 'topic-game', text: gameLabel }),
+          h('span', { class: 'topic-stars', 'aria-label': '5 estrelas', text: '★★★★★' }),
+          t.pinned ? h('span', { class: 'pin', text: 'Fixado' }) : null
+        ),
+        h('h3', { id: `th-${t.id}` }, t.title),
+        h('p', { class: 'topic-meta' },
+          h('span', { text: 'Avaliado por ' }),
+          h('span', { class: 'topic-author', text: t.author }),
+          h('span', { 'aria-hidden': 'true', text: '·' }),
+          h('time', { datetime: new Date(t.at).toISOString(), text: ago(t.at) })
+        ),
+        h('p', { class: 'topic-body', text: t.body }),
+        h('details', {},
+          h('summary', { text: n ? `💬 ${n} comentário${n > 1 ? 's' : ''}` : '💬 Comentar' }),
+          n ? h('ol', { class: 'replies' }, t.replies.map(r => h('li', { class: 'reply' },
+            h('p', { class: 'label' }, `${r.author} · `, h('time', { datetime: new Date(r.at).toISOString(), text: ago(r.at) })),
+            h('p', { text: r.body })))) : null,
+          replyForm)
+      )
+    );
   }
 
   function renderTopics(openId) {
@@ -521,7 +624,7 @@
     const list = topics
       .filter(t => !q || [t.title, t.game, t.author, t.body].join(' ').toLowerCase().includes(q))
       .sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0) || lastActivity(b) - lastActivity(a));
-    els.topics.replaceChildren(...(list.length ? list.map(topicEl) : [h('p', { class: 'muted empty', text: 'Nenhum tópico encontrado.' })]));
+    els.topics.replaceChildren(...(list.length ? list.map(topicEl) : [h('p', { class: 'muted empty', text: 'Nenhuma avaliação encontrada.' })]));
     topics.forEach(t => t.game && knownGames.add(t.game));
     refreshDatalist();
     if (openId) {
@@ -544,51 +647,32 @@
     const f = els.form.elements;
     const title = clean(f.title.value, 120), body = clean(f.body.value, 2000);
     if (title.length < 4) { els.fErr.textContent = 'O título precisa de pelo menos 4 caracteres.'; f.title.setAttribute('aria-invalid', 'true'); f.title.focus(); return; }
-    if (body.length < 10) { els.fErr.textContent = 'A mensagem precisa de pelo menos 10 caracteres.'; f.body.setAttribute('aria-invalid', 'true'); f.body.focus(); return; }
+    if (body.length < 10) { els.fErr.textContent = 'A avaliação precisa de pelo menos 10 caracteres.'; f.body.setAttribute('aria-invalid', 'true'); f.body.focus(); return; }
     f.title.removeAttribute('aria-invalid'); f.body.removeAttribute('aria-invalid');
     const t = { id: 'u' + Date.now().toString(36), author: clean(f.author.value, 40) || 'Anônimo', game: clean(f.game.value, 80) || 'Geral', title, body, at: Date.now(), replies: [] };
     topics.unshift(t); saveTopics();
     f.title.value = ''; f.body.value = ''; f.game.value = '';
-    els.fErr.textContent = 'Tópico publicado.';
+    els.fErr.textContent = 'Avaliação publicada.';
     els.forumQ.value = '';
     renderTopics();
     $(`#topic-${t.id}`)?.scrollIntoView({ block: 'nearest' });
   });
 
-  /* ── Animação de fundo e transição no scroll ── */
+  /* ── Navegação ativa no scroll ── */
   let scrollTicking = false;
-  let snakeEngine = null;
   const navLinks = document.querySelectorAll('.site-nav a[href^="#"]');
-  const trackedSections = ['inicio', 'acervo', 'forum', 'manifesto'].map(id => document.getElementById(id)).filter(Boolean);
+  const trackedSections = ['inicio', 'lets-you', 'acervo', 'forum', 'manifesto'].map(id => document.getElementById(id)).filter(Boolean);
 
   function updateScrollEffects() {
     const scrollY = window.scrollY || window.pageYOffset;
-    const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-    const pct = Math.min(1, Math.max(0, scrollY / maxScroll));
-
-    // Parallax suave na grade cósmica (módulo 48px para ciclo contínuo sem cortes)
-    const offset = (-(scrollY * 0.22) % 48).toFixed(2);
-    document.documentElement.style.setProperty('--scroll-offset', `${offset}px`);
-
-    // Aura de iluminação acompanha suavemente a altura da rolagem
-    const glowY = (10 + pct * 75).toFixed(1);
-    document.documentElement.style.setProperty('--glow-pos', `${glowY}%`);
-
-    // Destaque da seção ativa no menu
     let activeId = '';
     for (const sec of trackedSections) {
-      if (scrollY >= sec.offsetTop - 140) activeId = sec.id;
+      if (scrollY >= sec.offsetTop - 160) activeId = sec.id;
     }
     navLinks.forEach(a => {
       const target = a.getAttribute('href').slice(1);
       a.classList.toggle('active', target === activeId);
     });
-
-    // Sincroniza o motor da cobrinha com a rolagem e o deslocamento da grade
-    if (snakeEngine) {
-      snakeEngine.onScroll(pct, parseFloat(offset));
-    }
-
     scrollTicking = false;
   }
 
@@ -598,489 +682,20 @@
       scrollTicking = true;
     }
   }, { passive: true });
-  updateScrollEffects();
-
-  /* ───────── Jogo da Cobrinha (Background Snake Engine) ───────── */
-  function initBackgroundSnake() {
-    const canvas = document.getElementById('snake-canvas');
-    if (!canvas) return null;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return null;
-
-    const CELL_SIZE = 48; // Grid sincronizado com .bg-grid-plane
-    const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-
-    let width = 0;
-    let height = 0;
-    let dpr = 1;
-    let scrollOffset = 0;
-    let targetProgress = 0;
-    let currentProgress = 0;
-    let lastProgress = 0;
-    let rAFId = null;
-
-    // Carregador de Sprites (Paper / Higgsfield) com Fallback Vetorial Nativo
-    const sprites = {
-      head: new Image(),
-      body: new Image(),
-      seed: new Image(),
-      loaded: { head: false, body: false, seed: false },
-    };
-    sprites.head.onload = () => { sprites.loaded.head = true; };
-    sprites.body.onload = () => { sprites.loaded.body = true; };
-    sprites.seed.onload = () => { sprites.loaded.seed = true; };
-    sprites.head.src = 'assets/snake/head.svg';
-    sprites.body.src = 'assets/snake/body.svg';
-    sprites.seed.src = 'assets/snake/seed.svg';
-
-    // Sistema de Partículas Minimalistas (Particle Burst)
-    const particles = [];
-    function triggerBurst(x, y, color) {
-      for (let i = 0; i < 26; i++) {
-        const angle = Math.random() * Math.PI * 2;
-        const speed = 1.5 + Math.random() * 4.5;
-        particles.push({
-          x,
-          y,
-          vx: Math.cos(angle) * speed,
-          vy: Math.sin(angle) * speed,
-          size: 2 + Math.random() * 3,
-          life: 1.0,
-          decay: 0.02 + Math.random() * 0.025,
-          color,
-        });
-      }
-    }
-
-    // Leitura Dinâmica das Variáveis CSS do Tema
-    function getThemeColors() {
-      const s = getComputedStyle(document.documentElement);
-      return {
-        accent: s.getPropertyValue('--accent').trim() || '#00F0FF',
-        accentGlow: s.getPropertyValue('--accent-glow').trim() || 'rgba(0, 240, 255, 0.22)',
-        fg: s.getPropertyValue('--fg').trim() || '#E6EDF3',
-        line: s.getPropertyValue('--line').trim() || '#14171D',
-      };
-    }
-
-    // Waypoints e Sementes nas 4 Seções (Acervo, Fórum, Manifesto)
-    const waypoints = [
-      { id: 'acervo', pct: 0.28, collected: false, x: 0, y: 0 },
-      { id: 'forum', pct: 0.62, collected: false, x: 0, y: 0 },
-      { id: 'manifesto', pct: 0.88, collected: false, x: 0, y: 0 },
-    ];
-
-    function calculateSectionPcts() {
-      const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-      const acervoEl = document.getElementById('acervo');
-      const forumEl = document.getElementById('forum');
-      const manifestoEl = document.getElementById('manifesto');
-
-      if (acervoEl) waypoints[0].pct = Math.max(0.12, Math.min(0.42, (acervoEl.offsetTop - 140) / maxScroll));
-      if (forumEl) waypoints[1].pct = Math.max(0.44, Math.min(0.74, (forumEl.offsetTop - 140) / maxScroll));
-      if (manifestoEl) waypoints[2].pct = Math.max(0.76, Math.min(0.96, (manifestoEl.offsetTop - 140) / maxScroll));
-    }
-
-    // Geração do Caminho Ortogonal Rígido (curvas de 90° alinhadas a CELL_SIZE)
-    let pathSegments = [];
-    let totalPathLength = 0;
-
-    function buildOrthogonalPath() {
-      const cols = Math.max(6, Math.floor(width / CELL_SIZE));
-      const rows = Math.max(6, Math.floor(height / CELL_SIZE));
-      const maxC = Math.max(2, cols - 2);
-      const maxR = Math.max(2, rows - 2);
-      const c = (ratio) => Math.max(1, Math.min(maxC, Math.round(ratio * maxC)));
-      const r = (ratio) => Math.max(1, Math.min(maxR, Math.round(ratio * maxR)));
-
-      // Sequência de nós em coordenadas de grade ortogonal
-      const gridNodes = [
-        { c: c(0.08), r: r(0.06) },
-        { c: c(0.85), r: r(0.06) },
-        { c: c(0.85), r: r(0.22) },
-        { c: c(0.18), r: r(0.22) },
-        // Waypoint 1 (Acervo)
-        { c: c(0.18), r: r(0.42) },
-        { c: c(0.82), r: r(0.42) },
-        { c: c(0.82), r: r(0.58) },
-        // Waypoint 2 (Fórum)
-        { c: c(0.14), r: r(0.58) },
-        { c: c(0.14), r: r(0.76) },
-        { c: c(0.8),  r: r(0.76) },
-        // Waypoint 3 (Manifesto)
-        { c: c(0.8),  r: r(0.88) },
-        { c: c(0.22), r: r(0.88) },
-        { c: c(0.22), r: r(0.96) },
-        { c: c(0.88), r: r(0.96) },
-      ];
-
-      // Decompõe nós em pontos estritamente ortogonais (curvas 90°)
-      const orthogonalPoints = [];
-      for (let i = 0; i < gridNodes.length; i++) {
-        const curr = gridNodes[i];
-        if (i === 0) {
-          orthogonalPoints.push({
-            x: curr.c * CELL_SIZE + CELL_SIZE / 2,
-            y: curr.r * CELL_SIZE + CELL_SIZE / 2,
-          });
-        } else {
-          const prev = gridNodes[i - 1];
-          if (curr.c !== prev.c && curr.r !== prev.r) {
-            orthogonalPoints.push({
-              x: curr.c * CELL_SIZE + CELL_SIZE / 2,
-              y: prev.r * CELL_SIZE + CELL_SIZE / 2,
-            });
-          }
-          orthogonalPoints.push({
-            x: curr.c * CELL_SIZE + CELL_SIZE / 2,
-            y: curr.r * CELL_SIZE + CELL_SIZE / 2,
-          });
-        }
-      }
-
-      // Constrói segmentos com comprimento cumulativo para amostragem contínua
-      pathSegments = [];
-      totalPathLength = 0;
-      for (let i = 0; i < orthogonalPoints.length - 1; i++) {
-        const p1 = orthogonalPoints[i];
-        const p2 = orthogonalPoints[i + 1];
-        const dx = p2.x - p1.x;
-        const dy = p2.y - p1.y;
-        const len = Math.hypot(dx, dy);
-        if (len > 0) {
-          const angle = Math.atan2(dy, dx);
-          pathSegments.push({
-            p1,
-            p2,
-            length: len,
-            startDist: totalPathLength,
-            endDist: totalPathLength + len,
-            angle,
-          });
-          totalPathLength += len;
-        }
-      }
-
-      // Atualiza coordenadas físicas das sementes
-      waypoints.forEach(w => {
-        const d = w.pct * totalPathLength;
-        const pt = samplePath(d);
-        w.x = pt.x;
-        w.y = pt.y;
-      });
-    }
-
-    function samplePath(dist) {
-      if (pathSegments.length === 0) return { x: 0, y: 0, angle: 0 };
-      const d = Math.max(0, Math.min(totalPathLength, dist));
-      for (let i = 0; i < pathSegments.length; i++) {
-        const seg = pathSegments[i];
-        if (d >= seg.startDist && d <= seg.endDist) {
-          const t = seg.length > 0 ? (d - seg.startDist) / seg.length : 0;
-          return {
-            x: seg.p1.x + (seg.p2.x - seg.p1.x) * t,
-            y: seg.p1.y + (seg.p2.y - seg.p1.y) * t,
-            angle: seg.angle,
-          };
-        }
-      }
-      const lastSeg = pathSegments[pathSegments.length - 1];
-      return { x: lastSeg.p2.x, y: lastSeg.p2.y, angle: lastSeg.angle };
-    }
-
-    function resize() {
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
-      width = window.innerWidth;
-      height = window.innerHeight;
-      canvas.width = Math.floor(width * dpr);
-      canvas.height = Math.floor(height * dpr);
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      calculateSectionPcts();
-      buildOrthogonalPath();
-    }
-
-    window.addEventListener('resize', debounce(resize, 150));
-    resize();
-
-    // Renderização da Cabeça (Chanfro 45° tipo .btn--accent + HUD Neon)
-    function drawHead(x, y, angle, colors) {
-      ctx.save();
-      ctx.translate(x, y + scrollOffset);
-      ctx.rotate(angle);
-
-      if (sprites.loaded.head) {
-        ctx.shadowColor = colors.accent;
-        ctx.shadowBlur = 14;
-        ctx.drawImage(sprites.head, -24, -24, 48, 48);
-        ctx.restore();
-        return;
-      }
-
-      // Renderização Vetorial Nativa
-      ctx.shadowColor = colors.accent;
-      ctx.shadowBlur = 14;
-
-      // Casco principal chanfrado em 45°
-      ctx.beginPath();
-      ctx.moveTo(-16, -14);
-      ctx.lineTo(8, -14);
-      ctx.lineTo(18, -4);
-      ctx.lineTo(18, 14);
-      ctx.lineTo(-16, 14);
-      ctx.closePath();
-
-      ctx.fillStyle = '#040D14';
-      ctx.fill();
-      ctx.strokeStyle = colors.accent;
-      ctx.lineWidth = 1.75;
-      ctx.stroke();
-
-      // Viseira cibernética
-      ctx.beginPath();
-      ctx.moveTo(-6, -8);
-      ctx.lineTo(6, -8);
-      ctx.lineTo(12, -2);
-      ctx.lineTo(12, 4);
-      ctx.lineTo(-6, 4);
-      ctx.closePath();
-      ctx.fillStyle = colors.accent;
-      ctx.fill();
-
-      // Mira holográfica / HUD
-      ctx.strokeStyle = colors.fg;
-      ctx.lineWidth = 1.2;
-      ctx.beginPath();
-      ctx.moveTo(2, -18);
-      ctx.lineTo(2, -14);
-      ctx.moveTo(22, 6);
-      ctx.lineTo(26, 6);
-      ctx.stroke();
-
-      ctx.restore();
-    }
-
-    // Renderização de Segmento Modular
-    function drawSegment(x, y, angle, alpha, colors) {
-      ctx.save();
-      ctx.translate(x, y + scrollOffset);
-      ctx.rotate(angle);
-      ctx.globalAlpha = Math.max(0.12, Math.min(1.0, alpha));
-
-      if (sprites.loaded.body) {
-        ctx.shadowColor = colors.accent;
-        ctx.shadowBlur = 8 * alpha;
-        ctx.drawImage(sprites.body, -20, -20, 40, 40);
-        ctx.restore();
-        return;
-      }
-
-      // Geometria chanfrada octogonal
-      const s = 14;
-      const c = 5;
-      ctx.beginPath();
-      ctx.moveTo(-s + c, -s);
-      ctx.lineTo(s - c, -s);
-      ctx.lineTo(s, -s + c);
-      ctx.lineTo(s, s - c);
-      ctx.lineTo(s - c, s);
-      ctx.lineTo(-s + c, s);
-      ctx.lineTo(-s, s - c);
-      ctx.lineTo(-s, -s + c);
-      ctx.closePath();
-
-      ctx.fillStyle = '#030A10';
-      ctx.fill();
-      ctx.strokeStyle = colors.accent;
-      ctx.lineWidth = 1.25;
-      ctx.shadowColor = colors.accent;
-      ctx.shadowBlur = 8 * alpha;
-      ctx.stroke();
-
-      // Núcleo de energia interno
-      ctx.fillStyle = colors.accent;
-      ctx.fillRect(-3, -3, 6, 6);
-
-      ctx.restore();
-    }
-
-    // Renderização de Semente / Cubo de Energia
-    function drawSeed(seed, time, colors) {
-      ctx.save();
-      ctx.translate(seed.x, seed.y + scrollOffset);
-
-      const pulse = 1 + 0.15 * Math.sin(time * 0.005);
-      const rot = (time * 0.001) % (Math.PI * 2);
-
-      if (sprites.loaded.seed) {
-        ctx.shadowColor = colors.accent;
-        ctx.shadowBlur = 18 * pulse;
-        ctx.scale(pulse, pulse);
-        ctx.drawImage(sprites.seed, -24, -24, 48, 48);
-        ctx.restore();
-        return;
-      }
-
-      // Anel rotativo de contenção
-      ctx.save();
-      ctx.rotate(rot);
-      ctx.strokeStyle = colors.accent;
-      ctx.lineWidth = 1.25;
-      ctx.setLineDash([4, 3]);
-      ctx.strokeRect(-16, -16, 32, 32);
-      ctx.restore();
-
-      // Cubo de energia ciano pulsante em 45°
-      ctx.save();
-      ctx.rotate(Math.PI / 4);
-      ctx.scale(pulse, pulse);
-      ctx.shadowColor = colors.accent;
-      ctx.shadowBlur = 16;
-      ctx.fillStyle = colors.accent;
-      ctx.fillRect(-8, -8, 16, 16);
-      ctx.restore();
-
-      // Ponto quântico central
-      ctx.fillStyle = colors.fg;
-      ctx.beginPath();
-      ctx.arc(0, 0, 2, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.restore();
-    }
-
-    // Loop Principal de Animação com Lerp
-    function render(time) {
-      if (reducedMotionQuery.matches) {
-        ctx.clearRect(0, 0, width, height);
-        return;
-      }
-
-      // Lerp Suavizado do Scroll: currentProgress += (targetScrollPct - currentProgress) * 0.08
-      currentProgress += (targetProgress - currentProgress) * 0.08;
-
-      ctx.clearRect(0, 0, width, height);
-      const colors = getThemeColors();
-
-      // Atualiza estado das sementes e dispara particle burst ao atingir waypoint
-      let eatenCount = 0;
-      waypoints.forEach(w => {
-        const wasCollected = w.collected;
-        if (currentProgress >= w.pct) {
-          w.collected = true;
-          eatenCount++;
-          if (!wasCollected && lastProgress < w.pct) {
-            triggerBurst(w.x, w.y + scrollOffset, colors.accent);
-          }
-        } else {
-          // Reversibilidade: devolve a semente ao rolar para cima
-          w.collected = false;
-        }
-      });
-      lastProgress = currentProgress;
-
-      // Desenha sementes ativas (não coletadas)
-      waypoints.forEach(w => {
-        if (!w.collected) {
-          drawSeed(w, time, colors);
-        }
-      });
-
-      // Crescimento: 4 segmentos base + 3 por semente consumida
-      const numSegments = 4 + eatenCount * 3;
-      const headDist = currentProgress * totalPathLength;
-      const headPt = samplePath(headDist);
-
-      // Traçado sutil do caminho da cobrinha (guia cinético)
-      ctx.save();
-      ctx.beginPath();
-      for (let i = 0; i < pathSegments.length; i++) {
-        const s = pathSegments[i];
-        if (i === 0) ctx.moveTo(s.p1.x, s.p1.y + scrollOffset);
-        ctx.lineTo(s.p2.x, s.p2.y + scrollOffset);
-      }
-      ctx.strokeStyle = colors.line;
-      ctx.lineWidth = 1;
-      ctx.setLineDash([2, 5]);
-      ctx.stroke();
-      ctx.restore();
-
-      // Desenha segmentos do corpo (da cauda para o pescoço com gradiente de opacidade)
-      const SEG_SPACING = 30;
-      for (let i = numSegments; i >= 1; i--) {
-        const segDist = headDist - i * SEG_SPACING;
-        if (segDist >= 0) {
-          const pt = samplePath(segDist);
-          const alpha = 0.95 * Math.pow(1 - i / (numSegments + 1), 0.6) + 0.15;
-          drawSegment(pt.x, pt.y, pt.angle, alpha, colors);
-        }
-      }
-
-      // Desenha a cabeça
-      drawHead(headPt.x, headPt.y, headPt.angle, colors);
-
-      // Atualiza e renderiza partículas
-      if (particles.length > 0) {
-        ctx.save();
-        for (let i = particles.length - 1; i >= 0; i--) {
-          const p = particles[i];
-          p.x += p.vx;
-          p.y += p.vy;
-          p.vx *= 0.95;
-          p.vy *= 0.95;
-          p.life -= p.decay;
-
-          if (p.life <= 0) {
-            particles.splice(i, 1);
-            continue;
-          }
-
-          ctx.globalAlpha = p.life;
-          ctx.fillStyle = p.color;
-          ctx.shadowColor = p.color;
-          ctx.shadowBlur = 8;
-          ctx.fillRect(p.x - p.size / 2, p.y - p.size / 2, p.size, p.size);
-        }
-        ctx.restore();
-      }
-
-      rAFId = requestAnimationFrame(render);
-    }
-
-    rAFId = requestAnimationFrame(render);
-
-    reducedMotionQuery.addEventListener('change', e => {
-      if (e.matches) {
-        if (rAFId) cancelAnimationFrame(rAFId);
-        ctx.clearRect(0, 0, width, height);
-      } else {
-        rAFId = requestAnimationFrame(render);
-      }
-    });
-
-    return {
-      onScroll(pct, offset) {
-        targetProgress = pct;
-        scrollOffset = offset;
-      },
-      recalculate() {
-        calculateSectionPcts();
-        buildOrthogonalPath();
-      },
-    };
-  }
 
   /* ── Revelação suave ── */
   const reveals = document.querySelectorAll('.reveal');
   if ('IntersectionObserver' in window) {
     const io = new IntersectionObserver(entries => entries.forEach(en => {
       if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
-    }), { rootMargin: '0px 0px -10% 0px' });
+    }), { rootMargin: '0px 0px -8% 0px' });
     reveals.forEach(r => io.observe(r));
   } else reveals.forEach(r => r.classList.add('in'));
 
   $('#year').textContent = new Date().getFullYear();
+  renderFeaturedStrip(SEED.map(g => ({ ...g, source: 'seed' })));
+  updateHeroBackdrop(SEED.map(g => ({ ...g, source: 'seed' })));
   renderTopics();
   loadGames();
-  snakeEngine = initBackgroundSnake();
   updateScrollEffects();
 })();
