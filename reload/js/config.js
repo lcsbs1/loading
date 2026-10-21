@@ -37,4 +37,10 @@ const CONFIG = {
     target: 'pt-BR',
     email: 'lamounierlucasramiro@icloud.com', // amplia cota do MyMemory para 50k caracteres/dia
   },
+
+  // Paginação do Acervo (scroll infinito desativado por padrão; ative com true a qualquer momento)
+  PAGINATION: {
+    pageSize: 40,
+    infiniteScroll: false,
+  },
 };

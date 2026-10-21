@@ -181,16 +181,17 @@
           <div class="toolbar" role="group" aria-label="Filtrar por plataforma" id="platforms">
             <button class="chip" type="button" data-p="" aria-pressed="true">Todos</button>
             <button class="chip" type="button" data-p="1" aria-pressed="false">PC</button>
-            <button class="chip" type="button" data-p="2" aria-pressed="false">PlayStation</button>
-            <button class="chip" type="button" data-p="3" aria-pressed="false">Xbox</button>
-            <button class="chip" type="button" data-p="7" aria-pressed="false">Nintendo</button>
+            <button class="chip" type="button" data-p="2,3,7" aria-pressed="false">Console</button>
             <button class="chip" type="button" data-p="9,10,11,12,13" aria-pressed="false">Retrô</button>
           </div>
           <span class="acervo-hint">Passe o cursor sobre um pôster para ver o gameplay · Clique para abrir a ficha</span>
         </div>
 
         <ul class="grid" id="games" aria-label="Jogos do acervo"></ul>
-        <div class="more"><button class="btn" type="button" id="more" hidden>Carregar mais jogos</button></div>
+        <div class="more" id="more-wrap">
+          <button class="btn" type="button" id="more" hidden>Carregar mais jogos</button>
+          <p class="muted infinite-loader" id="infinite-loader" hidden aria-live="polite">Carregando mais jogos…</p>
+        </div>
       </div>
     </section>
 

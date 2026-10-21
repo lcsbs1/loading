@@ -10,6 +10,8 @@
     topics: 'loading.topics',
     theme: 'loading.theme',
   };
+  const PAGE_SIZE = (typeof CONFIG !== 'undefined' && CONFIG.PAGINATION && CONFIG.PAGINATION.pageSize) ? CONFIG.PAGINATION.pageSize : 40;
+  const ENABLE_INFINITE_SCROLL = (typeof CONFIG !== 'undefined' && CONFIG.PAGINATION && typeof CONFIG.PAGINATION.infiniteScroll === 'boolean') ? CONFIG.PAGINATION.infiniteScroll : false;
 
   /* ── Acervo local (funciona sem chave/offline) ── */
   const SEED = [
@@ -99,6 +101,8 @@
     featured: $('#featured-games'),
     status: $('#status'),
     more: $('#more'),
+    moreWrap: $('#more-wrap'),
+    infiniteLoader: $('#infinite-loader'),
     q: $('#q'),
     platforms: $('#platforms'),
     dlg: $('#game-dialog'),
@@ -160,6 +164,7 @@
       id: g.id, source: 'rawg', name: g.name, released: g.released, metacritic: g.metacritic, rating: g.rating,
       image: g.background_image,
       imageHover: hoverShot ? hoverShot.image : null,
+      screenshots: (g.short_screenshots || []).map(s => s && s.image).filter(Boolean),
       platforms: (g.parent_platforms || []).map(p => p.platform.name),
       genres: (g.genres || []).map(x => (typeof I18N !== 'undefined' ? I18N.genre(x.name) : x.name)),
     };
@@ -168,6 +173,10 @@
   /* ── Otimização de imagens RAWG ── */
   const rawgCrop = url => (url && url.startsWith('https://media.rawg.io/media/'))
     ? url.replace(/\/media\/(games|screenshots)\//, '/media/crop/600/400/$1/')
+    : url;
+
+  const rawgSize = (url, w) => (url && url.startsWith('https://media.rawg.io/media/') && !/\/media\/(crop|resize)\//.test(url))
+    ? url.replace('https://media.rawg.io/media/', `https://media.rawg.io/media/resize/${w}/-/`)
     : url;
 
   /* ── Hero Backdrop estilo Letterboxd ── */
@@ -190,6 +199,9 @@
   els.heroCreditBtn?.addEventListener('click', () => {
     if (state.backdropGame) openGame(state.backdropGame);
   });
+
+  /* ── Galeria auxiliar ── */
+  const galleryOf = g => [...new Set([g.image, ...(g.screenshots || []), g.imageHover].filter(Boolean))];
 
   /* ── Cards de Pôster 2:3 ── */
   const cover = (g, isAboveFold = false) => {
@@ -236,16 +248,22 @@
   };
 
   const card = (g, isAboveFold = false) => {
+    const shots = galleryOf(g).length;
     const shownPlats = g.platforms.slice(0, 2).map(p => h('span', { class: 'plat-tag', text: shortPlat(p) }));
     if (g.platforms.length > 2) {
       shownPlats.push(h('span', { class: 'plat-tag', text: `+${g.platforms.length - 2}` }));
     }
 
+    const hudBadges = [
+      shots > 1 ? h('span', { class: 'cover-count', 'aria-label': `${shots} fotos`, text: `▣ ${shots}` }) : null,
+      g.metacritic ? h('span', { class: 'score', title: 'Metacritic', text: String(g.metacritic) }) : null,
+    ].filter(Boolean);
+
     const btn = h('button', { class: 'card-hit', type: 'button', 'aria-haspopup': 'dialog', onclick: () => openGame(g) },
       h('div', { class: 'cover' }, cover(g, isAboveFold)),
       h('div', { class: 'card-hud-top' },
         h('span', { class: 'card-year', text: year(g.released) }),
-        g.metacritic ? h('span', { class: 'score', title: 'Metacritic', text: g.metacritic }) : null),
+        hudBadges.length ? h('div', { class: 'card-hud-badges' }, hudBadges) : null),
       h('div', { class: 'card-body' },
         shownPlats.length ? h('div', { class: 'card-platforms' }, shownPlats) : null,
         h('h3', { class: 'card-title', text: g.name }),
@@ -276,10 +294,29 @@
     els.featured.replaceChildren(frag);
   }
 
+  /* ── Revelação suave de cards ao rolar a tela ── */
+  const cardRevealIo = ('IntersectionObserver' in window)
+    ? new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in');
+            cardRevealIo.unobserve(entry.target);
+          }
+        });
+      }, { rootMargin: '0px 0px -40px 0px' })
+    : null;
+
   const render = (list, append) => {
     const frag = document.createDocumentFragment();
-    list.forEach(g => {
-      frag.append(card(g, false));
+    list.forEach((g, idx) => {
+      const c = card(g, false);
+      if (append) {
+        c.classList.add('card--reveal');
+        c.style.transitionDelay = `${(idx % 6) * 45}ms`;
+        if (cardRevealIo) cardRevealIo.observe(c);
+        else c.classList.add('in');
+      }
+      frag.append(c);
       knownGames.add(g.name);
       if (g.image) gameImageMap.set(g.name.toLowerCase(), g.image);
     });
@@ -298,7 +335,8 @@
     const plats = state.platform ? state.platform.split(',').map(Number) : null;
     const list = SEED.filter(g => (!q || g.name.toLowerCase().includes(q)) && (!plats || g.tags.some(t => plats.includes(t))));
     render(list.map(g => ({ ...g, source: 'seed' })));
-    els.more.hidden = true;
+    if (els.more) els.more.hidden = true;
+    if (els.infiniteLoader) els.infiniteLoader.hidden = true;
     $('#fact-count').textContent = '500 mil+';
     setStatus(list.length
       ? `Curadoria local · ${list.length} jogo${list.length > 1 ? 's' : ''}.`
@@ -326,25 +364,39 @@
     } catch (_) {}
   };
 
+  let loadingMore = false;
   async function loadGames(append = false) {
     if (!state.key) return loadSeed();
-    state.ctrl?.abort();
-    state.ctrl = new AbortController();
+    if (append) {
+      if (loadingMore || !state.next) return;
+      loadingMore = true;
+      if (ENABLE_INFINITE_SCROLL) {
+        if (els.infiniteLoader) els.infiniteLoader.hidden = false;
+      } else if (els.more) {
+        els.more.textContent = 'Carregando…';
+        els.more.disabled = true;
+      }
+    } else {
+      state.ctrl?.abort();
+      state.ctrl = new AbortController();
+      setStatus('Carregando catálogo…');
+      els.games.setAttribute('aria-busy', 'true');
+    }
+
     let url;
     if (append && state.next) url = state.next;
     else {
-      const p = new URLSearchParams({ key: state.key, page_size: '12' });
+      const p = new URLSearchParams({ key: state.key, page_size: String(PAGE_SIZE) });
       if (state.query) { p.set('search', state.query); p.set('search_precise', 'true'); }
       else p.set('ordering', '-added');
       if (state.platform) p.set('parent_platforms', state.platform);
       url = `${API}/games?${p}`;
     }
-    setStatus('Carregando catálogo…');
-    els.games.setAttribute('aria-busy', 'true');
+
     try {
       let data = !append ? getCache(url) : null;
       if (!data) {
-        const res = await fetch(url, { signal: state.ctrl.signal });
+        const res = await fetch(url, { signal: append ? undefined : state.ctrl.signal });
         if (res.status === 401) throw Object.assign(new Error('key'), { code: 401 });
         if (!res.ok) throw new Error('HTTP ' + res.status);
         data = await res.json();
@@ -352,17 +404,31 @@
       }
       state.next = data.next;
       render(data.results.map(fromRawg), append);
-      els.more.hidden = !data.next;
+      if (els.more) {
+        els.more.hidden = ENABLE_INFINITE_SCROLL ? true : !data.next;
+      }
       setStatus(data.count
         ? `${data.count.toLocaleString('pt-BR')} jogos catalogados${state.query ? ` para “${state.query}”` : ''}.`
         : 'Nenhum jogo encontrado.');
       if (!state.query && !state.platform) $('#fact-count').textContent = data.count.toLocaleString('pt-BR');
     } catch (e) {
       if (e.name === 'AbortError') return;
-      loadSeed();
-      setStatus(e.code === 401 ? 'Chave RAWG inválida. Exibindo curadoria local.' : 'Modo offline. Exibindo curadoria local.', 'Configurar chave →');
+      if (!append) {
+        loadSeed();
+        setStatus(e.code === 401 ? 'Chave RAWG inválida. Exibindo curadoria local.' : 'Modo offline. Exibindo curadoria local.', 'Configurar chave →');
+      }
     } finally {
-      els.games.removeAttribute('aria-busy');
+      if (append) {
+        loadingMore = false;
+        if (ENABLE_INFINITE_SCROLL) {
+          if (els.infiniteLoader) els.infiniteLoader.hidden = true;
+        } else if (els.more) {
+          els.more.textContent = 'Carregar mais jogos';
+          els.more.disabled = false;
+        }
+      } else {
+        els.games.removeAttribute('aria-busy');
+      }
     }
   }
 
@@ -373,35 +439,52 @@
     return h('div', {}, h('dt', { class: 'label', text: k }), h('dd', {}, val));
   };
 
-  /* ── Descrição com suporte a tradução e alternância de idioma ── */
-  function renderDescription(g) {
-    if (g.description == null) {
-      $('#g-desc').replaceChildren(h('p', { class: 'muted', text: 'Carregando sinopse…' }));
+  /* ── Descrição com suporte a tradução simultânea e revelação em cascata ── */
+  function renderDescription(g, cascade = false) {
+    const discussWrap = $('#g-discuss')?.parentElement;
+    if (g.description == null || g.isLoadingDesc) {
+      $('#g-desc').replaceChildren(h('p', { class: 'desc-loading', text: 'Carregando sinopse…' }));
+      if (discussWrap) {
+        discussWrap.hidden = true;
+        discussWrap.classList.remove('cascade-item');
+      }
       return;
     }
+
     if (!g.description) {
       $('#g-desc').replaceChildren(h('p', { class: 'muted', text: 'Sem sinopse disponível.' }));
+      if (discussWrap) {
+        discussWrap.hidden = false;
+        discussWrap.classList.remove('cascade-item');
+      }
       return;
     }
 
     const showTranslated = !!g.translatedDesc && !g.showOriginal;
     const activeText = showTranslated ? g.translatedDesc : g.description;
-    const paras = activeText.split(/\n{2,}/).map(t => h('p', { text: t.trim() }));
+    let idx = 0;
+
+    const paras = activeText.split(/\n{2,}/).map(t => h('p', {
+      class: cascade ? 'cascade-item' : null,
+      style: cascade ? `--i:${idx++}` : null,
+      text: t.trim(),
+    }));
     const kids = [...paras];
 
-    if (g.isTranslating) {
-      kids.push(h('p', { class: 'label tr-note', text: 'Traduzindo sinopse para o português…' }));
-    } else if (g.translatedDesc) {
+    if (g.translatedDesc) {
       const toggleBtn = h('button', {
         type: 'button',
         class: 'tr-toggle link',
         text: g.showOriginal ? 'Ver tradução em português' : 'Ver original em inglês',
         onclick: () => {
           g.showOriginal = !g.showOriginal;
-          if (state.current === g) renderDescription(g);
+          if (state.current === g) renderDescription(g, true);
         },
       });
-      kids.push(h('div', { class: 'tr-bar' },
+      kids.push(h('div', {
+        class: cascade ? 'tr-bar cascade-item' : 'tr-bar',
+        style: cascade ? `--i:${idx++}` : null,
+      },
         h('span', { class: 'label tr-note', text: showTranslated ? 'Traduzido automaticamente' : 'Texto original em inglês' }),
         h('span', { class: 'muted', 'aria-hidden': 'true', text: '·' }),
         toggleBtn
@@ -409,31 +492,21 @@
     }
 
     $('#g-desc').replaceChildren(...kids);
-  }
 
-  async function translateGameDesc(g) {
-    if (!g.description || g.translatedDesc || g.source !== 'rawg' || typeof I18N === 'undefined') return;
-    g.isTranslating = true;
-    if (state.current === g) renderDescription(g);
-    try {
-      const res = await I18N.text(g.id, g.description);
-      if (res && res !== g.description) {
-        g.translatedDesc = res;
-        g.showOriginal = false;
+    if (discussWrap) {
+      discussWrap.hidden = false;
+      discussWrap.classList.remove('cascade-item');
+      if (cascade) {
+        void discussWrap.offsetWidth;
+        discussWrap.style.setProperty('--i', String(idx));
+        discussWrap.classList.add('cascade-item');
+      } else {
+        discussWrap.style.removeProperty('--i');
       }
-    } catch (err) {
-      console.warn('[I18N] Falha na tradução da descrição:', err);
-    } finally {
-      g.isTranslating = false;
-      if (state.current === g) renderDescription(g);
     }
   }
 
-  function fillDialog(g) {
-    const dlgCover = g.image ? [h('img', { src: g.image, alt: `Imagem de ${g.name}`, decoding: 'async' })] : [].concat(cover(g));
-    $('#g-cover').replaceChildren(...dlgCover);
-    $('#g-title').textContent = g.name;
-    $('#g-sub').textContent = [year(g.released), g.platforms.join(' · ')].filter(Boolean).join(' — ');
+  function fillSpecs(g) {
     $('#g-specs').replaceChildren(...[
       spec('Lançamento', fmtDate(g.released)),
       spec('Plataformas', g.platforms),
@@ -445,18 +518,127 @@
       g.website ? h('div', {}, h('dt', { class: 'label', text: 'Site oficial' }),
         h('dd', {}, h('a', { class: 'link', href: g.website, rel: 'noopener', target: '_blank', text: new URL(g.website).hostname + ' ↗' }))) : null,
     ].filter(Boolean));
-    renderDescription(g);
+  }
+
+  /* ── Galeria / carrossel da ficha ── */
+  let gallery = null;
+
+  function buildGallery(g, start = 0) {
+    const root = $('#g-cover');
+    const imgs = galleryOf(g);
+    gallery = null;
+    if (!imgs.length) {
+      root.classList.remove('gallery');
+      root.replaceChildren(...[].concat(cover(g)));
+      return;
+    }
+    root.classList.add('gallery');
+
+    const many = imgs.length > 1;
+    let idx = 0;
+    const slides = imgs.map((src, n) => h('img', {
+      class: 'gallery-slide',
+      alt: `${g.name} — imagem ${n + 1} de ${imgs.length}`,
+      decoding: 'async',
+      draggable: 'false',
+      'data-src': rawgSize(src, 1280),
+    }));
+    const track = h('div', { class: 'gallery-track' }, slides);
+    const count = many ? h('span', { class: 'gallery-count', 'aria-live': 'polite' }) : null;
+    const progress = many ? h('span', { class: 'gallery-progress', 'aria-hidden': 'true' }) : null;
+    const nav = (dir, label, glyph) => h('button', {
+      class: `gallery-nav gallery-nav--${dir}`, type: 'button', 'aria-label': label, text: glyph,
+      onclick: () => go(idx + (dir === 'next' ? 1 : -1)),
+    });
+    const stage = h('div', { class: 'gallery-stage', role: 'region', 'aria-roledescription': 'carrossel', 'aria-label': `Imagens de ${g.name}` },
+      track,
+      many ? nav('prev', 'Imagem anterior', '‹') : null,
+      many ? nav('next', 'Próxima imagem', '›') : null,
+      count, progress);
+    const thumbs = many ? imgs.map((src, n) => h('button', {
+      class: 'gallery-thumb', type: 'button', 'aria-label': `Ver imagem ${n + 1}`, onclick: () => go(n),
+    }, h('img', { src: rawgCrop(src), alt: '', loading: 'lazy', decoding: 'async' }))) : [];
+    const thumbsWrap = many ? h('div', { class: 'gallery-thumbs' }, thumbs) : null;
+    root.replaceChildren(...[stage, thumbsWrap].filter(Boolean));
+
+    const load = n => {
+      const s = slides[(n + imgs.length) % imgs.length];
+      if (s && s.dataset.src) { s.src = s.dataset.src; s.removeAttribute('data-src'); }
+    };
+    function go(n) {
+      idx = (n + imgs.length) % imgs.length;
+      track.style.transform = `translateX(-${idx * 100}%)`;
+      [idx, idx + 1, idx - 1].forEach(load);
+      if (count) count.textContent = `${String(idx + 1).padStart(2, '0')} / ${String(imgs.length).padStart(2, '0')}`;
+      if (progress) progress.style.width = `${((idx + 1) / imgs.length) * 100}%`;
+      thumbs.forEach((t, k) => t.setAttribute('aria-current', String(k === idx)));
+      const t = thumbs[idx];
+      if (t && thumbsWrap) thumbsWrap.scrollTo({ left: t.offsetLeft - (thumbsWrap.clientWidth - t.clientWidth) / 2, behavior: 'smooth' });
+    }
+
+    /* Swipe / arrastar no stage */
+    if (many) {
+      let x0 = null;
+      stage.addEventListener('pointerdown', e => { if (!e.target.closest('button')) x0 = e.clientX; });
+      stage.addEventListener('pointerup', e => {
+        if (x0 == null) return;
+        const dx = e.clientX - x0; x0 = null;
+        if (Math.abs(dx) > 40) go(idx + (dx < 0 ? 1 : -1));
+      });
+      stage.addEventListener('pointercancel', () => { x0 = null; });
+    }
+
+    gallery = { many, go, get idx() { return idx; } };
+    go(Math.min(start, imgs.length - 1));
+  }
+
+  /* Busca o conjunto completo de screenshots do jogo (além das ~6 da listagem) */
+  async function loadScreenshots(g) {
+    if (g.source !== 'rawg' || g.shotsFetched || !state.key) return;
+    g.shotsFetched = true;
+    try {
+      const res = await fetch(`${API}/games/${g.id}/screenshots?key=${encodeURIComponent(state.key)}&page_size=20`);
+      if (!res.ok) return;
+      const d = await res.json();
+      const before = galleryOf(g).length;
+      const extra = (d.results || []).filter(s => s && s.image && !s.is_deleted).map(s => s.image);
+      g.screenshots = [...new Set([...(g.screenshots || []), ...extra])];
+      if (state.current === g && galleryOf(g).length !== before) buildGallery(g, gallery ? gallery.idx : 0);
+    } catch (_) {
+      g.shotsFetched = false;
+    }
+  }
+
+  els.dlg.addEventListener('keydown', e => {
+    if (!gallery || !gallery.many || e.target.closest('input, textarea, select')) return;
+    if (e.key === 'ArrowRight') { e.preventDefault(); gallery.go(gallery.idx + 1); }
+    else if (e.key === 'ArrowLeft') { e.preventDefault(); gallery.go(gallery.idx - 1); }
+  });
+
+  function fillDialog(g, cascade = false) {
+    buildGallery(g);
+    $('#g-title').textContent = g.name;
+    $('#g-sub').textContent = [year(g.released), g.platforms.join(' · ')].filter(Boolean).join(' — ');
+    fillSpecs(g);
+    renderDescription(g, cascade);
   }
 
   async function openGame(g) {
     state.current = g;
-    const base = (g.source === 'rawg' && g.description == null) ? { ...g, description: null } : g;
-    fillDialog(base);
-    els.dlg.showModal();
+    const dlgBody = $('.dlg-body', els.dlg);
+    if (dlgBody) dlgBody.scrollTop = 0;
+    loadScreenshots(g);
 
-    if (g.source === 'rawg') {
-      if (g.description == null) {
-        try {
+    const needsFetch = g.source === 'rawg' && g.description == null;
+    const needsTranslate = g.source === 'rawg' && !g.translatedDesc && !g.translationAttempted && typeof I18N !== 'undefined';
+
+    if (needsFetch || needsTranslate) {
+      g.isLoadingDesc = true;
+      fillDialog(g, false);
+      els.dlg.showModal();
+
+      try {
+        if (needsFetch) {
           const res = await fetch(`${API}/games/${g.id}?key=${encodeURIComponent(state.key)}`);
           if (!res.ok) throw new Error();
           const d = await res.json();
@@ -470,13 +652,37 @@
             website: d.website || null,
             image: g.image || d.background_image,
           });
-          fillDialog(g);
-        } catch {
-          if (state.current === g) $('#g-desc').replaceChildren(h('p', { class: 'muted', text: 'Não foi possível carregar a descrição.' }));
-          return;
+          if (state.current === g) fillSpecs(g);
         }
+
+        if (g.description && !g.translatedDesc && typeof I18N !== 'undefined') {
+          try {
+            const tr = await I18N.text(g.id, g.description);
+            if (tr && tr !== g.description) {
+              g.translatedDesc = tr;
+              g.showOriginal = false;
+            }
+          } catch (err) {
+            console.warn('[I18N] Falha na tradução da descrição:', err);
+          }
+        }
+        g.translationAttempted = true;
+      } catch {
+        g.isLoadingDesc = false;
+        if (state.current === g) {
+          $('#g-desc').replaceChildren(h('p', { class: 'muted', text: 'Não foi possível carregar a descrição.' }));
+          const discussWrap = $('#g-discuss')?.parentElement;
+          if (discussWrap) discussWrap.hidden = false;
+        }
+        return;
       }
-      translateGameDesc(g);
+
+      g.isLoadingDesc = false;
+      if (state.current === g) renderDescription(g, true);
+    } else {
+      g.isLoadingDesc = false;
+      fillDialog(g, true);
+      els.dlg.showModal();
     }
   }
 
@@ -502,7 +708,17 @@
     els.platforms.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
     state.platform = b.dataset.p; state.next = null; loadGames();
   });
-  els.more.addEventListener('click', () => loadGames(true));
+  els.more?.addEventListener('click', () => loadGames(true));
+
+  /* ── Scroll Infinito Automático (ativável via CONFIG.PAGINATION.infiniteScroll em config.js) ── */
+  if (ENABLE_INFINITE_SCROLL && 'IntersectionObserver' in window && els.moreWrap) {
+    const infiniteScrollIo = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && state.next && !loadingMore && !els.games.hasAttribute('aria-busy')) {
+        loadGames(true);
+      }
+    }, { rootMargin: '350px 0px' });
+    infiniteScrollIo.observe(els.moreWrap);
+  }
 
   /* ── Chave ── */
   const keyInput = $('#api-key');
