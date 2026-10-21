@@ -80,9 +80,9 @@
 
       <nav class="site-nav" aria-label="Seções principais">
         <a class="active" href="#inicio">[01] DESTAQUES</a>
-        <a href="#acervo">[02] ACERVO 500K</a>
-        <a href="#forum">[03] FÓRUM LOCAL</a>
-        <a href="#config">[04] RAWG API</a>
+        <a href="#acervo">[02] ACERVO</a>
+        <a href="#lets-you">[03] RECURSOS</a>
+        <a href="#forum">[04] FÓRUM</a>
       </nav>
 
       <div class="header-controls">
@@ -133,7 +133,7 @@
             <div class="console-footer">
               <div class="hero-actions">
                 <a class="btn btn--primary" href="#acervo">INICIAR CATÁLOGO [ENTER]</a>
-                <a class="btn btn--secondary" href="#config">CONECTAR API RAWG</a>
+                <a class="btn btn--secondary" href="#forum">ACESSAR FÓRUM</a>
               </div>
               <div class="console-persist">
                 <span class="persist-title">MODO OFFLINE + CLOUD</span>
@@ -179,16 +179,20 @@
           </aside>
         </div>
 
-        <!-- Fileira de 6 Cartuchos em Destaque -->
+        <!-- Fileira de 6 Cartuchos em Destaque (Ciclo Semanal de 7 Dias) -->
         <div class="featured-block reveal">
           <div class="section-bar">
             <div class="section-bar-left">
-              <span class="hw-kicker">MÓDULO 01 // SELEÇÃO DA COMUNIDADE</span>
-              <span class="section-bar-title">Cartuchos em Destaque</span>
+              <span class="hw-kicker">MÓDULO 01 // EM ALTA NO MOMENTO · CICLO DE 7 DIAS</span>
+              <span class="section-bar-title">Jogos em Alta na Semana</span>
+              <p class="featured-desc">Seleção dos títulos com maior atividade e engajamento global no momento. Atualizado a cada 7 dias (títulos populares podem se repetir no ciclo).</p>
             </div>
-            <a class="section-bar-link" href="#acervo">VER ACERVO COMPLETO →</a>
+            <div class="section-bar-actions">
+              <span class="section-bar-meta section-bar-meta--cycle" id="featured-cycle-badge">CICLO SEMANAL · RENOVAÇÃO EM 7D</span>
+              <a class="section-bar-link" href="#acervo">VER ACERVO COMPLETO →</a>
+            </div>
           </div>
-          <ul class="poster-strip" id="featured-games" aria-label="Jogos em destaque"></ul>
+          <ul class="poster-strip" id="featured-games" aria-label="Jogos em alta no momento"></ul>
         </div>
       </div>
     </section>
@@ -207,12 +211,7 @@
               </div>
 
               <div class="acervo-controls">
-                <div class="toolbar" role="group" aria-label="Filtrar por plataforma" id="platforms">
-                  <button class="chip" type="button" data-p="" aria-pressed="true">TODOS</button>
-                  <button class="chip" type="button" data-p="1" aria-pressed="false">PC</button>
-                  <button class="chip" type="button" data-p="2,3,7" aria-pressed="false">CONSOLE</button>
-                  <button class="chip" type="button" data-p="9,10,11,12,13" aria-pressed="false">RETRÔ</button>
-                </div>
+                <span class="acervo-badge" aria-label="Seleção dos 9 jogos mais jogados e comentados na web">TOP 9 // MAIS JOGADOS &amp; COMENTADOS</span>
               </div>
             </div>
 
@@ -222,7 +221,7 @@
 
             <ul class="grid" id="games" aria-label="Jogos do acervo"></ul>
 
-            <div class="more" id="more-wrap">
+            <div class="more" id="more-wrap" hidden>
               <button class="btn btn--primary" type="button" id="more" hidden>CARREGAR MAIS CARTUCHOS</button>
               <p class="muted infinite-loader" id="infinite-loader" hidden aria-live="polite">CARREGANDO MAIS JOGOS…</p>
             </div>
@@ -244,10 +243,10 @@
             <article class="spec-card spec-card--white reveal">
               <div class="spec-card-top">
                 <span class="spec-num spec-num--red">RECURSO // 02</span>
-                <span class="spec-tag">[RAWG BRIDGE]</span>
+                <span class="spec-tag">[CLOUD ENGINE]</span>
               </div>
               <h3 class="spec-title">Expansão para 500 Mil+ Jogos</h3>
-              <p class="spec-desc">Funciona offline com curadoria local ou conectado à sua chave gratuita da API RAWG com tradução automática PT-BR.</p>
+              <p class="spec-desc">Base global integrada com mais de 500 mil jogos cadastrados, fichas técnicas completas e tradução automática para PT-BR.</p>
             </article>
 
             <article class="spec-card spec-card--white reveal">
@@ -343,28 +342,25 @@
             </form>
           </div>
 
-          <!-- Módulo Direito: Dock de Expansão API RAWG + Rodapé de Hardware -->
+          <!-- Módulo Direito: Dock de Informações & Status Global -->
           <div class="bento-right-dock">
-            <form id="config" class="bento-rawg-dock reveal" aria-labelledby="t-config">
+            <div class="bento-rawg-dock reveal" id="info-dock">
               <div class="rawg-dock-top">
-                <span class="rawg-dock-kicker">MÓDULO DE EXPANSÃO // API RAWG</span>
-                <h2 class="rawg-dock-title" id="t-config">Desbloqueie 500 mil+ títulos no navegador</h2>
+                <span class="rawg-dock-kicker">CATÁLOGO GLOBAL // BASE INTEGRADA</span>
+                <h2 class="rawg-dock-title">Mais de 500 mil títulos indexados</h2>
                 <p class="rawg-dock-desc">
-                  Sem chave, você navega pela curadoria local offline. Insira sua chave gratuita da <a class="link link--light" href="https://rawg.io/apidocs" rel="noopener" target="_blank">API RAWG<span class="sr-only"> (abre em nova aba)</span></a> para consultar todas as gerações (1972—2026) traduzidas para PT-BR.
+                  Acervo universal abrangendo todas as gerações de videogames (1972—2026), com especificações de hardware, gameplay dinâmico e sinopses traduzidas para PT-BR.
                 </p>
               </div>
 
               <div class="rawg-dock-bottom">
-                <label class="label label--light" for="api-key">CHAVE DA API RAWG (32 HEX)</label>
-                <div class="key-row">
-                  <input class="input input--dark-slot" id="api-key" type="password" autocomplete="off" spellcheck="false" placeholder="KEY: rawg_0123abcd...">
-                  <button class="btn btn--vermilion" type="submit">SALVAR</button>
-                  <button class="btn btn--dark-ghost" type="button" id="key-clear">REMOVER</button>
+                <div class="dock-status-badge">
+                  <span class="brand-led brand-led--green" aria-hidden="true"></span>
+                  <span>BASE CONECTADA · ATUALIZAÇÃO CONTÍNUA</span>
                 </div>
-                <p class="status status--light" id="key-status" role="status"></p>
                 <p class="rawg-dock-copy">© <span id="year">2026</span> LOADING... · PROJETO INDEPENDENTE SEM FINS COMERCIAIS</p>
               </div>
-            </form>
+            </div>
           </div>
         </div>
       </div>

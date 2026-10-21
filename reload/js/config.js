@@ -1,19 +1,8 @@
 /**
  * ====================================================================
- * LOADING... — Configurações e Chaves de API
+ * LOADING... — Configurações e Integração de APIs
  * ====================================================================
- * 
- * Para ativar a busca e paginação em tempo real de +500.000 jogos na
- * base de dados global da RAWG Video Games Database:
- * 
- * 1. Obtenha sua chave gratuita em: https://rawg.io/apidocs
- * 2. Cole a chave de 32 caracteres na constante RAWG_KEY abaixo.
- * 
- * Exemplo:
- *   RAWG_KEY: 'abc0123456789def0123456789abcdef',
- * 
- * Nota: Você também pode salvar a chave diretamente pela interface
- * do site, no campo "Chave da API RAWG" situado no rodapé.
+ * Base de dados global integrada (RAWG Video Games Database).
  */
 
 const CONFIG = {
@@ -40,7 +29,7 @@ const CONFIG = {
 
   // Paginação do Acervo (scroll infinito desativado por padrão; ative com true a qualquer momento)
   PAGINATION: {
-    pageSize: 40,
+    pageSize: 9,
     infiniteScroll: false,
   },
 };
