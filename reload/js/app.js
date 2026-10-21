@@ -91,7 +91,7 @@
     next: null,
     ctrl: null,
     current: null,
-    backdropGame: SEED[2], // Elden Ring por padrão
+    backdropGame: SEED[0], // Zelda: Breath of the Wild por padrão no Slot Ativo
   };
   const knownGames = new Set(SEED.map(g => g.name));
   const gameImageMap = new Map(SEED.map(g => [g.name.toLowerCase(), g.image]));
@@ -115,26 +115,28 @@
     heroImg: $('#hero-backdrop-img'),
     heroCreditBtn: $('#hero-credit-btn'),
     heroCreditName: $('#hero-credit-name'),
+    heroCreditStudio: $('#hero-credit-studio'),
+    heroMetaBadge: $('#hero-meta-badge'),
   };
 
-  /* ── Tema manual (Escuro padrão estilo Letterboxd, Claro e Auto) ── */
-  let themeIdx = 2; // Escuro como padrão visual do Letterboxd
+  /* ── Tema manual (Claro padrão estilo Hardware Tátil & Bento, Escuro e Auto) ── */
+  let themeIdx = 1; // Claro como padrão visual da Opção 2
   const urlTheme = new URLSearchParams(location.search).get('theme');
-  const storedTheme = urlTheme || localStorage.getItem(LS.theme) || 'dark';
-  if (storedTheme === 'light') {
-    themeIdx = 1;
-    document.documentElement.dataset.theme = 'light';
+  const storedTheme = urlTheme || localStorage.getItem(LS.theme) || 'light';
+  if (storedTheme === 'dark') {
+    themeIdx = 2;
+    document.documentElement.dataset.theme = 'dark';
   } else if (storedTheme === 'auto') {
     themeIdx = 0;
     delete document.documentElement.dataset.theme;
   } else {
-    themeIdx = 2;
-    document.documentElement.dataset.theme = 'dark';
+    themeIdx = 1;
+    document.documentElement.dataset.theme = 'light';
   }
 
   const updateThemeBtn = () => {
-    const mode = ['Auto', 'Claro', 'Escuro'][themeIdx];
-    if (els.themeBtn) els.themeBtn.textContent = `Tema: ${mode}`;
+    const mode = ['AUTO', 'CLARO', 'ESCURO'][themeIdx];
+    if (els.themeBtn) els.themeBtn.textContent = `TEMA: ${mode}`;
   };
   updateThemeBtn();
   els.themeBtn?.addEventListener('click', () => {
@@ -150,6 +152,15 @@
       localStorage.setItem(LS.theme, 'dark');
     }
     updateThemeBtn();
+  });
+
+  /* ── Atalho de teclado CTRL+K para busca rápida ── */
+  window.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      els.q?.focus();
+      els.q?.select();
+    }
   });
 
   const setStatus = (msg, link) => {
@@ -179,24 +190,38 @@
     ? url.replace('https://media.rawg.io/media/', `https://media.rawg.io/media/resize/${w}/-/`)
     : url;
 
-  /* ── Hero Backdrop estilo Letterboxd ── */
-  function updateHeroBackdrop(list) {
-    if (!els.heroImg || !list || !list.length) return;
-    const candidate = list.find(g => g.name === 'Elden Ring') || list.find(g => g.imageHover || g.image) || list[0];
-    if (!candidate) return;
+  /* ── Slot Ativo de Cartucho no Hero (Gameplay Preview) ── */
+  function setHeroDeckGame(candidate) {
+    if (!els.heroImg || !candidate) return;
     state.backdropGame = candidate;
-    const backdropUrl = candidate.imageHover || candidate.image;
+    const backdropUrl = candidate.image || candidate.imageHover;
     if (backdropUrl && els.heroImg.src !== backdropUrl) {
       els.heroImg.src = backdropUrl;
       els.heroImg.alt = `Cena de ${candidate.name}`;
     }
+    const yr = year(candidate.released);
     if (els.heroCreditName) {
-      const yr = year(candidate.released);
-      els.heroCreditName.textContent = yr !== '—' ? `${candidate.name} (${yr})` : candidate.name;
+      els.heroCreditName.textContent = candidate.name.toUpperCase();
+    }
+    if (els.heroCreditStudio) {
+      const studio = (candidate.developers && candidate.developers[0]) || (candidate.platforms && candidate.platforms[0]) || 'ARCHIVE';
+      els.heroCreditStudio.textContent = yr !== '—' ? `${studio.toUpperCase()} · ${yr}` : studio.toUpperCase();
+    }
+    if (els.heroMetaBadge) {
+      els.heroMetaBadge.textContent = candidate.metacritic ? `META ${candidate.metacritic}` : 'ROM OK';
     }
   }
 
+  function updateHeroBackdrop(list) {
+    if (!els.heroImg || !list || !list.length) return;
+    const candidate = list.find(g => g.name.includes('Zelda')) || list.find(g => g.imageHover || g.image) || list[0];
+    if (candidate) setHeroDeckGame(candidate);
+  }
+
   els.heroCreditBtn?.addEventListener('click', () => {
+    if (state.backdropGame) openGame(state.backdropGame);
+  });
+  $('#hero-backdrop')?.addEventListener('click', () => {
     if (state.backdropGame) openGame(state.backdropGame);
   });
 
@@ -281,6 +306,10 @@
       };
       btn.addEventListener('pointerenter', loadHover, { once: true, passive: true });
       btn.addEventListener('focusin', loadHover, { once: true, passive: true });
+    }
+    if (isAboveFold) {
+      btn.addEventListener('pointerenter', () => setHeroDeckGame(g), { passive: true });
+      btn.addEventListener('focusin', () => setHeroDeckGame(g), { passive: true });
     }
 
     return h('li', { class: 'card' }, btn);
@@ -813,7 +842,7 @@
       posterNode,
       h('div', { class: 'topic-content' },
         h('div', { class: 'topic-header' },
-          h('span', { class: 'topic-game', text: gameLabel }),
+          h('span', { class: 'topic-game', text: `[${gameLabel.toUpperCase()}]` }),
           h('span', { class: 'topic-stars', 'aria-label': '5 estrelas', text: '★★★★★' }),
           t.pinned ? h('span', { class: 'pin', text: 'Fixado' }) : null
         ),

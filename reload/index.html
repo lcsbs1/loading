@@ -1,20 +1,23 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="light">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Loading... — Acompanhe, avalie e descubra todos os jogos</title>
-  <meta name="description" content="Loading...: enciclopédia social e fórum aberto de jogos de videogame e computador. Acompanhe o que você jogou, descubra clássicos e converse sem anúncios.">
-  <meta name="color-scheme" content="dark light">
-  <meta name="theme-color" content="#14181C" media="(prefers-color-scheme: dark)">
-  <meta name="theme-color" content="#F4F6F8" media="(prefers-color-scheme: light)">
+  <title>Loading... — Acervo Tátil &amp; Fórum Comunitário de Jogos (1972—2026)</title>
+  <meta name="description" content="Loading...: enciclopédia aberta e fórum comunitário de jogos de videogame e computador. Acompanhe o que você jogou, inspecione fichas técnicas e converse sem anúncios.">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#ECECEC" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Loading...">
-  <meta property="og:title" content="Loading... — Acompanhe, avalie e descubra todos os jogos">
-  <meta property="og:description" content="Acompanhe os jogos que você zerou. Salve aqueles que quer jogar. Conte aos amigos o que é bom.">
+  <meta property="og:title" content="Loading... — Seu Acervo Tátil e Fórum Comunitário">
+  <meta property="og:description" content="Registre cada título que você já zerou, inspecione fichas técnicas com preview instantâneo de gameplay e debata sem algoritmos.">
   <meta property="og:locale" content="pt_BR">
   <meta name="twitter:card" content="summary_large_image">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 16'%3E%3Ccircle cx='7' cy='8' r='5.5' fill='%23FF8000'/%3E%3Ccircle cx='18' cy='8' r='5.5' fill='%2300E054'/%3E%3Ccircle cx='29' cy='8' r='5.5' fill='%2340BCF4'/%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 20'%3E%3Crect width='36' height='20' rx='5' fill='%23161616'/%3E%3Ccircle cx='12' cy='10' r='4' fill='%23F5B700'/%3E%3Ccircle cx='24' cy='10' r='4' fill='%23E04F33'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400..700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;family=Space+Grotesk:wght@600;700&amp;display=swap" rel="stylesheet">
   <link rel="preconnect" href="https://api.rawg.io" crossorigin>
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -29,10 +32,9 @@
   <a class="skip" href="#conteudo">Pular para o conteúdo</a>
 
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
-    <symbol id="lb-dots" viewBox="0 0 42 16">
-      <circle cx="8" cy="8" r="6.5" fill="#FF8000"/>
-      <circle cx="21" cy="8" r="6.5" fill="#00E054" style="mix-blend-mode:screen"/>
-      <circle cx="34" cy="8" r="6.5" fill="#40BCF4" style="mix-blend-mode:screen"/>
+    <symbol id="lb-dots" viewBox="0 0 28 12">
+      <circle cx="6" cy="6" r="4.5" fill="#F5B700"/>
+      <circle cx="20" cy="6" r="4.5" fill="#E04F33"/>
     </symbol>
     <symbol id="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/>
@@ -61,260 +63,340 @@
     </symbol>
   </svg>
 
+  <!-- Barra de Chassi Superior (Hardware Top Chassis Bar) -->
   <header class="site-header" id="site-header">
     <div class="wrap header-inner">
-      <a class="brand" href="#inicio" aria-label="Loading..., início">
-        <svg class="brand-dots" aria-hidden="true"><use href="#lb-dots"/></svg>
-        <span class="brand-name">Loading<span class="brand-ellipsis">...</span></span>
-      </a>
+      <div class="brand-group">
+        <a class="brand" href="#inicio" aria-label="Loading..., início">
+          <span class="brand-led brand-led--yellow" aria-hidden="true"></span>
+          <span class="brand-led brand-led--red" aria-hidden="true"></span>
+          <span class="brand-name">LOADING<span class="brand-ellipsis">...</span></span>
+        </a>
+        <div class="brand-telemetry">
+          <span class="brand-rev">SYS.REV // 1972—2026</span>
+          <span class="brand-sub">OPEN ARCHIVE · NO ADS</span>
+        </div>
+      </div>
 
       <nav class="site-nav" aria-label="Seções principais">
-        <a href="#inicio">Destaques</a>
-        <a href="#acervo">Jogos</a>
-        <a href="#lets-you">Recursos</a>
-        <a href="#forum">Avaliações</a>
-        <a href="#manifesto">Membros &amp; Sobre</a>
-        <button class="chip chip--theme" id="theme-btn" type="button" aria-label="Alternar tema de cores">Tema: Escuro</button>
+        <a class="active" href="#inicio">[01] DESTAQUES</a>
+        <a href="#acervo">[02] ACERVO 500K</a>
+        <a href="#forum">[03] FÓRUM LOCAL</a>
+        <a href="#config">[04] RAWG API</a>
       </nav>
 
-      <form class="header-search" role="search" id="search-form">
-        <label class="sr-only" for="q">Buscar jogos</label>
-        <input class="input input--search" id="q" name="q" type="search" placeholder="Buscar jogos, anos, plataformas…" autocomplete="off" spellcheck="false">
-      </form>
+      <div class="header-controls">
+        <form class="header-search" role="search" id="search-form">
+          <label class="sr-only" for="q">Buscar jogos</label>
+          <div class="search-slot">
+            <input class="input input--search" id="q" name="q" type="search" placeholder="BUSCAR ROM / JOGO..." autocomplete="off" spellcheck="false">
+            <kbd class="search-kbd" aria-hidden="true">CTRL+K</kbd>
+          </div>
+        </form>
+        <button class="chip chip--theme" id="theme-btn" type="button" aria-label="Alternar tema de cores">TEMA: CLARO</button>
+      </div>
     </div>
   </header>
 
   <main id="conteudo">
-    <!-- 01 · Hero Estilo Letterboxd (Backdrop Widescreen + Headline Editorial + 6 Pôsteres) -->
+    <!-- 01 · Tactile Bento Hero (Console Principal + Slot de Cartucho Ativo) -->
     <section class="hero" id="inicio" aria-labelledby="t-inicio">
-      <div class="hero-backdrop-wrap">
-        <div class="hero-backdrop" id="hero-backdrop">
-          <img
-            id="hero-backdrop-img"
-            class="hero-backdrop-img"
-            src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1245620/ss_943bf6fe62352757d9070c1d33e50b92fe8539f1.600x338.jpg"
-            alt="Cena de Elden Ring"
-            fetchpriority="high"
-            decoding="async"
-            width="1200"
-            height="675"
-          >
-          <div class="hero-backdrop-vignette" aria-hidden="true"></div>
-          <button type="button" class="hero-backdrop-credit" id="hero-credit-btn" title="Ver ficha deste jogo">
-            Backdrop de <strong id="hero-credit-name">Elden Ring (2022)</strong>
-          </button>
+      <div class="wrap">
+        <div class="bento-hero-grid">
+          <!-- Módulo Esquerdo: Console Principal -->
+          <div class="bento-console">
+            <div class="console-topbar">
+              <div class="console-topbar-left">
+                <span class="hw-badge hw-badge--yellow">UNIDADE DE ARQUIVO V2.6</span>
+                <span class="hw-meta">ATARI 2600 → PS5 · MS-DOS → STEAM</span>
+              </div>
+              <span class="hw-telemetry-dot">● TELEMETRIA ZERO-ADS</span>
+            </div>
+
+            <div class="console-body">
+              <h1 class="hero-headline" id="t-inicio">
+                <span class="hero-headline-row">
+                  <span>SEU ACERVO TÁTIL</span>
+                  <span class="hero-inline-counter">
+                    <strong id="fact-count">500.000+</strong>
+                    <small>JOGOS</small>
+                  </span>
+                </span>
+                <span>E FÓRUM COMUNITÁRIO.</span>
+              </h1>
+
+              <p class="hero-sub">
+                Registre cada título que você já zerou, inspecione fichas técnicas com preview instantâneo de gameplay e debata com a comunidade sem algoritmos ou rastreadores.
+              </p>
+            </div>
+
+            <div class="console-footer">
+              <div class="hero-actions">
+                <a class="btn btn--primary" href="#acervo">INICIAR CATÁLOGO [ENTER]</a>
+                <a class="btn btn--secondary" href="#config">CONECTAR API RAWG</a>
+              </div>
+              <div class="console-persist">
+                <span class="persist-title">MODO OFFLINE + CLOUD</span>
+                <span class="persist-sub">LOCALSTORAGE PERSISTENT</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Módulo Direito: Deck de Cartucho Ativo (Gameplay Preview) -->
+          <aside class="bento-deck" aria-label="Jogo em destaque no slot ativo">
+            <div class="deck-header">
+              <span class="deck-slot-label">SLOT ATIVO // GAMEPLAY PREVIEW</span>
+              <span class="deck-meta-badge" id="hero-meta-badge">META 97</span>
+            </div>
+
+            <div class="hero-backdrop-wrap">
+              <div class="hero-backdrop" id="hero-backdrop">
+                <img
+                  id="hero-backdrop-img"
+                  class="hero-backdrop-img"
+                  src="https://media.rawg.io/media/games/cc1/cc196a5ad763955d6532cdba236f730c.jpg"
+                  alt="Cena de The Legend of Zelda: Breath of the Wild"
+                  fetchpriority="high"
+                  decoding="async"
+                  width="1200"
+                  height="675"
+                >
+                <div class="hero-backdrop-vignette" aria-hidden="true"></div>
+                <div class="deck-screen-hud">
+                  <strong class="deck-game-name" id="hero-credit-name">ZELDA: BREATH OF THE WILD (2017)</strong>
+                  <span class="deck-game-studio" id="hero-credit-studio">NINTENDO EPD · 2017</span>
+                </div>
+              </div>
+            </div>
+
+            <button type="button" class="deck-inspect-bar" id="hero-credit-btn" title="Ver ficha técnica deste jogo">
+              <div class="deck-inspect-copy">
+                <span class="deck-inspect-kicker">INSPEÇÃO DE FICHA TÉCNICA</span>
+                <span class="deck-inspect-hint">Passe o cursor nos cartuchos para vídeo/captura</span>
+              </div>
+              <span class="deck-inspect-cta">VER FICHA →</span>
+            </button>
+          </aside>
         </div>
-      </div>
 
-      <div class="wrap hero-content">
-        <h1 class="hero-headline" id="t-inicio">
-          <span>Acompanhe os jogos que você zerou.</span>
-          <span>Salve aqueles que você quer jogar.</span>
-          <span>Conte aos amigos o que vale a pena.</span>
-        </h1>
-
-        <div class="hero-actions">
-          <a class="btn btn--primary" href="#acervo">Comece agora — é grátis!</a>
-        </div>
-
-        <p class="hero-sub">
-          A rede social e enciclopédia aberta para amantes de videogames. Disponível para consultar <strong id="fact-count">500 mil+</strong> títulos em <strong>50+</strong> plataformas, com <strong>0</strong> anúncios.
-        </p>
-
-        <!-- Fileira de 6 Pôsteres em Destaque (Proporção 2:3) -->
-        <div class="featured-block">
+        <!-- Fileira de 6 Cartuchos em Destaque -->
+        <div class="featured-block reveal">
           <div class="section-bar">
-            <span class="section-bar-title">Destaques da comunidade</span>
-            <a class="section-bar-link" href="#acervo">Ver catálogo completo →</a>
+            <div class="section-bar-left">
+              <span class="hw-kicker">MÓDULO 01 // SELEÇÃO DA COMUNIDADE</span>
+              <span class="section-bar-title">Cartuchos em Destaque</span>
+            </div>
+            <a class="section-bar-link" href="#acervo">VER ACERVO COMPLETO →</a>
           </div>
           <ul class="poster-strip" id="featured-games" aria-label="Jogos em destaque"></ul>
         </div>
       </div>
     </section>
 
-    <!-- 02 · "O Loading... permite que você..." (Grade 3x2 Estilo Letterboxd) -->
-    <section class="lets-section" id="lets-you" aria-labelledby="t-lets">
-      <div class="wrap">
-        <div class="section-bar reveal">
-          <h2 class="section-bar-title" id="t-lets">O Loading... permite que você…</h2>
-          <span class="section-bar-meta">100% aberto · Sem rastreadores</span>
-        </div>
-
-        <div class="lets-grid reveal">
-          <article class="lets-card lets-card--green">
-            <svg class="lets-icon" aria-hidden="true"><use href="#icon-eye"/></svg>
-            <p>Mantenha o registro de cada jogo que você já experimentou (ou comece a partir do que está jogando hoje)</p>
-          </article>
-          <article class="lets-card lets-card--orange">
-            <svg class="lets-icon" aria-hidden="true"><use href="#icon-heart"/></svg>
-            <p>Demonstre apreço pelos seus jogos favoritos com previews de gameplay instantâneos e fichas completas</p>
-          </article>
-          <article class="lets-card lets-card--blue">
-            <svg class="lets-icon" aria-hidden="true"><use href="#icon-review"/></svg>
-            <p>Escreva e compartilhe análises no fórum comunitário, e acompanhe discussões por jogo sem algoritmos</p>
-          </article>
-          <article class="lets-card lets-card--green">
-            <svg class="lets-icon" aria-hidden="true"><use href="#icon-star"/></svg>
-            <p>Consulte notas do Metacritic, avaliações da comunidade e especificações traduzidas para o português</p>
-          </article>
-          <article class="lets-card lets-card--orange">
-            <svg class="lets-icon" aria-hidden="true"><use href="#icon-calendar"/></svg>
-            <p>Viaje pela linha do tempo dos videogames: do Atari e MS-DOS ao PlayStation 5, Nintendo Switch e PC</p>
-          </article>
-          <article class="lets-card lets-card--blue">
-            <svg class="lets-icon" aria-hidden="true"><use href="#icon-grid"/></svg>
-            <p>Conecte sua chave gratuita da API RAWG para desbloquear mais de 500 mil jogos diretamente no navegador</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- 03 · Acervo Principal (Pôsteres Verticais 2:3 + Filtros de Plataforma) -->
+    <!-- 02 · Bento Grid Assimétrico: Acervo Interativo + Stack de Recursos de Hardware -->
     <section id="acervo" aria-labelledby="t-acervo">
       <div class="wrap">
-        <div class="section-bar reveal">
-          <h2 class="section-bar-title" id="t-acervo">Acervo de Jogos</h2>
-          <p class="status" id="status" role="status" aria-live="polite"></p>
-        </div>
+        <div class="bento-catalog-layout">
+          <!-- Coluna Principal: Biblioteca de Mídias -->
+          <div class="bento-module bento-module--catalog">
+            <div class="catalog-header">
+              <div class="catalog-title-group">
+                <span class="hw-kicker">MÓDULO 02 // BIBLIOTECA DE MÍDIAS</span>
+                <h2 class="bento-heading" id="t-acervo">ACERVO INTERATIVO DE JOGOS</h2>
+                <p class="status" id="status" role="status" aria-live="polite"></p>
+              </div>
 
-        <div class="acervo-controls">
-          <div class="toolbar" role="group" aria-label="Filtrar por plataforma" id="platforms">
-            <button class="chip" type="button" data-p="" aria-pressed="true">Todos</button>
-            <button class="chip" type="button" data-p="1" aria-pressed="false">PC</button>
-            <button class="chip" type="button" data-p="2,3,7" aria-pressed="false">Console</button>
-            <button class="chip" type="button" data-p="9,10,11,12,13" aria-pressed="false">Retrô</button>
+              <div class="acervo-controls">
+                <div class="toolbar" role="group" aria-label="Filtrar por plataforma" id="platforms">
+                  <button class="chip" type="button" data-p="" aria-pressed="true">TODOS</button>
+                  <button class="chip" type="button" data-p="1" aria-pressed="false">PC</button>
+                  <button class="chip" type="button" data-p="2,3,7" aria-pressed="false">CONSOLE</button>
+                  <button class="chip" type="button" data-p="9,10,11,12,13" aria-pressed="false">RETRÔ</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="catalog-subbar">
+              <span class="acervo-hint">Passe o cursor sobre um cartucho para ver o gameplay · Clique para abrir a ficha técnica</span>
+            </div>
+
+            <ul class="grid" id="games" aria-label="Jogos do acervo"></ul>
+
+            <div class="more" id="more-wrap">
+              <button class="btn btn--primary" type="button" id="more" hidden>CARREGAR MAIS CARTUCHOS</button>
+              <p class="muted infinite-loader" id="infinite-loader" hidden aria-live="polite">CARREGANDO MAIS JOGOS…</p>
+            </div>
           </div>
-          <span class="acervo-hint">Passe o cursor sobre um pôster para ver o gameplay · Clique para abrir a ficha</span>
-        </div>
 
-        <ul class="grid" id="games" aria-label="Jogos do acervo"></ul>
-        <div class="more" id="more-wrap">
-          <button class="btn" type="button" id="more" hidden>Carregar mais jogos</button>
-          <p class="muted infinite-loader" id="infinite-loader" hidden aria-live="polite">Carregando mais jogos…</p>
+          <!-- Coluna Lateral: Stack de Especificações & Recursos (#lets-you) -->
+          <aside class="bento-spec-stack" id="lets-you" aria-labelledby="t-lets">
+            <h2 class="sr-only" id="t-lets">Recursos do Loading...</h2>
+
+            <article class="spec-card spec-card--yellow reveal">
+              <div class="spec-card-top">
+                <span class="spec-num">RECURSO // 01</span>
+                <span class="spec-tag">[HOVER ENGINE]</span>
+              </div>
+              <h3 class="spec-title">Preview Dinâmico de Gameplay</h3>
+              <p class="spec-desc">Passe o cursor sobre qualquer cartucho para revelar capturas de gameplay em alta resolução instantaneamente.</p>
+            </article>
+
+            <article class="spec-card spec-card--white reveal">
+              <div class="spec-card-top">
+                <span class="spec-num spec-num--red">RECURSO // 02</span>
+                <span class="spec-tag">[RAWG BRIDGE]</span>
+              </div>
+              <h3 class="spec-title">Expansão para 500 Mil+ Jogos</h3>
+              <p class="spec-desc">Funciona offline com curadoria local ou conectado à sua chave gratuita da API RAWG com tradução automática PT-BR.</p>
+            </article>
+
+            <article class="spec-card spec-card--white reveal">
+              <div class="spec-card-top">
+                <span class="spec-num">RECURSO // 03</span>
+                <span class="spec-tag">[1972—2026]</span>
+              </div>
+              <h3 class="spec-title">Memória Multi-Plataforma</h3>
+              <p class="spec-desc">Viaje pela linha do tempo dos videogames: do Atari 2600 e MS-DOS ao PlayStation 5, Nintendo Switch e Steam.</p>
+            </article>
+
+            <article class="spec-card spec-card--dark reveal" id="manifesto" aria-labelledby="t-manifesto">
+              <div class="spec-card-top">
+                <span class="spec-num spec-num--yellow">MANIFESTO // 04</span>
+                <span class="spec-tag spec-tag--light">[ZERO TRACKERS]</span>
+              </div>
+              <h3 class="spec-title spec-title--light" id="t-manifesto">Para quem leva a história dos videogames a sério.</h3>
+              <p class="spec-desc spec-desc--light">O <strong>Loading...</strong> não vende nada e não exibe anúncios. Precisão nos dados, clareza na leitura e constância na comunidade.</p>
+              <dl class="manifesto-stats">
+                <div>
+                  <dt class="label">Catálogo</dt>
+                  <dd class="stat-yellow">500K+</dd>
+                </div>
+                <div>
+                  <dt class="label">Gerações</dt>
+                  <dd class="stat-red">1972—26</dd>
+                </div>
+                <div>
+                  <dt class="label">Anúncios</dt>
+                  <dd class="stat-light">ZERO</dd>
+                </div>
+              </dl>
+            </article>
+          </aside>
         </div>
       </div>
     </section>
 
-    <!-- 04 · Avaliações & Discussões Recentes (Fórum estilo Popular Reviews do Letterboxd) -->
+    <!-- 03 · Fórum Comunitário & Módulo de Expansão API RAWG -->
     <section id="forum" aria-labelledby="t-forum">
       <div class="wrap">
-        <div class="section-bar reveal">
-          <h2 class="section-bar-title" id="t-forum">Avaliações e discussões populares</h2>
-          <span class="section-bar-meta">Comunidade Loading...</span>
-        </div>
+        <div class="bento-forum-grid">
+          <!-- Módulo Esquerdo: Análises & Tópicos Populares -->
+          <div class="bento-module bento-module--forum">
+            <div class="forum-header-bar">
+              <div class="forum-header-left">
+                <span class="hw-badge hw-badge--dark">FÓRUM // COMUNIDADE</span>
+                <h2 class="bento-heading" id="t-forum">ANÁLISES &amp; TÓPICOS POPULARES</h2>
+              </div>
+              <span class="hw-meta">ARMAZENAMENTO LOCAL · ZERO ADS</span>
+            </div>
 
-        <div class="forum-layout">
-          <div class="forum-feed">
             <div class="field forum-filter">
-              <label class="label" for="forum-q">Filtrar avaliações e tópicos</label>
+              <label class="label" for="forum-q">FILTRAR AVALIAÇÕES E TÓPICOS</label>
               <input class="input" id="forum-q" type="search" placeholder="Filtrar por jogo, título ou membro…" autocomplete="off">
             </div>
+
             <div class="topics" id="topics" aria-live="polite"></div>
-          </div>
 
-          <form class="form reveal" id="topic-form" aria-labelledby="t-new" novalidate>
-            <div class="form-header">
-              <span class="form-kicker">Diário da comunidade</span>
-              <h3 class="strong" id="t-new">Registrar avaliação ou tópico</h3>
-            </div>
-            <div class="form-row">
-              <div class="field">
-                <label class="label" for="f-author">Seu perfil</label>
-                <input class="input" id="f-author" name="author" maxlength="40" placeholder="Anônimo" autocomplete="nickname">
+            <!-- Formulário de Registro Integrado -->
+            <form class="form reveal" id="topic-form" aria-labelledby="t-new" novalidate>
+              <div class="form-header">
+                <div class="form-header-left">
+                  <span class="form-kicker">+ DIÁRIO DA COMUNIDADE</span>
+                  <h3 class="strong" id="t-new">Registrar nova avaliação ou abrir tópico</h3>
+                </div>
+                <span class="hw-meta">LOCALSTORAGE</span>
+              </div>
+              <div class="form-row">
+                <div class="field">
+                  <label class="label" for="f-author">SEU PERFIL</label>
+                  <input class="input" id="f-author" name="author" maxlength="40" placeholder="Anônimo" autocomplete="nickname">
+                </div>
+                <div class="field">
+                  <label class="label" for="f-game">JOGO / ROM</label>
+                  <input class="input" id="f-game" name="game" maxlength="80" list="game-list" placeholder="Ex.: Elden Ring">
+                  <datalist id="game-list"></datalist>
+                </div>
               </div>
               <div class="field">
-                <label class="label" for="f-game">Jogo</label>
-                <input class="input" id="f-game" name="game" maxlength="80" list="game-list" placeholder="Ex.: Elden Ring">
-                <datalist id="game-list"></datalist>
+                <label class="label" for="f-title">TÍTULO DA ANÁLISE OU TÓPICO <span aria-hidden="true">*</span></label>
+                <input class="input" id="f-title" name="title" required minlength="4" maxlength="120" placeholder="Resumo sem spoilers…" aria-describedby="f-err">
               </div>
-            </div>
-            <div class="field">
-              <label class="label" for="f-title">Título da análise ou tópico <span aria-hidden="true">*</span></label>
-              <input class="input" id="f-title" name="title" required minlength="4" maxlength="120" placeholder="Resumo sem spoilers…" aria-describedby="f-err">
-            </div>
-            <div class="field">
-              <label class="label" for="f-body">Sua análise / comentário <span aria-hidden="true">*</span></label>
-              <textarea class="input" id="f-body" name="body" required minlength="10" maxlength="2000" placeholder="O que achou da direção de arte, mecânicas ou história?" aria-describedby="f-err"></textarea>
-            </div>
-            <p class="status" id="f-err" aria-live="assertive"></p>
-            <div><button class="btn btn--primary" type="submit">Publicar na comunidade</button></div>
-            <p class="label">Salvo localmente no seu navegador · Zero rastreadores.</p>
-          </form>
-        </div>
-      </div>
-    </section>
-
-    <!-- 05 · Manifesto / Editorial Banner -->
-    <section id="manifesto" class="manifesto" aria-labelledby="t-manifesto">
-      <div class="wrap">
-        <div class="section-bar reveal">
-          <h2 class="section-bar-title" id="t-manifesto">Sobre o Loading...</h2>
-          <span class="section-bar-meta">Manifesto Editorial</span>
-        </div>
-        <div class="manifesto-card reveal">
-          <div class="manifesto-copy">
-            <h3 class="manifesto-headline">Para quem leva a história dos videogames a sério.</h3>
-            <p>O <strong>Loading...</strong> não vende nada e não exibe anúncios. É um espaço editorial inspirado na cultura de catalogação cinematográfica para consultar fichas técnicas, redescobrir clássicos e conversar sobre jogos com dados abertos e leitura limpa.</p>
-            <p class="muted">Precisão nos dados. Clareza na leitura. Constância na comunidade.</p>
+              <div class="field">
+                <label class="label" for="f-body">SUA ANÁLISE / COMENTÁRIO <span aria-hidden="true">*</span></label>
+                <textarea class="input" id="f-body" name="body" required minlength="10" maxlength="2000" placeholder="O que achou da direção de arte, mecânicas ou história?" aria-describedby="f-err"></textarea>
+              </div>
+              <p class="status" id="f-err" aria-live="assertive"></p>
+              <div class="form-actions-bar">
+                <span class="label">Salvo localmente no seu navegador · Zero rastreadores.</span>
+                <button class="btn btn--primary" type="submit">PUBLICAR NO FÓRUM →</button>
+              </div>
+            </form>
           </div>
-          <dl class="manifesto-stats">
-            <div>
-              <dt class="label">Catálogo Global</dt>
-              <dd class="stat-green">500.000+</dd>
-            </div>
-            <div>
-              <dt class="label">Gerações &amp; Sistemas</dt>
-              <dd class="stat-orange">1972 — 2026</dd>
-            </div>
-            <div>
-              <dt class="label">Rastreadores / Ads</dt>
-              <dd class="stat-blue">Zero</dd>
-            </div>
-          </dl>
+
+          <!-- Módulo Direito: Dock de Expansão API RAWG + Rodapé de Hardware -->
+          <div class="bento-right-dock">
+            <form id="config" class="bento-rawg-dock reveal" aria-labelledby="t-config">
+              <div class="rawg-dock-top">
+                <span class="rawg-dock-kicker">MÓDULO DE EXPANSÃO // API RAWG</span>
+                <h2 class="rawg-dock-title" id="t-config">Desbloqueie 500 mil+ títulos no navegador</h2>
+                <p class="rawg-dock-desc">
+                  Sem chave, você navega pela curadoria local offline. Insira sua chave gratuita da <a class="link link--light" href="https://rawg.io/apidocs" rel="noopener" target="_blank">API RAWG<span class="sr-only"> (abre em nova aba)</span></a> para consultar todas as gerações (1972—2026) traduzidas para PT-BR.
+                </p>
+              </div>
+
+              <div class="rawg-dock-bottom">
+                <label class="label label--light" for="api-key">CHAVE DA API RAWG (32 HEX)</label>
+                <div class="key-row">
+                  <input class="input input--dark-slot" id="api-key" type="password" autocomplete="off" spellcheck="false" placeholder="KEY: rawg_0123abcd...">
+                  <button class="btn btn--vermilion" type="submit">SALVAR</button>
+                  <button class="btn btn--dark-ghost" type="button" id="key-clear">REMOVER</button>
+                </div>
+                <p class="status status--light" id="key-status" role="status"></p>
+                <p class="rawg-dock-copy">© <span id="year">2026</span> LOADING... · PROJETO INDEPENDENTE SEM FINS COMERCIAIS</p>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </section>
   </main>
 
   <footer class="site-footer">
-    <div class="wrap footer-grid">
-      <div class="footer-brand-col">
-        <div class="footer-nav-row">
-          <a class="brand" href="#inicio">
-            <svg class="brand-dots" aria-hidden="true"><use href="#lb-dots"/></svg>
-            <span class="brand-name">Loading<span class="brand-ellipsis">...</span></span>
-          </a>
-          <div class="footer-links">
-            <a class="link" href="#acervo">Acervo</a>
-            <a class="link" href="#lets-you">Recursos</a>
-            <a class="link" href="#forum">Avaliações</a>
-            <a class="link" href="https://github.com/" rel="noopener" target="_blank">GitHub ↗<span class="sr-only"> (abre em nova aba)</span></a>
-            <a class="link" href="mailto:ola@loading.dev">Contato</a>
-          </div>
-        </div>
-        <p class="muted" style="margin-top:1rem">Dados e imagens fornecidos pela <a class="link" href="https://rawg.io/" rel="noopener" target="_blank">RAWG Video Games Database<span class="sr-only"> (abre em nova aba)</span></a>. Tradução automática integrada para PT-BR.</p>
-        <p class="label" style="margin-top:1.25rem">© <span id="year">2026</span> Loading... · Projeto independente sem fins comerciais.</p>
+    <div class="wrap footer-inner">
+      <div class="footer-brand-row">
+        <a class="brand" href="#inicio">
+          <span class="brand-led brand-led--yellow" aria-hidden="true"></span>
+          <span class="brand-led brand-led--red" aria-hidden="true"></span>
+          <span class="brand-name">LOADING<span class="brand-ellipsis">...</span></span>
+        </a>
+        <p class="muted">Dados e imagens fornecidos pela <a class="link" href="https://rawg.io/" rel="noopener" target="_blank">RAWG Video Games Database<span class="sr-only"> (abre em nova aba)</span></a> · Tradução automática PT-BR integrada.</p>
       </div>
-
-      <form id="config" class="footer-config" aria-labelledby="t-config">
-        <h2 class="strong" id="t-config">Desbloquear acervo de 500 mil+ jogos</h2>
-        <p class="muted" style="margin:.375rem 0 .875rem">Sem chave, exibimos uma curadoria local de clássicos. Insira uma chave gratuita da <a class="link" href="https://rawg.io/apidocs" rel="noopener" target="_blank">API RAWG<span class="sr-only"> (abre em nova aba)</span></a> para pesquisar toda a base global.</p>
-        <label class="label" for="api-key">Chave da API RAWG</label>
-        <div class="key-row" style="margin-top:.375rem">
-          <input class="input" id="api-key" type="password" autocomplete="off" spellcheck="false" placeholder="ex.: 0123abcd…">
-          <button class="btn btn--primary" type="submit">Salvar</button>
-          <button class="btn" type="button" id="key-clear">Remover</button>
-        </div>
-        <p class="status" id="key-status" role="status" style="margin-top:.625rem"></p>
-      </form>
+      <div class="footer-links">
+        <a class="link" href="#inicio">[01] Destaques</a>
+        <a class="link" href="#acervo">[02] Acervo</a>
+        <a class="link" href="#lets-you">[03] Recursos</a>
+        <a class="link" href="#forum">[04] Fórum</a>
+        <a class="link" href="https://github.com/" rel="noopener" target="_blank">GitHub ↗<span class="sr-only"> (abre em nova aba)</span></a>
+      </div>
     </div>
   </footer>
 
   <dialog id="game-dialog" aria-labelledby="g-title">
     <div class="dlg-bar">
       <div class="dlg-bar-brand">
-        <svg class="brand-dots brand-dots--sm" aria-hidden="true"><use href="#lb-dots"/></svg>
-        <span class="label">Ficha técnica do jogo</span>
+        <span class="brand-led brand-led--yellow" aria-hidden="true"></span>
+        <span class="brand-led brand-led--red" aria-hidden="true"></span>
+        <span class="label">INSPEÇÃO // FICHA TÉCNICA DO JOGO</span>
       </div>
       <button class="dlg-close" type="button" id="dlg-close" aria-label="Fechar">×</button>
     </div>
@@ -327,7 +409,7 @@
       <dl class="specs" id="g-specs"></dl>
       <div class="desc" id="g-desc"></div>
       <div class="dlg-actions">
-        <button class="btn btn--primary" type="button" id="g-discuss">Escrever avaliação no fórum →</button>
+        <button class="btn btn--primary" type="button" id="g-discuss">PUBLICAR ANÁLISE NO FÓRUM →</button>
       </div>
     </div>
   </dialog>
