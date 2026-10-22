@@ -155,6 +155,7 @@
     ctrl: null,
     current: null,
     backdropGame: SEED[0], // Zelda: Breath of the Wild por padrão no Slot Ativo
+    popularPage: 1,
   };
   const knownGames = new Set([...SEED, ...TRENDING_POOL].map(g => g.name));
   const gameImageMap = new Map([...SEED, ...TRENDING_POOL].map(g => [g.name.toLowerCase(), g.image]));
@@ -167,6 +168,7 @@
     more: $('#more'),
     moreWrap: $('#more-wrap'),
     infiniteLoader: $('#infinite-loader'),
+    refreshBtn: $('#acervo-refresh-btn'),
     q: $('#q'),
     platforms: $('#platforms'),
     dlg: $('#game-dialog'),
@@ -500,7 +502,21 @@
   };
 
   /* ── Carregamento ── */
-  function loadSeed() {
+  function loadSeed(isRotate = false) {
+    if (isRotate) {
+      state.popularPage = (state.popularPage % 3) + 1;
+      const combined = [...SEED, ...TRENDING_POOL];
+      const start = ((state.popularPage - 1) * PAGE_SIZE) % combined.length;
+      let slice = combined.slice(start, start + PAGE_SIZE);
+      if (slice.length < PAGE_SIZE) {
+        slice = slice.concat(combined.slice(0, PAGE_SIZE - slice.length));
+      }
+      render(slice.map(g => ({ ...g, source: 'seed' })));
+      if (els.more) els.more.hidden = true;
+      if (els.infiniteLoader) els.infiniteLoader.hidden = true;
+      setStatus(`Modo offline. Jogos em alta · Página ${state.popularPage}.`);
+      return;
+    }
     const q = state.query.toLowerCase();
     const list = SEED.filter(g => (!q || g.name.toLowerCase().includes(q)));
     render(list.map(g => ({ ...g, source: 'seed' })));
@@ -508,7 +524,7 @@
     if (els.infiniteLoader) els.infiniteLoader.hidden = true;
     $('#fact-count').textContent = '500 mil+';
     setStatus(list.length
-      ? (q ? `${list.length} jogo${list.length > 1 ? 's' : ''} encontrado${list.length > 1 ? 's' : ''}.` : 'Top 9 · Os jogos mais jogados e comentados na web (curadoria local).')
+      ? (q ? `${list.length} jogo${list.length > 1 ? 's' : ''} encontrado${list.length > 1 ? 's' : ''}.` : 'Os jogos mais jogados e comentados na web (curadoria local).')
       : 'Nenhum jogo na curadoria local.');
   }
 
@@ -534,8 +550,8 @@
   };
 
   let loadingMore = false;
-  async function loadGames(append = false) {
-    if (!state.key) return loadSeed();
+  async function loadGames(append = false, isRefresh = false) {
+    if (!state.key) return loadSeed(isRefresh);
     if (append) {
       if (loadingMore || !state.next) return;
       loadingMore = true;
@@ -548,7 +564,7 @@
     } else {
       state.ctrl?.abort();
       state.ctrl = new AbortController();
-      setStatus('Carregando catálogo…');
+      setStatus(isRefresh ? 'Atualizando jogos mais jogados…' : 'Carregando catálogo…');
       els.games.setAttribute('aria-busy', 'true');
     }
 
@@ -557,13 +573,16 @@
     else {
       const p = new URLSearchParams({ key: state.key, page_size: String(PAGE_SIZE) });
       if (state.query) { p.set('search', state.query); p.set('search_precise', 'true'); }
-      else p.set('ordering', '-added');
+      else {
+        p.set('ordering', '-added');
+        if (state.popularPage > 1) p.set('page', String(state.popularPage));
+      }
       if (state.platform) p.set('parent_platforms', state.platform);
       url = `${API}/games?${p}`;
     }
 
     try {
-      let data = !append ? getCache(url) : null;
+      let data = (!append && !isRefresh) ? getCache(url) : null;
       if (!data) {
         const res = await fetch(url, { signal: append ? undefined : state.ctrl.signal });
         if (res.status === 401) throw Object.assign(new Error('key'), { code: 401 });
@@ -579,13 +598,15 @@
       setStatus(data.count
         ? (state.query
             ? `${data.count.toLocaleString('pt-BR')} jogos catalogados para “${state.query}”.`
-            : 'Top 9 · Os jogos mais jogados e comentados na web.')
+            : (state.popularPage > 1
+                ? `Os jogos mais jogados e comentados na web · Página ${state.popularPage}.`
+                : 'Os jogos mais jogados e comentados na web.'))
         : 'Nenhum jogo encontrado.');
       if (!state.query && !state.platform) $('#fact-count').textContent = data.count.toLocaleString('pt-BR');
     } catch (e) {
       if (e.name === 'AbortError') return;
       if (!append) {
-        loadSeed();
+        loadSeed(isRefresh);
         setStatus('Modo offline. Exibindo curadoria local.');
       }
     } finally {
@@ -603,27 +624,61 @@
     }
   }
 
-  /* ── Ficha do jogo ── */
+  /* ── Ficha do jogo & Trava de Rolagem (Scroll Lock) ── */
+  function lockPageScroll() {
+    const sbw = Math.max(0, window.innerWidth - document.documentElement.clientWidth);
+    document.body.style.setProperty('--scrollbar-comp', `${sbw}px`);
+    document.documentElement.classList.add('is-modal-open');
+    document.body.classList.add('is-modal-open');
+  }
+
+  function unlockPageScroll() {
+    document.documentElement.classList.remove('is-modal-open');
+    document.body.classList.remove('is-modal-open');
+    document.body.style.removeProperty('--scrollbar-comp');
+  }
+
+  els.dlg.addEventListener('close', unlockPageScroll);
+
   const spec = (k, v) => {
     if (!v || (Array.isArray(v) && !v.length)) return null;
     const val = v instanceof Node ? v : (Array.isArray(v) ? v.join(', ') : String(v));
     return h('div', {}, h('dt', { class: 'label', text: k }), h('dd', {}, val));
   };
 
-  /* ── Descrição com suporte a tradução simultânea e revelação em cascata ── */
+  function setDescStatus(status, label) {
+    const pill = $('#g-desc-status');
+    if (els.dlg) els.dlg.dataset.descState = status;
+    if (!pill) return;
+    pill.dataset.status = status;
+    pill.textContent = label;
+  }
+
+  /* ── Descrição com suporte a tradução simultânea e revelação lateral ── */
   function renderDescription(g, cascade = false) {
+    const descEl = $('#g-desc');
     const discussWrap = $('#g-discuss')?.parentElement;
+    if (descEl) descEl.scrollTop = 0;
+
     if (g.description == null || g.isLoadingDesc) {
-      $('#g-desc').replaceChildren(h('p', { class: 'desc-loading', text: 'Carregando sinopse…' }));
+      setDescStatus('loading', 'SINCRONIZANDO…');
+      const skelLines = Array.from({ length: 6 }, () => h('span', { class: 'desc-skel-line', 'aria-hidden': 'true' }));
+      descEl.replaceChildren(
+        h('div', { class: 'desc-loading-wrap' },
+          h('p', { class: 'desc-loading', text: 'Sincronizando e traduzindo sinopse…' }),
+          h('div', { class: 'desc-skel-lines', 'aria-hidden': 'true' }, skelLines)
+        )
+      );
       if (discussWrap) {
-        discussWrap.hidden = true;
+        discussWrap.hidden = false;
         discussWrap.classList.remove('cascade-item');
       }
       return;
     }
 
     if (!g.description) {
-      $('#g-desc').replaceChildren(h('p', { class: 'muted', text: 'Sem sinopse disponível.' }));
+      setDescStatus('empty', 'INDISPONÍVEL');
+      descEl.replaceChildren(h('p', { class: 'muted', text: 'Sem sinopse disponível.' }));
       if (discussWrap) {
         discussWrap.hidden = false;
         discussWrap.classList.remove('cascade-item');
@@ -632,6 +687,7 @@
     }
 
     const showTranslated = !!g.translatedDesc && !g.showOriginal;
+    setDescStatus('ready', showTranslated ? 'PT-BR // TRADUZIDO' : (g.translatedDesc ? 'EN // ORIGINAL' : 'SINOPSE PRONTA'));
     const activeText = showTranslated ? g.translatedDesc : g.description;
     let idx = 0;
 
@@ -662,7 +718,7 @@
       ));
     }
 
-    $('#g-desc').replaceChildren(...kids);
+    descEl.replaceChildren(...kids);
 
     if (discussWrap) {
       discussWrap.hidden = false;
@@ -707,6 +763,7 @@
 
     const many = imgs.length > 1;
     let idx = 0;
+    let thumbMoved = false;
     const slides = imgs.map((src, n) => h('img', {
       class: 'gallery-slide',
       alt: `${g.name} — imagem ${n + 1} de ${imgs.length}`,
@@ -727,8 +784,14 @@
       many ? nav('next', 'Próxima imagem', '›') : null,
       count, progress);
     const thumbs = many ? imgs.map((src, n) => h('button', {
-      class: 'gallery-thumb', type: 'button', 'aria-label': `Ver imagem ${n + 1}`, onclick: () => go(n),
-    }, h('img', { src: rawgCrop(src), alt: '', loading: 'lazy', decoding: 'async' }))) : [];
+      class: 'gallery-thumb',
+      type: 'button',
+      'aria-label': `Ver imagem ${n + 1}`,
+      onclick: e => {
+        if (thumbMoved) { e.preventDefault(); return; }
+        go(n);
+      },
+    }, h('img', { src: rawgCrop(src), alt: '', loading: 'lazy', decoding: 'async', draggable: 'false' }))) : [];
     const thumbsWrap = many ? h('div', {
       class: `gallery-thumbs ${imgs.length <= 6 ? 'gallery-thumbs--fit' : 'gallery-thumbs--scroll'}`,
       style: `--thumb-count: ${imgs.length};`,
@@ -749,6 +812,39 @@
       thumbs.forEach((t, k) => t.setAttribute('aria-current', String(k === idx)));
       const t = thumbs[idx];
       if (t && thumbsWrap) thumbsWrap.scrollTo({ left: t.offsetLeft - (thumbsWrap.clientWidth - t.clientWidth) / 2, behavior: 'smooth' });
+    }
+
+    /* Rolagem horizontal suave com roda do mouse ou arrasto nas miniaturas */
+    if (thumbsWrap) {
+      thumbsWrap.addEventListener('wheel', e => {
+        if (thumbsWrap.scrollWidth <= thumbsWrap.clientWidth) return;
+        const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+        if (delta !== 0) {
+          e.preventDefault();
+          thumbsWrap.scrollLeft += delta;
+        }
+      }, { passive: false });
+
+      let tx0 = null;
+      let sl0 = 0;
+      thumbsWrap.addEventListener('pointerdown', e => {
+        if (thumbsWrap.scrollWidth <= thumbsWrap.clientWidth) return;
+        tx0 = e.clientX;
+        sl0 = thumbsWrap.scrollLeft;
+        thumbMoved = false;
+      });
+      thumbsWrap.addEventListener('pointermove', e => {
+        if (tx0 == null) return;
+        const dx = e.clientX - tx0;
+        if (Math.abs(dx) > 6) {
+          thumbMoved = true;
+          thumbsWrap.scrollLeft = sl0 - dx;
+        }
+      });
+      const endThumbDrag = () => { tx0 = null; setTimeout(() => { thumbMoved = false; }, 0); };
+      thumbsWrap.addEventListener('pointerup', endThumbDrag);
+      thumbsWrap.addEventListener('pointercancel', endThumbDrag);
+      thumbsWrap.addEventListener('pointerleave', endThumbDrag);
     }
 
     /* Swipe / arrastar no stage */
@@ -801,7 +897,9 @@
   async function openGame(g) {
     state.current = g;
     const dlgBody = $('.dlg-body', els.dlg);
+    const dlgMain = $('.dlg-main', els.dlg);
     if (dlgBody) dlgBody.scrollTop = 0;
+    if (dlgMain) dlgMain.scrollTop = 0;
     loadScreenshots(g);
 
     const needsFetch = g.source === 'rawg' && g.description == null;
@@ -810,7 +908,8 @@
     if (needsFetch || needsTranslate) {
       g.isLoadingDesc = true;
       fillDialog(g, false);
-      els.dlg.showModal();
+      lockPageScroll();
+      if (!els.dlg.open) els.dlg.showModal();
 
       try {
         if (needsFetch) {
@@ -845,6 +944,7 @@
       } catch {
         g.isLoadingDesc = false;
         if (state.current === g) {
+          setDescStatus('empty', 'ERRO');
           $('#g-desc').replaceChildren(h('p', { class: 'muted', text: 'Não foi possível carregar a descrição.' }));
           const discussWrap = $('#g-discuss')?.parentElement;
           if (discussWrap) discussWrap.hidden = false;
@@ -857,7 +957,8 @@
     } else {
       g.isLoadingDesc = false;
       fillDialog(g, true);
-      els.dlg.showModal();
+      lockPageScroll();
+      if (!els.dlg.open) els.dlg.showModal();
     }
   }
 
@@ -885,6 +986,29 @@
       state.platform = b.dataset.p; state.next = null; loadGames();
     });
   }
+
+  /* ── Botão de Atualização Dinâmica dos Jogos Mais Jogados ── */
+  if (els.refreshBtn) {
+    els.refreshBtn.addEventListener('click', async () => {
+      if (els.refreshBtn.disabled || els.games.hasAttribute('aria-busy')) return;
+      els.refreshBtn.classList.add('is-refreshing');
+      els.refreshBtn.disabled = true;
+
+      // Avança a página de mais jogados (1 a 10) e limpa busca de texto para ver populares
+      state.popularPage = (state.popularPage % 10) + 1;
+      if (els.q) els.q.value = '';
+      state.query = '';
+      state.next = null;
+
+      try {
+        await loadGames(false, true);
+      } finally {
+        els.refreshBtn.classList.remove('is-refreshing');
+        els.refreshBtn.disabled = false;
+      }
+    });
+  }
+
   els.more?.addEventListener('click', () => loadGames(true));
 
   /* ── Scroll Infinito Automático (ativável via CONFIG.PAGINATION.infiniteScroll em config.js) ── */
@@ -1051,30 +1175,113 @@
     $(`#topic-${t.id}`)?.scrollIntoView({ block: 'nearest' });
   });
 
-  /* ── Navegação ativa no scroll ── */
+  /* ── Navegação ativa no scroll (pílula deslizante proporcional à rolagem) ── */
   let scrollTicking = false;
-  const navLinks = document.querySelectorAll('.site-nav a[href^="#"]');
-  const trackedSections = ['inicio', 'lets-you', 'acervo', 'forum', 'manifesto'].map(id => document.getElementById(id)).filter(Boolean);
+  const siteNav = document.querySelector('.site-nav');
+  const navPill = siteNav?.querySelector('.site-nav-pill');
+  const siteHeader = document.querySelector('.site-header');
+  const navSpy = [...document.querySelectorAll('.site-nav a[href^="#"]')]
+    .map(a => ({ a, sec: document.getElementById(a.getAttribute('href').slice(1)) }))
+    .filter(s => s.sec); // ordem do menu = ordem das seções na página
+
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const smoothstep = t => t * t * (3 - 2 * t);
 
   function updateScrollEffects() {
-    const scrollY = window.scrollY || window.pageYOffset;
-    let activeId = '';
-    for (const sec of trackedSections) {
-      if (scrollY >= sec.offsetTop - 160) activeId = sec.id;
-    }
-    navLinks.forEach(a => {
-      const target = a.getAttribute('href').slice(1);
-      a.classList.toggle('active', target === activeId);
-    });
     scrollTicking = false;
+    // Nav escondido (< 68rem) ou sem seções: nada a fazer
+    if (!siteNav || !navPill || !navSpy.length || getComputedStyle(siteNav).display === 'none') return;
+
+    const vh = window.innerHeight;
+    const y = window.scrollY || window.pageYOffset;
+    const maxScroll = Math.max(0, document.documentElement.scrollHeight - vh);
+    const offset = (siteHeader?.offsetHeight || 0) + vh * 0.3; // linha de leitura
+    const line = y + offset;
+    const maxLine = maxScroll + offset;
+
+    // Topo absoluto de cada seção (com suporte a módulos lado a lado e divisão de rolagem)
+    const secAcervo = document.getElementById('acervo');
+    const secRecursos = document.getElementById('lets-you');
+    const topInicio = navSpy[0]?.sec ? (navSpy[0].sec.getBoundingClientRect().top + y) : 0;
+    const topAcervo = secAcervo ? (secAcervo.getBoundingClientRect().top + y) : 0;
+    const heightAcervo = secAcervo ? (secAcervo.offsetHeight || secAcervo.getBoundingClientRect().height) : 0;
+    const rawRecursosTop = secRecursos ? (secRecursos.getBoundingClientRect().top + y) : topAcervo;
+
+    // Detecta se Módulo 02 e Módulo 03 estão lado a lado no layout
+    const isSideBySide = Math.abs(rawRecursosTop - topAcervo) < 120;
+    // Se lado a lado, a transição para Recursos ocorre a 45% da altura da seção
+    const topRecursos = isSideBySide ? (topAcervo + heightAcervo * 0.45) : rawRecursosTop;
+    const topForum = navSpy[3]?.sec ? (navSpy[3].sec.getBoundingClientRect().top + y) : maxLine;
+
+    const tops = [
+      Math.min(topInicio, maxLine - 1),
+      Math.min(topAcervo, maxLine - 1),
+      Math.min(topRecursos, maxLine - 1),
+      Math.min(topForum, maxLine - 1)
+    ];
+
+    let i = 0;
+    while (i < tops.length - 1 && line >= tops[i + 1]) i++;
+
+    // Zona de transição: últimos ~35% da viewport antes da próxima seção
+    let t = 0;
+    if (i < tops.length - 1) {
+      const zone = Math.max(1, Math.min(vh * 0.35, tops[i + 1] - tops[i]));
+      t = Math.max(0, Math.min(1, (line - (tops[i + 1] - zone)) / zone));
+    }
+    const j = Math.min(i + 1, navSpy.length - 1);
+    const k = smoothstep(t);
+
+    const navLeft = siteNav.getBoundingClientRect().left + siteNav.clientLeft;
+    const rects = navSpy.map(s => s.a.getBoundingClientRect());
+    const x = lerp(rects[i].left, rects[j].left, k) - navLeft;
+    const w = lerp(rects[i].width, rects[j].width, k);
+    siteNav.style.setProperty('--pill-x', x.toFixed(2) + 'px');
+    siteNav.style.setProperty('--pill-w', w.toFixed(2) + 'px');
+
+    const dominant = k < 0.5 ? i : j;
+    navSpy.forEach((s, n) => {
+      const L = rects[n].left - navLeft;
+      const R = L + rects[n].width;
+      const cover = Math.max(0, Math.min(R, x + w) - Math.max(L, x)) / (rects[n].width || 1);
+      s.a.style.setProperty('--fill', cover.toFixed(3));
+      const on = n === dominant;
+      s.a.classList.toggle('active', on);
+      if (on) s.a.setAttribute('aria-current', 'location');
+      else s.a.removeAttribute('aria-current');
+    });
+    siteNav.classList.add('is-ready');
   }
 
-  window.addEventListener('scroll', () => {
+  function requestScrollEffects() {
     if (!scrollTicking) {
       requestAnimationFrame(updateScrollEffects);
       scrollTicking = true;
     }
-  }, { passive: true });
+  }
+
+  // Suporte a clique em Recursos quando estiver lado a lado com o Acervo
+  document.querySelectorAll('.site-nav a[href="#lets-you"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const secA = document.getElementById('acervo');
+      const secR = document.getElementById('lets-you');
+      if (secA && secR && Math.abs(secR.offsetTop - secA.offsetTop) < 120) {
+        e.preventDefault();
+        const headerH = siteHeader?.offsetHeight || 0;
+        const targetY = secA.getBoundingClientRect().top + window.scrollY + secA.offsetHeight * 0.45 - headerH;
+        window.scrollTo({ top: targetY, behavior: 'smooth' });
+      }
+    });
+  });
+
+  window.addEventListener('scroll', requestScrollEffects, { passive: true });
+  window.addEventListener('resize', requestScrollEffects);
+  document.fonts?.ready.then(requestScrollEffects);
+  // Conteúdo assíncrono (destaques/acervo) altera a altura das seções
+  if ('ResizeObserver' in window) {
+    const mainEl = document.getElementById('conteudo');
+    if (mainEl) new ResizeObserver(requestScrollEffects).observe(mainEl);
+  }
 
   /* ── Revelação suave ── */
   const reveals = document.querySelectorAll('.reveal');

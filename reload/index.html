@@ -79,6 +79,7 @@
       </div>
 
       <nav class="site-nav" aria-label="Seções principais">
+        <span class="site-nav-pill" aria-hidden="true"></span>
         <a class="active" href="#inicio">[01] DESTAQUES</a>
         <a href="#acervo">[02] ACERVO</a>
         <a href="#lets-you">[03] RECURSOS</a>
@@ -197,11 +198,11 @@
       </div>
     </section>
 
-    <!-- 02 · Bento Grid Assimétrico: Acervo Interativo + Stack de Recursos de Hardware -->
+    <!-- 02 · Bento Catalog & Hardware Spec Stack (Acervo + Recursos lado a lado) -->
     <section id="acervo" aria-labelledby="t-acervo">
       <div class="wrap">
         <div class="bento-catalog-layout">
-          <!-- Coluna Principal: Biblioteca de Mídias -->
+          <!-- Coluna Esquerda: Módulo 02 // Biblioteca de Mídias -->
           <div class="bento-module bento-module--catalog">
             <div class="catalog-header">
               <div class="catalog-title-group">
@@ -211,7 +212,11 @@
               </div>
 
               <div class="acervo-controls">
-                <span class="acervo-badge" aria-label="Seleção dos 9 jogos mais jogados e comentados na web">TOP 9 // MAIS JOGADOS &amp; COMENTADOS</span>
+                <span class="acervo-badge" aria-label="Seleção dos jogos mais jogados e comentados na web">MAIS JOGADOS &amp; COMENTADOS // WEB</span>
+                <button type="button" class="btn-refresh" id="acervo-refresh-btn" title="Atualizar lista de jogos mais jogados" aria-label="Atualizar lista de jogos mais jogados na web">
+                  <span class="refresh-icon" aria-hidden="true">↻</span>
+                  <span>ATUALIZAR LISTA</span>
+                </button>
               </div>
             </div>
 
@@ -221,75 +226,98 @@
 
             <ul class="grid" id="games" aria-label="Jogos do acervo"></ul>
 
-            <div class="more" id="more-wrap" hidden>
-              <button class="btn btn--primary" type="button" id="more" hidden>CARREGAR MAIS CARTUCHOS</button>
-              <p class="muted infinite-loader" id="infinite-loader" hidden aria-live="polite">CARREGANDO MAIS JOGOS…</p>
+            <!-- Rodapé do Módulo 02 alinhado -->
+            <div class="catalog-footer">
+              <div class="more" id="more-wrap" hidden>
+                <button class="btn btn--primary" type="button" id="more" hidden>CARREGAR MAIS CARTUCHOS</button>
+                <p class="muted infinite-loader" id="infinite-loader" hidden aria-live="polite">CARREGANDO MAIS JOGOS…</p>
+              </div>
+              <div class="dock-status-badge">
+                <span class="brand-led brand-led--green" aria-hidden="true"></span>
+                <span>CURADORIA LOCAL &amp; WEB ATIVA</span>
+              </div>
             </div>
           </div>
 
-          <!-- Coluna Lateral: Stack de Especificações & Recursos (#lets-you) -->
-          <aside class="bento-spec-stack" id="lets-you" aria-labelledby="t-lets">
-            <h2 class="sr-only" id="t-lets">Recursos do Loading...</h2>
-
-            <article class="spec-card spec-card--yellow reveal">
-              <div class="spec-card-top">
-                <span class="spec-num">RECURSO // 01</span>
-                <span class="spec-tag">[HOVER ENGINE]</span>
+          <!-- Coluna Direita: Módulo 03 // Recursos do Sistema (#lets-you) -->
+          <aside class="bento-module bento-module--spec" id="lets-you" aria-labelledby="t-lets">
+            <div class="catalog-header">
+              <div class="catalog-title-group">
+                <span class="hw-kicker">MÓDULO 03 // RECURSOS DO SISTEMA</span>
+                <h2 class="bento-heading" id="t-lets">RECURSOS DO LOADING...</h2>
               </div>
-              <h3 class="spec-title">Preview Dinâmico de Gameplay</h3>
-              <p class="spec-desc">Passe o cursor sobre qualquer cartucho para revelar capturas de gameplay em alta resolução instantaneamente.</p>
-            </article>
+            </div>
 
-            <article class="spec-card spec-card--white reveal">
-              <div class="spec-card-top">
-                <span class="spec-num spec-num--red">RECURSO // 02</span>
-                <span class="spec-tag">[CLOUD ENGINE]</span>
-              </div>
-              <h3 class="spec-title">Expansão para 500 Mil+ Jogos</h3>
-              <p class="spec-desc">Base global integrada com mais de 500 mil jogos cadastrados, fichas técnicas completas e tradução automática para PT-BR.</p>
-            </article>
-
-            <article class="spec-card spec-card--white reveal">
-              <div class="spec-card-top">
-                <span class="spec-num">RECURSO // 03</span>
-                <span class="spec-tag">[1972—2026]</span>
-              </div>
-              <h3 class="spec-title">Memória Multi-Plataforma</h3>
-              <p class="spec-desc">Viaje pela linha do tempo dos videogames: do Atari 2600 e MS-DOS ao PlayStation 5, Nintendo Switch e Steam.</p>
-            </article>
-
-            <article class="spec-card spec-card--dark reveal" id="manifesto" aria-labelledby="t-manifesto">
-              <div class="spec-card-top">
-                <span class="spec-num spec-num--yellow">MANIFESTO // 04</span>
-                <span class="spec-tag spec-tag--light">[ZERO TRACKERS]</span>
-              </div>
-              <h3 class="spec-title spec-title--light" id="t-manifesto">Para quem leva a história dos videogames a sério.</h3>
-              <p class="spec-desc spec-desc--light">O <strong>Loading...</strong> não vende nada e não exibe anúncios. Precisão nos dados, clareza na leitura e constância na comunidade.</p>
-              <dl class="manifesto-stats">
-                <div>
-                  <dt class="label">Catálogo</dt>
-                  <dd class="stat-yellow">500K+</dd>
+            <div class="bento-spec-inner">
+              <article class="spec-card spec-card--yellow reveal">
+                <div class="spec-card-top">
+                  <span class="spec-num">RECURSO // 01</span>
+                  <span class="spec-tag">[HOVER ENGINE]</span>
                 </div>
-                <div>
-                  <dt class="label">Gerações</dt>
-                  <dd class="stat-red">1972—26</dd>
+                <h3 class="spec-title">Preview Dinâmico de Gameplay</h3>
+                <p class="spec-desc">Passe o cursor sobre qualquer cartucho para revelar capturas de gameplay em alta resolução instantaneamente.</p>
+              </article>
+
+              <article class="spec-card spec-card--white reveal">
+                <div class="spec-card-top">
+                  <span class="spec-num spec-num--red">RECURSO // 02</span>
+                  <span class="spec-tag">[CLOUD ENGINE]</span>
                 </div>
-                <div>
-                  <dt class="label">Anúncios</dt>
-                  <dd class="stat-light">ZERO</dd>
+                <h3 class="spec-title">Expansão para 500 Mil+ Jogos</h3>
+                <p class="spec-desc">Base global integrada com mais de 500 mil jogos cadastrados, fichas técnicas completas e tradução automática para PT-BR.</p>
+              </article>
+
+              <article class="spec-card spec-card--white reveal">
+                <div class="spec-card-top">
+                  <span class="spec-num">RECURSO // 03</span>
+                  <span class="spec-tag">[1972—2026]</span>
                 </div>
-              </dl>
-            </article>
+                <h3 class="spec-title">Memória Multi-Plataforma</h3>
+                <p class="spec-desc">Viaje pela linha do tempo dos videogames: do Atari 2600 e MS-DOS ao PlayStation 5, Nintendo Switch e Steam.</p>
+              </article>
+
+              <article class="spec-card spec-card--dark reveal" id="manifesto" aria-labelledby="t-manifesto">
+                <div class="spec-card-top">
+                  <span class="spec-num spec-num--yellow">MANIFESTO // 04</span>
+                  <span class="spec-tag spec-tag--light">[ZERO TRACKERS]</span>
+                </div>
+                <h3 class="spec-title spec-title--light" id="t-manifesto">Para quem leva a história dos videogames a sério.</h3>
+                <p class="spec-desc spec-desc--light">O <strong>Loading...</strong> não vende nada e não exibe anúncios. Precisão nos dados, clareza na leitura e constância na comunidade.</p>
+                <dl class="manifesto-stats">
+                  <div>
+                    <dt class="label">Catálogo</dt>
+                    <dd class="stat-yellow">500K+</dd>
+                  </div>
+                  <div>
+                    <dt class="label">Gerações</dt>
+                    <dd class="stat-red">1972—26</dd>
+                  </div>
+                  <div>
+                    <dt class="label">Anúncios</dt>
+                    <dd class="stat-light">ZERO</dd>
+                  </div>
+                </dl>
+              </article>
+            </div>
+
+            <!-- Rodapé do Módulo 03 alinhado com o rodapé do Módulo 02 -->
+            <div class="spec-footer" id="info-dock">
+              <div class="dock-status-badge">
+                <span class="brand-led brand-led--green" aria-hidden="true"></span>
+                <span>BASE CONECTADA · ATUALIZAÇÃO CONTÍNUA</span>
+              </div>
+              <p class="rawg-dock-copy">© <span id="year">2026</span> LOADING... · PROJETO INDEPENDENTE SEM FINS COMERCIAIS</p>
+            </div>
           </aside>
         </div>
       </div>
     </section>
 
-    <!-- 03 · Fórum Comunitário & Módulo de Expansão API RAWG -->
+    <!-- 04 · Fórum Comunitário Centralizado -->
     <section id="forum" aria-labelledby="t-forum">
       <div class="wrap">
         <div class="bento-forum-grid">
-          <!-- Módulo Esquerdo: Análises & Tópicos Populares -->
+          <!-- Módulo Central: Análises & Tópicos Populares -->
           <div class="bento-module bento-module--forum">
             <div class="forum-header-bar">
               <div class="forum-header-left">
@@ -341,27 +369,6 @@
               </div>
             </form>
           </div>
-
-          <!-- Módulo Direito: Dock de Informações & Status Global -->
-          <div class="bento-right-dock">
-            <div class="bento-rawg-dock reveal" id="info-dock">
-              <div class="rawg-dock-top">
-                <span class="rawg-dock-kicker">CATÁLOGO GLOBAL // BASE INTEGRADA</span>
-                <h2 class="rawg-dock-title">Mais de 500 mil títulos indexados</h2>
-                <p class="rawg-dock-desc">
-                  Acervo universal abrangendo todas as gerações de videogames (1972—2026), com especificações de hardware, gameplay dinâmico e sinopses traduzidas para PT-BR.
-                </p>
-              </div>
-
-              <div class="rawg-dock-bottom">
-                <div class="dock-status-badge">
-                  <span class="brand-led brand-led--green" aria-hidden="true"></span>
-                  <span>BASE CONECTADA · ATUALIZAÇÃO CONTÍNUA</span>
-                </div>
-                <p class="rawg-dock-copy">© <span id="year">2026</span> LOADING... · PROJETO INDEPENDENTE SEM FINS COMERCIAIS</p>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </section>
@@ -397,16 +404,24 @@
       <button class="dlg-close" type="button" id="dlg-close" aria-label="Fechar">×</button>
     </div>
     <div class="dlg-body">
-      <div class="cover" id="g-cover"></div>
-      <div class="dlg-header-meta">
-        <h2 class="dlg-title" id="g-title"></h2>
-        <p class="label" id="g-sub" style="margin-top:.5rem"></p>
+      <div class="dlg-main">
+        <div class="cover" id="g-cover"></div>
+        <div class="dlg-header-meta">
+          <h2 class="dlg-title" id="g-title"></h2>
+          <p class="label" id="g-sub" style="margin-top:.5rem"></p>
+        </div>
+        <dl class="specs" id="g-specs"></dl>
       </div>
-      <dl class="specs" id="g-specs"></dl>
-      <div class="desc" id="g-desc"></div>
-      <div class="dlg-actions">
-        <button class="btn btn--primary" type="button" id="g-discuss">PUBLICAR ANÁLISE NO FÓRUM →</button>
-      </div>
+      <aside class="dlg-aside" id="g-aside" aria-label="Sinopse e análise do jogo">
+        <div class="dlg-aside-head">
+          <span class="label">DOSSIÊ // SINOPSE DO JOGO</span>
+          <span class="dlg-status-pill" id="g-desc-status" aria-live="polite"></span>
+        </div>
+        <div class="desc" id="g-desc"></div>
+        <div class="dlg-actions">
+          <button class="btn btn--primary" type="button" id="g-discuss">PUBLICAR ANÁLISE NO FÓRUM →</button>
+        </div>
+      </aside>
     </div>
   </dialog>
 
