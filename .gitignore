@@ -8,3 +8,8 @@ skills-lock.json
 .mcp.json
 andrej-karpathy-skills-main/
 
+# Segredos e overrides locais
+reload/js/config.local.js
+.env
+.env.*
+!.env.example

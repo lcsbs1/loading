@@ -104,16 +104,6 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Canvas preservado de forma oculta para compatibilidade com scripts/build.js */
-.bg-grid-fx,
-#snake-canvas {
-  display: none !important;
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: -1;
-}
-
 h1, h2, h3, p, ol, ul, dl, dd, figure { margin: 0; }
 ol, ul { padding: 0; list-style: none; }
 img { display: block; max-width: 100%; height: auto; }
@@ -853,6 +843,32 @@ section { padding-block: var(--section); position: relative; }
   flex-wrap: wrap;
   align-items: center;
   gap: .5rem;
+}
+.platforms {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .35rem;
+}
+.plat-filter {
+  appearance: none;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+  font: 600 0.65rem/1 var(--mono);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  padding: .35rem .55rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+.plat-filter:hover {
+  color: var(--text);
+  border-color: var(--hw-yellow);
+}
+.plat-filter[aria-pressed="true"] {
+  color: #161616;
+  background: var(--hw-yellow);
+  border-color: var(--hw-yellow);
 }
 .acervo-badge {
   display: inline-flex;

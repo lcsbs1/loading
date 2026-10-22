@@ -1,35 +1,45 @@
 /**
  * ====================================================================
- * LOADING... — Configurações e Integração de APIs
+ * LOADING... — Configurações públicas
  * ====================================================================
- * Base de dados global integrada (RAWG Video Games Database).
+ * Não coloque chaves de API neste arquivo (ele é versionado).
+ * Para desenvolvimento local, copie config.local.example.js → config.local.js
+ * ou defina a variável de ambiente RAWG_KEY ao usar `npm start`.
  */
 
 const CONFIG = {
-  // Cole sua chave da API RAWG entre as aspas:
-  RAWG_KEY: '10fb0c58e08244639995c2976ac31800',
+  // Deixe vazio no repositório. Override via config.local.js / localStorage / RAWG_KEY.
+  RAWG_KEY: '',
 
-  // Endpoint base da API RAWG
   API_BASE_URL: 'https://api.rawg.io/api',
 
-  // Identificadores de armazenamento local (localStorage)
   STORAGE_KEYS: {
     key: 'loading.rawgKey',
     topics: 'loading.topics',
     theme: 'loading.theme',
     translations: 'loading.tr',
+    featuredData: 'loading.featured.data',
+    featuredTime: 'loading.featured.timestamp',
   },
 
-  // Tradução automática de conteúdo em inglês (descrições da RAWG)
   TRANSLATE: {
     enabled: true,
     target: 'pt-BR',
-    email: 'lamounierlucasramiro@icloud.com', // amplia cota do MyMemory para 50k caracteres/dia
+    // Opcional: e-mail genérico amplia cota MyMemory. Não use e-mail pessoal no repo.
+    email: '',
   },
 
-  // Paginação do Acervo (scroll infinito desativado por padrão; ative com true a qualquer momento)
   PAGINATION: {
     pageSize: 9,
     infiniteScroll: false,
+  },
+
+  // IDs parent_platforms da RAWG → rótulo usado no seed offline
+  PLATFORMS: {
+    '': 'Todas',
+    '1': 'PC',
+    '2': 'PlayStation',
+    '3': 'Xbox',
+    '8': 'Nintendo',
   },
 };

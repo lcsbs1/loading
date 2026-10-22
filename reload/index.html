@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Loading... — Acervo Tátil &amp; Fórum Comunitário de Jogos (1972—2026)</title>
-  <meta name="description" content="Loading...: enciclopédia aberta e fórum comunitário de jogos de videogame e computador. Acompanhe o que você jogou, inspecione fichas técnicas e converse sem anúncios.">
+  <title>Loading... — Acervo Tátil &amp; Fórum Local de Jogos (1972—2026)</title>
+  <meta name="description" content="Loading...: acervo tátil de jogos com seed offline, RAWG opcional e fórum local no navegador. Fichas técnicas, filtros e avaliações sem anúncios.">
   <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#ECECEC" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
@@ -22,13 +22,6 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <!-- Canvas preservado de forma oculta/inerte para compatibilidade com scripts/build.js -->
-  <div class="bg-grid-fx" aria-hidden="true" hidden>
-    <div class="bg-grid-plane"></div>
-    <canvas id="snake-canvas"></canvas>
-    <div class="bg-glow-orb"></div>
-  </div>
-
   <a class="skip" href="#conteudo">Pular para o conteúdo</a>
 
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -118,15 +111,15 @@
                 <span class="hero-headline-row">
                   <span>SEU ACERVO TÁTIL</span>
                   <span class="hero-inline-counter">
-                    <strong id="fact-count">500.000+</strong>
-                    <small>JOGOS</small>
+                    <strong id="fact-count">9</strong>
+                    <small>EM DESTAQUE</small>
                   </span>
                 </span>
-                <span>E FÓRUM COMUNITÁRIO.</span>
+                <span>E FÓRUM LOCAL.</span>
               </h1>
 
               <p class="hero-sub">
-                Registre cada título que você já zerou, inspecione fichas técnicas com preview instantâneo de gameplay e debata com a comunidade sem algoritmos ou rastreadores.
+                Inspecione fichas técnicas com preview de gameplay, filtre por plataforma e registre avaliações neste navegador — sem anúncios e sem rastreadores.
               </p>
             </div>
 
@@ -136,8 +129,8 @@
                 <a class="btn btn--secondary" href="#forum">ACESSAR FÓRUM</a>
               </div>
               <div class="console-persist">
-                <span class="persist-title">MODO OFFLINE + CLOUD</span>
-                <span class="persist-sub">LOCALSTORAGE PERSISTENT</span>
+                <span class="persist-title">MODO OFFLINE</span>
+                <span class="persist-sub">SEED LOCAL + LOCALSTORAGE</span>
               </div>
             </div>
           </div>
@@ -211,12 +204,19 @@
               </div>
 
               <div class="acervo-controls">
-                <span class="acervo-badge" aria-label="Seleção dos 9 jogos mais jogados e comentados na web">TOP 9 // MAIS JOGADOS &amp; COMENTADOS</span>
+                <span class="acervo-badge" aria-label="Seleção dos 9 jogos em destaque">TOP 9 // DESTAQUE</span>
+                <div class="platforms" id="platforms" role="group" aria-label="Filtrar por plataforma">
+                  <button type="button" class="plat-filter" data-p="" aria-pressed="true">Todas</button>
+                  <button type="button" class="plat-filter" data-p="1" aria-pressed="false">PC</button>
+                  <button type="button" class="plat-filter" data-p="2" aria-pressed="false">PlayStation</button>
+                  <button type="button" class="plat-filter" data-p="3" aria-pressed="false">Xbox</button>
+                  <button type="button" class="plat-filter" data-p="8" aria-pressed="false">Nintendo</button>
+                </div>
               </div>
             </div>
 
             <div class="catalog-subbar">
-              <span class="acervo-hint">Passe o cursor sobre um cartucho para ver o gameplay · Clique para abrir a ficha técnica</span>
+              <span class="acervo-hint">Filtro por plataforma · Hover para gameplay · Clique para ficha técnica</span>
             </div>
 
             <ul class="grid" id="games" aria-label="Jogos do acervo"></ul>
@@ -243,10 +243,10 @@
             <article class="spec-card spec-card--white reveal">
               <div class="spec-card-top">
                 <span class="spec-num spec-num--red">RECURSO // 02</span>
-                <span class="spec-tag">[CLOUD ENGINE]</span>
+                <span class="spec-tag">[RAWG API]</span>
               </div>
-              <h3 class="spec-title">Expansão para 500 Mil+ Jogos</h3>
-              <p class="spec-desc">Base global integrada com mais de 500 mil jogos cadastrados, fichas técnicas completas e tradução automática para PT-BR.</p>
+              <h3 class="spec-title">Catálogo expandido via RAWG</h3>
+              <p class="spec-desc">Com chave local (config.local.js), busca e pagina títulos na base RAWG, com fichas técnicas e tradução sob demanda para PT-BR.</p>
             </article>
 
             <article class="spec-card spec-card--white reveal">
@@ -267,8 +267,8 @@
               <p class="spec-desc spec-desc--light">O <strong>Loading...</strong> não vende nada e não exibe anúncios. Precisão nos dados, clareza na leitura e constância na comunidade.</p>
               <dl class="manifesto-stats">
                 <div>
-                  <dt class="label">Catálogo</dt>
-                  <dd class="stat-yellow">500K+</dd>
+                  <dt class="label">Seed local</dt>
+                  <dd class="stat-yellow">TOP 9</dd>
                 </div>
                 <div>
                   <dt class="label">Gerações</dt>
@@ -293,10 +293,10 @@
           <div class="bento-module bento-module--forum">
             <div class="forum-header-bar">
               <div class="forum-header-left">
-                <span class="hw-badge hw-badge--dark">FÓRUM // COMUNIDADE</span>
-                <h2 class="bento-heading" id="t-forum">ANÁLISES &amp; TÓPICOS POPULARES</h2>
+                <span class="hw-badge hw-badge--dark">FÓRUM // LOCAL</span>
+                <h2 class="bento-heading" id="t-forum">ANÁLISES &amp; TÓPICOS</h2>
               </div>
-              <span class="hw-meta">ARMAZENAMENTO LOCAL · ZERO ADS</span>
+              <span class="hw-meta">SÓ NESTE NAVEGADOR · ZERO ADS</span>
             </div>
 
             <div class="field forum-filter">
@@ -325,6 +325,17 @@
                   <input class="input" id="f-game" name="game" maxlength="80" list="game-list" placeholder="Ex.: Elden Ring">
                   <datalist id="game-list"></datalist>
                 </div>
+                <div class="field">
+                  <label class="label" for="f-rating">NOTA (1–5)</label>
+                  <select class="input" id="f-rating" name="rating">
+                    <option value="">Sem nota</option>
+                    <option value="5">★★★★★</option>
+                    <option value="4">★★★★☆</option>
+                    <option value="3">★★★☆☆</option>
+                    <option value="2">★★☆☆☆</option>
+                    <option value="1">★☆☆☆☆</option>
+                  </select>
+                </div>
               </div>
               <div class="field">
                 <label class="label" for="f-title">TÍTULO DA ANÁLISE OU TÓPICO <span aria-hidden="true">*</span></label>
@@ -346,17 +357,17 @@
           <div class="bento-right-dock">
             <div class="bento-rawg-dock reveal" id="info-dock">
               <div class="rawg-dock-top">
-                <span class="rawg-dock-kicker">CATÁLOGO GLOBAL // BASE INTEGRADA</span>
-                <h2 class="rawg-dock-title">Mais de 500 mil títulos indexados</h2>
+                <span class="rawg-dock-kicker">CATÁLOGO // SEED + RAWG OPCIONAL</span>
+                <h2 class="rawg-dock-title">Curadoria local e API sob demanda</h2>
                 <p class="rawg-dock-desc">
-                  Acervo universal abrangendo todas as gerações de videogames (1972—2026), com especificações de hardware, gameplay dinâmico e sinopses traduzidas para PT-BR.
+                  Sem chave, o site usa o seed Top 9 e o ciclo semanal offline. Com RAWG configurada localmente, busca e pagina títulos com fichas e tradução PT-BR.
                 </p>
               </div>
 
               <div class="rawg-dock-bottom">
                 <div class="dock-status-badge">
                   <span class="brand-led brand-led--green" aria-hidden="true"></span>
-                  <span>BASE CONECTADA · ATUALIZAÇÃO CONTÍNUA</span>
+                  <span>FÓRUM LOCAL · DADOS NÃO SAEM DO NAVEGADOR</span>
                 </div>
                 <p class="rawg-dock-copy">© <span id="year">2026</span> LOADING... · PROJETO INDEPENDENTE SEM FINS COMERCIAIS</p>
               </div>
@@ -382,7 +393,7 @@
         <a class="link" href="#acervo">[02] Acervo</a>
         <a class="link" href="#lets-you">[03] Recursos</a>
         <a class="link" href="#forum">[04] Fórum</a>
-        <a class="link" href="https://github.com/" rel="noopener" target="_blank">GitHub ↗<span class="sr-only"> (abre em nova aba)</span></a>
+        <a class="link" href="https://github.com/lcsbs1/loading" rel="noopener" target="_blank">GitHub ↗<span class="sr-only"> (abre em nova aba)</span></a>
       </div>
     </div>
   </footer>
@@ -410,8 +421,9 @@
     </div>
   </dialog>
 
-  <!-- Chaves de API e Scripts modularizados -->
   <script src="js/config.js"></script>
+  <script src="js/config.local.js"></script>
+  <script src="js/data.js"></script>
   <script src="js/i18n.js"></script>
   <script src="js/app.js"></script>
 </body>

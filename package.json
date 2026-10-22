@@ -1,20 +1,23 @@
 {
   "name": "loading",
-  "version": "1.0.0",
-  "description": "Loading... — Fórum e acervo de todos os jogos: do Atari ao PlayStation 5, do DOS à Steam. Sem anúncios, sem rastreadores.",
+  "version": "1.1.0",
+  "description": "Loading... — Acervo tátil de jogos (seed + RAWG opcional) e fórum local. Sem anúncios, sem rastreadores.",
   "main": "reload/index.html",
   "scripts": {
     "build": "node scripts/build.js",
-    "test": "node scripts/build.js",
+    "test": "node scripts/test.js",
     "start": "node scripts/serve.js"
   },
   "keywords": [
     "games",
     "rawg",
-    "snake-game",
-    "minimalism",
-    "canvas"
+    "catalog",
+    "static-site"
   ],
   "author": "Loading...",
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lcsbs1/loading.git"
+  }
 }

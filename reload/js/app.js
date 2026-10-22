@@ -14,119 +14,27 @@
   };
   const PAGE_SIZE = (typeof CONFIG !== 'undefined' && CONFIG.PAGINATION && CONFIG.PAGINATION.pageSize) ? CONFIG.PAGINATION.pageSize : 9;
   const ENABLE_INFINITE_SCROLL = (typeof CONFIG !== 'undefined' && CONFIG.PAGINATION && typeof CONFIG.PAGINATION.infiniteScroll === 'boolean') ? CONFIG.PAGINATION.infiniteScroll : false;
+  const PLAT_LABEL = (typeof CONFIG !== 'undefined' && CONFIG.PLATFORMS) ? CONFIG.PLATFORMS : {
+    '': 'Todas', '1': 'PC', '2': 'PlayStation', '3': 'Xbox', '8': 'Nintendo',
+  };
 
-  /* ── Acervo local (funciona sem chave/offline) ── */
-  const SEED = [
-    { id: 's1', name: 'Grand Theft Auto V', released: '2013-09-17', metacritic: 97, platforms: ['PC', 'PlayStation', 'Xbox'], genres: ['Ação'], developers: ['Rockstar North'], publishers: ['Rockstar Games'], tags: [1, 2, 3],
-      image: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/271590/header.jpg',
-      imageHover: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/271590/ss_32aa18ab3175e3002217862dd5917646d298ab6b.600x338.jpg',
-      screenshots: ["https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/271590/ss_8e70908c6a61fb232c45163b9ef77366d2146908.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/271590/ss_7be5bc656fc384ccad3d9c84e27f12e2df5ef79b.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/271590/ss_32aa18ab3175e3002217862dd5917646d298ab6b.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/271590/ss_6919a3b83c483a91b269ecfae15f6ee48cfb17d9.600x338.jpg"],
-      description: 'Três criminosos — Michael, Franklin e Trevor — cruzam caminhos em Los Santos, uma sátira da Califórnia contemporânea. Inclui o modo online GTA Online.' },
-    { id: 's2', name: 'The Witcher 3: Wild Hunt', released: '2015-05-19', metacritic: 93, platforms: ['PC', 'PlayStation', 'Xbox', 'Nintendo'], genres: ['RPG'], developers: ['CD Projekt Red'], publishers: ['CD Projekt'], tags: [1, 2, 3, 7],
-      image: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/header.jpg',
-      imageHover: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/f7f564ecedd09b3e503b071a637aeefdedbeedd8/ss_f7f564ecedd09b3e503b071a637aeefdedbeedd8.600x338.jpg',
-      screenshots: ["https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/ss_107600c1337231660f50f52ba71477c3c66b2d00.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/ss_8e762c2f42a0f8bfd463d1cb53f1f7e0bc27e3cc.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/ss_75e01c0db721d7b0559eb431a478330ee0f4c084.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/ss_c7df0e4d084eeec286dbdb9db8a7ba1e78687258.600x338.jpg"],
-      description: 'Geralt de Rívia procura Ciri, sua filha adotiva, perseguida pela Caçada Selvagem. Mundo aberto com missões secundárias de escrita marcante.' },
-    { id: 's3', name: 'Portal 2', released: '2011-04-19', metacritic: 95, platforms: ['PC', 'PlayStation', 'Xbox'], genres: ['Quebra-cabeça'], developers: ['Valve'], publishers: ['Valve'], tags: [1, 2, 3],
-      image: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/620/header.jpg',
-      imageHover: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/620/ss_f3f6787d74739d3b2ec8a484b5c994b3d31ef325.600x338.jpg',
-      screenshots: ["https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/620/ss_6a12b670d80c6534608db1426477e68c8b417e3f.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/620/ss_bb936453664fa41a9d5926ecdbd0c722aebbe39c.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/620/ss_3ab634c05cc7fef7bca458f2d5733d9942a00c63.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/620/ss_f3f6787d74739d3b2ec8a484b5c994b3d31ef325.600x338.jpg"],
-      description: 'Chell volta ao Aperture Science e enfrenta GLaDOS e Wheatley. Quebra-cabeças com portais, campanha solo e cooperativa.' },
-    { id: 's4', name: 'Red Dead Redemption 2', released: '2018-10-26', metacritic: 97, platforms: ['PC', 'PlayStation', 'Xbox'], genres: ['Ação', 'Aventura'], developers: ['Rockstar Games'], publishers: ['Rockstar Games'], tags: [1, 2, 3],
-      image: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1174180/header.jpg',
-      imageHover: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1174180/ss_66b553f4c209476d3e4ce25fa4714002cc914c4f.600x338.jpg',
-      screenshots: ["https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1174180/ss_fb2896fd2cf1cb82c5a1ecba840dd67ec927b2e3.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1174180/ss_f8df2d475ef21e6be794c4ec9d924045f86ce5b1.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1174180/ss_495ee8cbe7bbcf156dd3d61b6c006437d042ec7d.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1174180/ss_66b553f4c209476d3e4ce25fa4714002cc914c4f.600x338.jpg"],
-      description: 'Em 1899, Arthur Morgan e a gangue de Dutch van der Linde fogem pelo oeste americano em declínio. Mundo aberto de grande densidade de detalhes.' },
-    { id: 's5', name: 'The Legend of Zelda: Breath of the Wild', released: '2017-03-03', metacritic: 97, platforms: ['Nintendo'], genres: ['Ação', 'Aventura'], developers: ['Nintendo EPD'], publishers: ['Nintendo'], tags: [7],
-      image: 'https://media.rawg.io/media/games/cc1/cc196a5ad763955d6532cdba236f730c.jpg',
-      imageHover: 'https://media.rawg.io/media/screenshots/b77/b771adc0585c655f8a747d3160e5325a.jpg',
-      screenshots: ["https://media.rawg.io/media/screenshots/b77/b771adc0585c655f8a747d3160e5325a.jpg","https://media.rawg.io/media/screenshots/f0d/f0da59e38ffc15b94236b2f7632ce60a.jpg","https://media.rawg.io/media/screenshots/a03/a037b5d13481eec647a40ca13dfc7bb6.jpg","https://media.rawg.io/media/screenshots/d0f/d0f2f3f9828551faaa6573c98894dfc1.jpg"],
-      description: 'Link desperta após cem anos em um Hyrule devastado e precisa derrotar Calamity Ganon. O mundo aberto pode ser explorado em qualquer ordem, com física e química que permitem resolver desafios de muitas formas.' },
-    { id: 's6', name: 'Elden Ring', released: '2022-02-25', metacritic: 96, platforms: ['PC', 'PlayStation', 'Xbox'], genres: ['Ação', 'RPG'], developers: ['FromSoftware'], publishers: ['Bandai Namco Entertainment'], tags: [1, 2, 3],
-      image: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1245620/header.jpg',
-      imageHover: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1245620/ss_943bf6fe62352757d9070c1d33e50b92fe8539f1.600x338.jpg',
-      screenshots: ["https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1245620/ss_d397c88b90c05763a83f983a54b3834da465bf19.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1245620/ss_5471d2b78d21dfbc28e1d5300f898308bf3f6da2.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1245620/ss_3d98eb6c2f7ff0d0ea37ca3ff7b7194f4a38ff6a.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1245620/ss_943bf6fe62352757d9070c1d33e50b92fe8539f1.600x338.jpg"],
-      description: 'RPG de ação em mundo aberto nas Terras Intermédias, com construção de mundo em colaboração com George R. R. Martin. Combate exigente e liberdade de exploração.' },
-    { id: 's7', name: 'Half-Life 2', released: '2004-11-16', metacritic: 96, platforms: ['PC', 'Xbox'], genres: ['Tiro'], developers: ['Valve'], publishers: ['Valve'], tags: [1, 3],
-      image: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/220/header.jpg',
-      imageHover: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/220/ss_47b4105b396de408cb8b6b4f358c69e5e2a62dae.600x338.jpg',
-      screenshots: ["https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/220/ss_6e91ea6b6777f98fb9787e91d58ebc760d40e94e.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/220/ss_3bfb098fbdd779ec4ea6ae9d8f8a846f48356f14.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/220/ss_1c69025e17a4198ee67b57b988f5bfcfba7a0d84.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/220/ss_47b4105b396de408cb8b6b4f358c69e5e2a62dae.600x338.jpg"],
-      description: 'Gordon Freeman retorna a uma Terra dominada pela Aliança em City 17. Referência em narrativa sem cortes e física interativa, com a Gravity Gun.' },
-    { id: 's8', name: 'Minecraft', released: '2011-11-18', metacritic: 93, platforms: ['PC', 'PlayStation', 'Xbox', 'Nintendo'], genres: ['Sandbox', 'Sobrevivência'], developers: ['Mojang Studios'], publishers: ['Mojang Studios', 'Xbox Game Studios'], tags: [1, 2, 3, 7],
-      image: 'https://media.rawg.io/media/games/b4e/b4e4c73d5aa4ec66bbf75375c4847a2b.jpg',
-      imageHover: 'https://media.rawg.io/media/screenshots/324/32454b11adde40d87c046f310f0d710d.jpg',
-      screenshots: ["https://media.rawg.io/media/screenshots/324/32454b11adde40d87c046f310f0d710d.jpg","https://media.rawg.io/media/screenshots/b93/b9354784a08fd5357876a4a4087dfcfc.jpg","https://media.rawg.io/media/screenshots/f60/f6004abfb72837ff44ebfd588ff1ceb7.jpg","https://media.rawg.io/media/screenshots/36f/36fa18aa95a707a01c40b6e927027d14.jpg"],
-      description: 'Mundo de blocos gerado proceduralmente para explorar, minerar e construir. Um dos jogos mais vendidos da história.' },
-    { id: 's9', name: 'God of War', released: '2018-04-20', metacritic: 94, platforms: ['PlayStation', 'PC'], genres: ['Ação'], developers: ['Santa Monica Studio'], publishers: ['Sony Interactive Entertainment'], tags: [2, 1],
-      image: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1593500/header.jpg',
-      imageHover: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1593500/ss_6eccc970b5de2943546d93d319be1b5c0618f21b.600x338.jpg',
-      screenshots: ["https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1593500/ss_3a8b444747ebc63833b5220c324c4e7ab91136b3.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1593500/ss_96e838f38bbd1945f3be4b563cb9671dbb065a28.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1593500/ss_3c0be8d5272a71d8717cfa8ebfc91c28b6d859a7.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1593500/ss_6eccc970b5de2943546d93d319be1b5c0618f21b.600x338.jpg"],
-      description: 'Kratos e seu filho Atreus viajam pelos reinos nórdicos para espalhar as cinzas da esposa do alto da montanha mais alta.' },
-  ];
+  const SEED = (typeof LOADING_DATA !== 'undefined' && LOADING_DATA.SEED) ? LOADING_DATA.SEED : [];
+  const TRENDING_POOL = (typeof LOADING_DATA !== 'undefined' && LOADING_DATA.TRENDING_POOL) ? LOADING_DATA.TRENDING_POOL : [];
 
-  /* ── Pool de Jogos em Alta no Momento (Rotação Semanal de 7 Dias) ── */
-  const TRENDING_POOL = [
-    { id: 't1', name: 'Counter-Strike 2', released: '2023-09-27', metacritic: 82, platforms: ['PC'], genres: ['Tiro'], developers: ['Valve'], publishers: ['Valve'], tags: [1],
-      image: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/730/header.jpg',
-      imageHover: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/730/ss_e15a9ff866ec8f51a89c3db6f8ab51a80c98f8b8.600x338.jpg',
-      screenshots: ["https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/730/ss_95ecce886a1170aa5a48d88e09f583aa1e8f533a.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/730/ss_e15a9ff866ec8f51a89c3db6f8ab51a80c98f8b8.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/730/ss_a599292c3066324d9c7336cecfdb325dfd6efdf8.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/730/ss_d8c47eb5cf77a28e93899532fe5ba60195ec47ee.600x338.jpg"],
-      description: 'Maior jogo de tiro tático em primeira pessoa do mundo, com nova engine Source 2, física de fumaça volumétrica responsiva e taxa de tique sub-tick.' },
-    { id: 't2', name: 'Elden Ring', released: '2022-02-25', metacritic: 96, platforms: ['PC', 'PlayStation', 'Xbox'], genres: ['Ação', 'RPG'], developers: ['FromSoftware'], publishers: ['Bandai Namco Entertainment'], tags: [1, 2, 3],
-      image: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1245620/header.jpg',
-      imageHover: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1245620/ss_943bf6fe62352757d9070c1d33e50b92fe8539f1.600x338.jpg',
-      screenshots: ["https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1245620/ss_d397c88b90c05763a83f983a54b3834da465bf19.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1245620/ss_5471d2b78d21dfbc28e1d5300f898308bf3f6da2.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1245620/ss_3d98eb6c2f7ff0d0ea37ca3ff7b7194f4a38ff6a.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1245620/ss_943bf6fe62352757d9070c1d33e50b92fe8539f1.600x338.jpg"],
-      description: 'RPG de ação em mundo aberto nas Terras Intermédias com expansão recente Shadow of the Erdtree, mantendo recordes de jogadores simultâneos.' },
-    { id: 't3', name: 'Cyberpunk 2077', released: '2020-12-10', metacritic: 86, platforms: ['PC', 'PlayStation', 'Xbox'], genres: ['RPG', 'Ação'], developers: ['CD Projekt Red'], publishers: ['CD Projekt'], tags: [1, 2, 3],
-      image: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1091500/header.jpg',
-      imageHover: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1091500/ss_ff63f82fcdd82f256086f6eb8035850ab85aeeb8.600x338.jpg',
-      screenshots: ["https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1091500/ss_bf5df18e38d06ee29f44f51e0ff05e60d2e85a6a.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1091500/ss_7e937d94cf75f34cf33db6ef9ec23f3640243403.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1091500/ss_6db033a8e4df4c1851e504cf66672c723f982181.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1091500/ss_ff63f82fcdd82f256086f6eb8035850ab85aeeb8.600x338.jpg"],
-      description: 'RPG de ação futurista em Night City, totalmente revitalizado com a atualização 2.0 e expansão Phantom Liberty.' },
-    { id: 't4', name: 'Baldur\'s Gate 3', released: '2023-08-03', metacritic: 96, platforms: ['PC', 'PlayStation', 'Xbox'], genres: ['RPG', 'Estratégia'], developers: ['Larian Studios'], publishers: ['Larian Studios'], tags: [1, 2, 3],
-      image: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/header.jpg',
-      imageHover: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/ss_d6dd85785f75c4046d3e81ad8fec3b59b02a98e3.600x338.jpg',
-      screenshots: ["https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/ss_16315ecbe5e6382069cc88a6d4ee292215c2cebb.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/ss_a39fc4159501a35794833dd72464b0f94605e554.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/ss_bf13b5d275ceea158971f112e8cb769a91702e7a.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/ss_d6dd85785f75c4046d3e81ad8fec3b59b02a98e3.600x338.jpg"],
-      description: 'RPG premiado no universo de Dungeons & Dragons com liberdade sem precedentes, narrativa ramificada e combate tático profundo.' },
-    { id: 't5', name: 'Grand Theft Auto V', released: '2013-09-17', metacritic: 97, platforms: ['PC', 'PlayStation', 'Xbox'], genres: ['Ação'], developers: ['Rockstar North'], publishers: ['Rockstar Games'], tags: [1, 2, 3],
-      image: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/271590/header.jpg',
-      imageHover: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/271590/ss_32aa18ab3175e3002217862dd5917646d298ab6b.600x338.jpg',
-      screenshots: ["https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/271590/ss_8e70908c6a61fb232c45163b9ef77366d2146908.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/271590/ss_7be5bc656fc384ccad3d9c84e27f12e2df5ef79b.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/271590/ss_32aa18ab3175e3002217862dd5917646d298ab6b.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/271590/ss_6919a3b83c483a91b269ecfae15f6ee48cfb17d9.600x338.jpg"],
-      description: 'Fenômeno constante de audiência e jogadores ativos em Los Santos e GTA Online com atualizações de conteúdo frequentes.' },
-    { id: 't6', name: 'The Witcher 3: Wild Hunt', released: '2015-05-19', metacritic: 93, platforms: ['PC', 'PlayStation', 'Xbox', 'Nintendo'], genres: ['RPG'], developers: ['CD Projekt Red'], publishers: ['CD Projekt'], tags: [1, 2, 3, 7],
-      image: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/header.jpg',
-      imageHover: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/f7f564ecedd09b3e503b071a637aeefdedbeedd8/ss_f7f564ecedd09b3e503b071a637aeefdedbeedd8.600x338.jpg',
-      screenshots: ["https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/ss_107600c1337231660f50f52ba71477c3c66b2d00.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/ss_8e762c2f42a0f8bfd463d1cb53f1f7e0bc27e3cc.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/ss_75e01c0db721d7b0559eb431a478330ee0f4c084.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/ss_c7df0e4d084eeec286dbdb9db8a7ba1e78687258.600x338.jpg"],
-      description: 'A jornada de Geralt de Rívia com versão next-gen atualizada, permanecendo entre os RPGs mais jogados do mundo.' },
-    { id: 't7', name: 'Red Dead Redemption 2', released: '2018-10-26', metacritic: 97, platforms: ['PC', 'PlayStation', 'Xbox'], genres: ['Ação', 'Aventura'], developers: ['Rockstar Games'], publishers: ['Rockstar Games'], tags: [1, 2, 3],
-      image: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1174180/header.jpg',
-      imageHover: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1174180/ss_66b553f4c209476d3e4ce25fa4714002cc914c4f.600x338.jpg',
-      screenshots: ["https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1174180/ss_fb2896fd2cf1cb82c5a1ecba840dd67ec927b2e3.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1174180/ss_f8df2d475ef21e6be794c4ec9d924045f86ce5b1.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1174180/ss_495ee8cbe7bbcf156dd3d61b6c006437d042ec7d.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1174180/ss_66b553f4c209476d3e4ce25fa4714002cc914c4f.600x338.jpg"],
-      description: 'Obra-prima de mundo aberto narrando a queda da gangue de Dutch van der Linde, com comunidades ativas e gráficos de referência.' },
-    { id: 't8', name: 'Helldivers 2', released: '2024-02-08', metacritic: 82, platforms: ['PC', 'PlayStation'], genres: ['Tiro', 'Ação'], developers: ['Arrowhead Game Studios'], publishers: ['Sony Interactive Entertainment'], tags: [1, 2],
-      image: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/553850/header.jpg',
-      imageHover: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/553850/ss_8e72750e50e95c4e97669d0dbe9a81f8f3b7d727.600x338.jpg',
-      screenshots: ["https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/553850/ss_2b724580fb354d2e7ca856942ad3eb74044be8d1.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/553850/ss_fa9740b2f483c7ce422bc7d8c7c941784ca1f76f.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/553850/ss_bf83a45c61266d9c6c5ea3e9c52feea36ee5144b.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/553850/ss_8e72750e50e95c4e97669d0dbe9a81f8f3b7d727.600x338.jpg"],
-      description: 'Shooter cooperativo de ação galáctica em terceira pessoa contra Terminídios e Autômatos na luta pela Super Terra.' },
-    { id: 't9', name: 'Minecraft', released: '2011-11-18', metacritic: 93, platforms: ['PC', 'PlayStation', 'Xbox', 'Nintendo'], genres: ['Sandbox', 'Sobrevivência'], developers: ['Mojang Studios'], publishers: ['Mojang Studios'], tags: [1, 2, 3, 7],
-      image: 'https://media.rawg.io/media/games/b4e/b4e4c73d5aa4ec66bbf75375c4847a2b.jpg',
-      imageHover: 'https://media.rawg.io/media/screenshots/324/32454b11adde40d87c046f310f0d710d.jpg',
-      screenshots: ["https://media.rawg.io/media/screenshots/324/32454b11adde40d87c046f310f0d710d.jpg","https://media.rawg.io/media/screenshots/b93/b9354784a08fd5357876a4a4087dfcfc.jpg","https://media.rawg.io/media/screenshots/f60/f6004abfb72837ff44ebfd588ff1ceb7.jpg","https://media.rawg.io/media/screenshots/36f/36fa18aa95a707a01c40b6e927027d14.jpg"],
-      description: 'O sandbox infinito mais jogado do planeta, com servidores ativos e milhões de jogadores em exploração constante.' },
-    { id: 't10', name: 'God of War', released: '2018-04-20', metacritic: 94, platforms: ['PlayStation', 'PC'], genres: ['Ação'], developers: ['Santa Monica Studio'], publishers: ['Sony Interactive Entertainment'], tags: [2, 1],
-      image: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1593500/header.jpg',
-      imageHover: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1593500/ss_6eccc970b5de2943546d93d319be1b5c0618f21b.600x338.jpg',
-      screenshots: ["https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1593500/ss_3a8b444747ebc63833b5220c324c4e7ab91136b3.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1593500/ss_96e838f38bbd1945f3be4b563cb9671dbb065a28.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1593500/ss_3c0be8d5272a71d8717cfa8ebfc91c28b6d859a7.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1593500/ss_6eccc970b5de2943546d93d319be1b5c0618f21b.600x338.jpg"],
-      description: 'A jornada mitológica de Kratos e Atreus pelas terras nórdicas, com narrativa tocante e combate visceral.' },
-    { id: 't11', name: 'The Legend of Zelda: Breath of the Wild', released: '2017-03-03', metacritic: 97, platforms: ['Nintendo'], genres: ['Ação', 'Aventura'], developers: ['Nintendo EPD'], publishers: ['Nintendo'], tags: [7],
-      image: 'https://media.rawg.io/media/games/cc1/cc196a5ad763955d6532cdba236f730c.jpg',
-      imageHover: 'https://media.rawg.io/media/screenshots/b77/b771adc0585c655f8a747d3160e5325a.jpg',
-      screenshots: ["https://media.rawg.io/media/screenshots/b77/b771adc0585c655f8a747d3160e5325a.jpg","https://media.rawg.io/media/screenshots/f0d/f0da59e38ffc15b94236b2f7632ce60a.jpg","https://media.rawg.io/media/screenshots/a03/a037b5d13481eec647a40ca13dfc7bb6.jpg","https://media.rawg.io/media/screenshots/d0f/d0f2f3f9828551faaa6573c98894dfc1.jpg"],
-      description: 'Marco do design de mundos abertos com exploração não linear, física emergente e aclamação contínua.' },
-    { id: 't12', name: 'Portal 2', released: '2011-04-19', metacritic: 95, platforms: ['PC', 'PlayStation', 'Xbox'], genres: ['Quebra-cabeça'], developers: ['Valve'], publishers: ['Valve'], tags: [1, 2, 3],
-      image: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/620/header.jpg',
-      imageHover: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/620/ss_f3f6787d74739d3b2ec8a484b5c994b3d31ef325.600x338.jpg',
-      screenshots: ["https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/620/ss_6a12b670d80c6534608db1426477e68c8b417e3f.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/620/ss_bb936453664fa41a9d5926ecdbd0c722aebbe39c.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/620/ss_3ab634c05cc7fef7bca458f2d5733d9942a00c63.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/620/ss_f3f6787d74739d3b2ec8a484b5c994b3d31ef325.600x338.jpg"],
-      description: 'Um dos quebra-cabeças em primeira pessoa mais celebrados da história, com modo cooperativo atemporal.' },
-  ];
+  const starsFromRating = rating => {
+    const n = Math.max(0, Math.min(5, Math.round(Number(rating) || 0)));
+    if (!n) return null;
+    return { text: '★'.repeat(n) + '☆'.repeat(5 - n), label: `${n} de 5 estrelas` };
+  };
+
+  const updateMoreVisibility = () => {
+    const show = Boolean(state.next) && !ENABLE_INFINITE_SCROLL;
+    if (els.moreWrap) els.moreWrap.hidden = !show && !(ENABLE_INFINITE_SCROLL && state.next);
+    if (els.more) {
+      els.more.hidden = !show;
+      if (show) els.more.textContent = 'CARREGAR MAIS CARTUCHOS';
+    }
+  };
 
   const $ = (s, r = document) => r.querySelector(s);
   const h = (tag, props = {}, ...kids) => {
@@ -502,14 +410,27 @@
   /* ── Carregamento ── */
   function loadSeed() {
     const q = state.query.toLowerCase();
-    const list = SEED.filter(g => (!q || g.name.toLowerCase().includes(q)));
+    const platLabel = PLAT_LABEL[state.platform] || '';
+    const list = SEED.filter(g => {
+      if (q && !g.name.toLowerCase().includes(q)) return false;
+      if (state.platform && platLabel && platLabel !== 'Todas') {
+        const ok = (g.platforms || []).some(p => String(p).toLowerCase().includes(platLabel.toLowerCase()));
+        if (!ok) return false;
+      }
+      return true;
+    });
+    state.next = null;
     render(list.map(g => ({ ...g, source: 'seed' })));
-    if (els.more) els.more.hidden = true;
+    updateMoreVisibility();
     if (els.infiniteLoader) els.infiniteLoader.hidden = true;
-    $('#fact-count').textContent = '500 mil+';
+    const fact = $('#fact-count');
+    if (fact) fact.textContent = String(SEED.length);
+    const filters = [q && `busca “${state.query}”`, state.platform && platLabel !== 'Todas' && platLabel].filter(Boolean);
     setStatus(list.length
-      ? (q ? `${list.length} jogo${list.length > 1 ? 's' : ''} encontrado${list.length > 1 ? 's' : ''}.` : 'Top 9 · Os jogos mais jogados e comentados na web (curadoria local).')
-      : 'Nenhum jogo na curadoria local.');
+      ? (filters.length
+          ? `${list.length} jogo${list.length > 1 ? 's' : ''} na curadoria local (${filters.join(' · ')}).`
+          : 'Top 9 · Curadoria local (sem chave RAWG ou modo offline).')
+      : 'Nenhum jogo encontrado com esses filtros. Tente outra plataforma ou limpe a busca.');
   }
 
   /* ── Cache de requisições RAWG (memória + sessionStorage) ── */
@@ -573,20 +494,21 @@
       }
       state.next = data.next;
       render(data.results.map(fromRawg), append);
-      if (els.more) {
-        els.more.hidden = true;
-      }
+      updateMoreVisibility();
       setStatus(data.count
-        ? (state.query
-            ? `${data.count.toLocaleString('pt-BR')} jogos catalogados para “${state.query}”.`
-            : 'Top 9 · Os jogos mais jogados e comentados na web.')
-        : 'Nenhum jogo encontrado.');
-      if (!state.query && !state.platform) $('#fact-count').textContent = data.count.toLocaleString('pt-BR');
+        ? (state.query || state.platform
+            ? `${data.count.toLocaleString('pt-BR')} jogos encontrados${state.query ? ` para “${state.query}”` : ''}${state.platform ? ` · ${PLAT_LABEL[state.platform] || ''}` : ''}.`
+            : `Top ${PAGE_SIZE} · Ordenados por popularidade na RAWG.`)
+        : 'Nenhum jogo encontrado. Ajuste busca ou plataforma.');
+      const fact = $('#fact-count');
+      if (fact && !state.query && !state.platform) fact.textContent = data.count.toLocaleString('pt-BR');
     } catch (e) {
       if (e.name === 'AbortError') return;
       if (!append) {
         loadSeed();
-        setStatus('Modo offline. Exibindo curadoria local.');
+        setStatus('API indisponível ou sem chave. Exibindo curadoria local offline.');
+      } else {
+        setStatus('Não foi possível carregar mais jogos. Tente de novo.');
       }
     } finally {
       if (append) {
@@ -594,8 +516,8 @@
         if (ENABLE_INFINITE_SCROLL) {
           if (els.infiniteLoader) els.infiniteLoader.hidden = true;
         } else if (els.more) {
-          els.more.textContent = 'Carregar mais jogos';
           els.more.disabled = false;
+          updateMoreVisibility();
         }
       } else {
         els.games.removeAttribute('aria-busy');
@@ -897,35 +819,16 @@
     infiniteScrollIo.observe(els.moreWrap);
   }
 
-  /* ── Chave (suporte de fallback sem elementos na tela) ── */
-  const keyInput = $('#api-key');
-  if (keyInput) {
-    keyInput.value = localStorage.getItem(LS.key) || '';
-    $('#config')?.addEventListener('submit', e => {
-      e.preventDefault();
-      const v = keyInput.value.trim();
-      if (!/^[a-f0-9]{32}$/i.test(v)) return;
-      localStorage.setItem(LS.key, v); state.key = v;
-      apiCache.clear();
-      loadGames();
-    });
-    $('#key-clear')?.addEventListener('click', () => {
-      localStorage.removeItem(LS.key); keyInput.value = ''; state.key = RAWG_KEY;
-      apiCache.clear();
-      loadGames();
-    });
-  }
-
-  /* ── Avaliações & Fórum (Estilo Popular Reviews do Letterboxd) ── */
+  /* ── Avaliações & Fórum local (localStorage; não sincroniza entre aparelhos) ── */
   const now = Date.now(), H = 3600e3;
   const SEED_TOPICS = [
     { id: 't1', pinned: true, author: 'Loading...', game: 'Elden Ring', title: 'Boas-vindas: compartilhe suas avaliações e listas',
-      body: 'Abra a ficha de qualquer jogo no acervo e clique em “Escrever avaliação no fórum” para publicar sua análise.\nCite a plataforma em que jogou e evite spoilers no título.', at: now - 72 * H, replies: [] },
+      body: 'Abra a ficha de qualquer jogo no acervo e clique em “Publicar análise no fórum”.\nOs tópicos ficam só neste navegador (localStorage).', at: now - 72 * H, rating: 0, replies: [] },
     { id: 't2', author: 'ana_retro', game: 'Half-Life 2', title: 'Half-Life 2 ainda se sustenta em 2026?',
-      body: 'Rejoguei no PC e a física continua impressionante. O ritmo de Ravenholm é o melhor da série pra mim.', at: now - 20 * H,
+      body: 'Rejoguei no PC e a física continua impressionante. O ritmo de Ravenholm é o melhor da série pra mim.', at: now - 20 * H, rating: 5,
       replies: [{ author: 'gordon', body: 'Envelheceu muito bem. Os episódios valem a pena logo depois.', at: now - 18 * H }] },
     { id: 't3', author: 'lucas', game: 'Hollow Knight', title: 'Direção de arte impecável e mapa interconectado',
-      body: 'A transição de Dirtmouth para Greenpath com a trilha de Christopher Larkin é um dos momentos mais marcantes dos jogos independentes.', at: now - 5 * H, replies: [] },
+      body: 'A transição de Dirtmouth para Greenpath com a trilha de Christopher Larkin é um dos momentos mais marcantes dos jogos independentes.', at: now - 5 * H, rating: 5, replies: [] },
   ];
   const loadTopics = () => {
     try {
@@ -991,7 +894,10 @@
       h('div', { class: 'topic-content' },
         h('div', { class: 'topic-header' },
           h('span', { class: 'topic-game', text: `[${gameLabel.toUpperCase()}]` }),
-          h('span', { class: 'topic-stars', 'aria-label': '5 estrelas', text: '★★★★★' }),
+          (() => {
+            const stars = starsFromRating(t.rating);
+            return stars ? h('span', { class: 'topic-stars', 'aria-label': stars.label, text: stars.text }) : null;
+          })(),
           t.pinned ? h('span', { class: 'pin', text: 'Fixado' }) : null
         ),
         h('h3', { id: `th-${t.id}` }, t.title),
@@ -1042,10 +948,13 @@
     if (title.length < 4) { els.fErr.textContent = 'O título precisa de pelo menos 4 caracteres.'; f.title.setAttribute('aria-invalid', 'true'); f.title.focus(); return; }
     if (body.length < 10) { els.fErr.textContent = 'A avaliação precisa de pelo menos 10 caracteres.'; f.body.setAttribute('aria-invalid', 'true'); f.body.focus(); return; }
     f.title.removeAttribute('aria-invalid'); f.body.removeAttribute('aria-invalid');
-    const t = { id: 'u' + Date.now().toString(36), author: clean(f.author.value, 40) || 'Anônimo', game: clean(f.game.value, 80) || 'Geral', title, body, at: Date.now(), replies: [] };
+    const ratingRaw = Number(f.rating?.value);
+    const rating = Number.isFinite(ratingRaw) && ratingRaw >= 1 && ratingRaw <= 5 ? Math.round(ratingRaw) : 0;
+    const t = { id: 'u' + Date.now().toString(36), author: clean(f.author.value, 40) || 'Anônimo', game: clean(f.game.value, 80) || 'Geral', title, body, rating, at: Date.now(), replies: [] };
     topics.unshift(t); saveTopics();
     f.title.value = ''; f.body.value = ''; f.game.value = '';
-    els.fErr.textContent = 'Avaliação publicada.';
+    if (f.rating) f.rating.value = '';
+    els.fErr.textContent = 'Avaliação publicada neste navegador.';
     els.forumQ.value = '';
     renderTopics();
     $(`#topic-${t.id}`)?.scrollIntoView({ block: 'nearest' });

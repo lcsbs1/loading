@@ -1,0 +1,19 @@
+name: CI
+
+on:
+  push:
+    branches: [main, homol, 'chore/**', 'feat/**', 'fix/**']
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Build checks
+        run: npm run build
+      - name: Unit tests
+        run: npm test
