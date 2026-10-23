@@ -840,7 +840,7 @@ textarea.input { min-height: 6.5rem; resize: vertical; line-height: 1.5; }
   .poster-strip { grid-template-columns: repeat(6, 1fr); }
 }
 
-/* ───────── 02 · Bento Catalog & Hardware Spec Stack ───────── */
+/* ───────── 02 · Bento Catalog (largura total) ───────── */
 section { padding-block: var(--section); position: relative; }
 
 .bento-catalog-layout {
@@ -849,18 +849,13 @@ section { padding-block: var(--section); position: relative; }
   gap: 1.25rem;
   align-items: stretch;
 }
-@media (min-width: 64rem) {
-  .bento-catalog-layout {
-    grid-template-columns: 1.65fr 1fr;
-    align-items: stretch;
-  }
-}
 
 .bento-module--catalog,
 .bento-module--spec {
   display: flex;
   flex-direction: column;
   height: 100%;
+  min-width: 0;
 }
 .bento-module--catalog #games,
 .bento-module--spec .bento-spec-inner {
@@ -1011,7 +1006,7 @@ section { padding-block: var(--section); position: relative; }
 }
 .status a:hover { text-decoration: underline; }
 
-/* Grade de Cartuchos (3 colunas no módulo Bento como no Paper) */
+/* Grade de Cartuchos (até 5 colunas em desktop) */
 #acervo .grid {
   display: grid;
   gap: 1rem;
@@ -1028,6 +1023,12 @@ section { padding-block: var(--section); position: relative; }
 }
 @media (min-width: 50rem) {
   #acervo .grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (min-width: 64rem) {
+  #acervo .grid { grid-template-columns: repeat(4, 1fr); }
+}
+@media (min-width: 80rem) {
+  #acervo .grid { grid-template-columns: repeat(5, 1fr); }
 }
 
 /* Card de Cartucho Tátil (Estilo Paper Opção 2) */
@@ -1308,11 +1309,16 @@ section { padding-block: var(--section); position: relative; }
 .bento-forum-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  max-width: 62rem;
   width: 100%;
   margin-inline: auto;
   gap: 1.25rem;
-  align-items: start;
+  align-items: stretch;
+}
+@media (min-width: 64rem) {
+  .bento-forum-grid {
+    grid-template-columns: 1.65fr 1fr;
+    align-items: stretch;
+  }
 }
 
 .forum-header-bar {

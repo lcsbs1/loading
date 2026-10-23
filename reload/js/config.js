@@ -29,7 +29,7 @@ const CONFIG = {
 
   // Paginação do Acervo (scroll infinito desativado por padrão; ative com true a qualquer momento)
   PAGINATION: {
-    pageSize: 9,
+    pageSize: 12,
     infiniteScroll: false,
   },
 };

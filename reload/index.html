@@ -82,8 +82,7 @@
         <span class="site-nav-pill" aria-hidden="true"></span>
         <a class="active" href="#inicio">[01] DESTAQUES</a>
         <a href="#acervo">[02] ACERVO</a>
-        <a href="#lets-you">[03] RECURSOS</a>
-        <a href="#forum">[04] FÓRUM</a>
+        <a href="#forum">[03] FÓRUM</a>
       </nav>
 
       <div class="header-controls">
@@ -198,11 +197,10 @@
       </div>
     </section>
 
-    <!-- 02 · Bento Catalog & Hardware Spec Stack (Acervo + Recursos lado a lado) -->
+    <!-- 02 · Biblioteca de Mídias (Acervo em largura total) -->
     <section id="acervo" aria-labelledby="t-acervo">
       <div class="wrap">
         <div class="bento-catalog-layout">
-          <!-- Coluna Esquerda: Módulo 02 // Biblioteca de Mídias -->
           <div class="bento-module bento-module--catalog">
             <div class="catalog-header">
               <div class="catalog-title-group">
@@ -226,7 +224,6 @@
 
             <ul class="grid" id="games" aria-label="Jogos do acervo"></ul>
 
-            <!-- Rodapé do Módulo 02 alinhado -->
             <div class="catalog-footer">
               <div class="more" id="more-wrap" hidden>
                 <button class="btn btn--primary" type="button" id="more" hidden>CARREGAR MAIS CARTUCHOS</button>
@@ -238,8 +235,65 @@
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </section>
 
-          <!-- Coluna Direita: Módulo 03 // Recursos do Sistema (#lets-you) -->
+    <!-- 03 · Fórum Comunitário + Recursos do Sistema -->
+    <section id="forum" aria-labelledby="t-forum">
+      <div class="wrap">
+        <div class="bento-forum-grid">
+          <div class="bento-module bento-module--forum">
+            <div class="forum-header-bar">
+              <div class="forum-header-left">
+                <span class="hw-badge hw-badge--dark">FÓRUM // COMUNIDADE</span>
+                <h2 class="bento-heading" id="t-forum">ANÁLISES &amp; TÓPICOS POPULARES</h2>
+              </div>
+              <span class="hw-meta">ARMAZENAMENTO LOCAL · ZERO ADS</span>
+            </div>
+
+            <div class="field forum-filter">
+              <label class="label" for="forum-q">FILTRAR AVALIAÇÕES E TÓPICOS</label>
+              <input class="input" id="forum-q" type="search" placeholder="Filtrar por jogo, título ou membro…" autocomplete="off">
+            </div>
+
+            <div class="topics" id="topics" aria-live="polite"></div>
+
+            <form class="form reveal" id="topic-form" aria-labelledby="t-new" novalidate>
+              <div class="form-header">
+                <div class="form-header-left">
+                  <span class="form-kicker">+ DIÁRIO DA COMUNIDADE</span>
+                  <h3 class="strong" id="t-new">Registrar nova avaliação ou abrir tópico</h3>
+                </div>
+                <span class="hw-meta">LOCALSTORAGE</span>
+              </div>
+              <div class="form-row">
+                <div class="field">
+                  <label class="label" for="f-author">SEU PERFIL</label>
+                  <input class="input" id="f-author" name="author" maxlength="40" placeholder="Anônimo" autocomplete="nickname">
+                </div>
+                <div class="field">
+                  <label class="label" for="f-game">JOGO / ROM</label>
+                  <input class="input" id="f-game" name="game" maxlength="80" list="game-list" placeholder="Ex.: Elden Ring">
+                  <datalist id="game-list"></datalist>
+                </div>
+              </div>
+              <div class="field">
+                <label class="label" for="f-title">TÍTULO DA ANÁLISE OU TÓPICO <span aria-hidden="true">*</span></label>
+                <input class="input" id="f-title" name="title" required minlength="4" maxlength="120" placeholder="Resumo sem spoilers…" aria-describedby="f-err">
+              </div>
+              <div class="field">
+                <label class="label" for="f-body">SUA ANÁLISE / COMENTÁRIO <span aria-hidden="true">*</span></label>
+                <textarea class="input" id="f-body" name="body" required minlength="10" maxlength="2000" placeholder="O que achou da direção de arte, mecânicas ou história?" aria-describedby="f-err"></textarea>
+              </div>
+              <p class="status" id="f-err" aria-live="assertive"></p>
+              <div class="form-actions-bar">
+                <span class="label">Salvo localmente no seu navegador · Zero rastreadores.</span>
+                <button class="btn btn--primary" type="submit">PUBLICAR NO FÓRUM →</button>
+              </div>
+            </form>
+          </div>
+
           <aside class="bento-module bento-module--spec" id="lets-you" aria-labelledby="t-lets">
             <div class="catalog-header">
               <div class="catalog-title-group">
@@ -300,7 +354,6 @@
               </article>
             </div>
 
-            <!-- Rodapé do Módulo 03 alinhado com o rodapé do Módulo 02 -->
             <div class="spec-footer" id="info-dock">
               <div class="dock-status-badge">
                 <span class="brand-led brand-led--green" aria-hidden="true"></span>
@@ -309,66 +362,6 @@
               <p class="rawg-dock-copy">© <span id="year">2026</span> LOADING... · PROJETO INDEPENDENTE SEM FINS COMERCIAIS</p>
             </div>
           </aside>
-        </div>
-      </div>
-    </section>
-
-    <!-- 04 · Fórum Comunitário Centralizado -->
-    <section id="forum" aria-labelledby="t-forum">
-      <div class="wrap">
-        <div class="bento-forum-grid">
-          <!-- Módulo Central: Análises & Tópicos Populares -->
-          <div class="bento-module bento-module--forum">
-            <div class="forum-header-bar">
-              <div class="forum-header-left">
-                <span class="hw-badge hw-badge--dark">FÓRUM // COMUNIDADE</span>
-                <h2 class="bento-heading" id="t-forum">ANÁLISES &amp; TÓPICOS POPULARES</h2>
-              </div>
-              <span class="hw-meta">ARMAZENAMENTO LOCAL · ZERO ADS</span>
-            </div>
-
-            <div class="field forum-filter">
-              <label class="label" for="forum-q">FILTRAR AVALIAÇÕES E TÓPICOS</label>
-              <input class="input" id="forum-q" type="search" placeholder="Filtrar por jogo, título ou membro…" autocomplete="off">
-            </div>
-
-            <div class="topics" id="topics" aria-live="polite"></div>
-
-            <!-- Formulário de Registro Integrado -->
-            <form class="form reveal" id="topic-form" aria-labelledby="t-new" novalidate>
-              <div class="form-header">
-                <div class="form-header-left">
-                  <span class="form-kicker">+ DIÁRIO DA COMUNIDADE</span>
-                  <h3 class="strong" id="t-new">Registrar nova avaliação ou abrir tópico</h3>
-                </div>
-                <span class="hw-meta">LOCALSTORAGE</span>
-              </div>
-              <div class="form-row">
-                <div class="field">
-                  <label class="label" for="f-author">SEU PERFIL</label>
-                  <input class="input" id="f-author" name="author" maxlength="40" placeholder="Anônimo" autocomplete="nickname">
-                </div>
-                <div class="field">
-                  <label class="label" for="f-game">JOGO / ROM</label>
-                  <input class="input" id="f-game" name="game" maxlength="80" list="game-list" placeholder="Ex.: Elden Ring">
-                  <datalist id="game-list"></datalist>
-                </div>
-              </div>
-              <div class="field">
-                <label class="label" for="f-title">TÍTULO DA ANÁLISE OU TÓPICO <span aria-hidden="true">*</span></label>
-                <input class="input" id="f-title" name="title" required minlength="4" maxlength="120" placeholder="Resumo sem spoilers…" aria-describedby="f-err">
-              </div>
-              <div class="field">
-                <label class="label" for="f-body">SUA ANÁLISE / COMENTÁRIO <span aria-hidden="true">*</span></label>
-                <textarea class="input" id="f-body" name="body" required minlength="10" maxlength="2000" placeholder="O que achou da direção de arte, mecânicas ou história?" aria-describedby="f-err"></textarea>
-              </div>
-              <p class="status" id="f-err" aria-live="assertive"></p>
-              <div class="form-actions-bar">
-                <span class="label">Salvo localmente no seu navegador · Zero rastreadores.</span>
-                <button class="btn btn--primary" type="submit">PUBLICAR NO FÓRUM →</button>
-              </div>
-            </form>
-          </div>
         </div>
       </div>
     </section>
@@ -387,8 +380,7 @@
       <div class="footer-links">
         <a class="link" href="#inicio">[01] Destaques</a>
         <a class="link" href="#acervo">[02] Acervo</a>
-        <a class="link" href="#lets-you">[03] Recursos</a>
-        <a class="link" href="#forum">[04] Fórum</a>
+        <a class="link" href="#forum">[03] Fórum</a>
         <a class="link" href="https://github.com/" rel="noopener" target="_blank">GitHub ↗<span class="sr-only"> (abre em nova aba)</span></a>
       </div>
     </div>

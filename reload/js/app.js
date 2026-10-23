@@ -12,7 +12,7 @@
     featuredData: 'loading.featured.data',
     featuredTime: 'loading.featured.timestamp',
   };
-  const PAGE_SIZE = (typeof CONFIG !== 'undefined' && CONFIG.PAGINATION && CONFIG.PAGINATION.pageSize) ? CONFIG.PAGINATION.pageSize : 9;
+  const PAGE_SIZE = (typeof CONFIG !== 'undefined' && CONFIG.PAGINATION && CONFIG.PAGINATION.pageSize) ? CONFIG.PAGINATION.pageSize : 12;
   const ENABLE_INFINITE_SCROLL = (typeof CONFIG !== 'undefined' && CONFIG.PAGINATION && typeof CONFIG.PAGINATION.infiniteScroll === 'boolean') ? CONFIG.PAGINATION.infiniteScroll : false;
 
   /* ── Acervo local (funciona sem chave/offline) ── */
@@ -1199,24 +1199,16 @@
     const line = y + offset;
     const maxLine = maxScroll + offset;
 
-    // Topo absoluto de cada seção (com suporte a módulos lado a lado e divisão de rolagem)
+    // Topo absoluto de cada seção (Destaques → Acervo → Fórum)
     const secAcervo = document.getElementById('acervo');
-    const secRecursos = document.getElementById('lets-you');
+    const secForum = document.getElementById('forum');
     const topInicio = navSpy[0]?.sec ? (navSpy[0].sec.getBoundingClientRect().top + y) : 0;
     const topAcervo = secAcervo ? (secAcervo.getBoundingClientRect().top + y) : 0;
-    const heightAcervo = secAcervo ? (secAcervo.offsetHeight || secAcervo.getBoundingClientRect().height) : 0;
-    const rawRecursosTop = secRecursos ? (secRecursos.getBoundingClientRect().top + y) : topAcervo;
-
-    // Detecta se Módulo 02 e Módulo 03 estão lado a lado no layout
-    const isSideBySide = Math.abs(rawRecursosTop - topAcervo) < 120;
-    // Se lado a lado, a transição para Recursos ocorre a 45% da altura da seção
-    const topRecursos = isSideBySide ? (topAcervo + heightAcervo * 0.45) : rawRecursosTop;
-    const topForum = navSpy[3]?.sec ? (navSpy[3].sec.getBoundingClientRect().top + y) : maxLine;
+    const topForum = secForum ? (secForum.getBoundingClientRect().top + y) : maxLine;
 
     const tops = [
       Math.min(topInicio, maxLine - 1),
       Math.min(topAcervo, maxLine - 1),
-      Math.min(topRecursos, maxLine - 1),
       Math.min(topForum, maxLine - 1)
     ];
 
@@ -1259,20 +1251,6 @@
       scrollTicking = true;
     }
   }
-
-  // Suporte a clique em Recursos quando estiver lado a lado com o Acervo
-  document.querySelectorAll('.site-nav a[href="#lets-you"]').forEach(a => {
-    a.addEventListener('click', e => {
-      const secA = document.getElementById('acervo');
-      const secR = document.getElementById('lets-you');
-      if (secA && secR && Math.abs(secR.offsetTop - secA.offsetTop) < 120) {
-        e.preventDefault();
-        const headerH = siteHeader?.offsetHeight || 0;
-        const targetY = secA.getBoundingClientRect().top + window.scrollY + secA.offsetHeight * 0.45 - headerH;
-        window.scrollTo({ top: targetY, behavior: 'smooth' });
-      }
-    });
-  });
 
   window.addEventListener('scroll', requestScrollEffects, { passive: true });
   window.addEventListener('resize', requestScrollEffects);
