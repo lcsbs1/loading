@@ -73,7 +73,7 @@
           <span class="brand-name">LOADING<span class="brand-ellipsis">...</span></span>
         </a>
         <div class="brand-telemetry">
-          <span class="brand-rev">SYS.REV // 1972—2026</span>
+          <span class="brand-rev // 1972—2026">SYS.REV // 1972—2026</span>
           <span class="brand-sub">OPEN ARCHIVE · NO ADS</span>
         </div>
       </div>
@@ -351,6 +351,54 @@
                     <dd class="stat-light">ZERO</dd>
                   </div>
                 </dl>
+              </article>
+
+              <!-- Card 05: Feedback e Aperfeiçoamento da Comunidade -->
+              <article class="spec-card spec-card--white spec-card--feedback reveal" id="feedback-card" aria-labelledby="t-feedback">
+                <div class="spec-card-top">
+                  <span class="spec-num spec-num--red">FEEDBACK // 05</span>
+                  <span class="spec-tag">[COMUNIDADE]</span>
+                </div>
+                <h3 class="spec-title" id="t-feedback">Sugestões &amp; Melhorias</h3>
+                <p class="spec-desc">Ajude a moldar o <strong>Loading...</strong>. Compartilhe sugestões de melhorias para a interface, correções de acervo ou ideias para a comunidade.</p>
+                
+                <form class="feedback-form" id="feedback-form" novalidate>
+                  <div class="feedback-grid">
+                    <div class="field">
+                      <label class="label" for="fb-category">CATEGORIA</label>
+                      <select class="input feedback-select" id="fb-category" name="category">
+                        <option value="site">Melhorias no Site</option>
+                        <option value="comunidade">Aperfeiçoamento da Comunidade</option>
+                        <option value="acervo">Acervo &amp; Fichas Técnicas</option>
+                        <option value="outro">Outra Sugestão</option>
+                      </select>
+                    </div>
+                    <div class="field">
+                      <label class="label" for="fb-author">SEU NOME OU APELIDO</label>
+                      <input class="input" id="fb-author" name="author" maxlength="40" placeholder="Anônimo / @membro" autocomplete="nickname">
+                    </div>
+                  </div>
+
+                  <div class="field">
+                    <label class="label" for="fb-message">SUA SUGESTÃO <span aria-hidden="true">*</span></label>
+                    <textarea class="input feedback-textarea" id="fb-message" name="message" required minlength="6" maxlength="500" placeholder="O que você gostaria de ver implementado ou melhorado no site?" aria-describedby="fb-status"></textarea>
+                  </div>
+
+                  <p class="status feedback-status" id="fb-status" aria-live="polite"></p>
+
+                  <div class="feedback-actions">
+                    <span class="label">Salvo localmente · Zero rastreadores</span>
+                    <button class="btn btn--primary btn--feedback" type="submit" id="fb-submit">ENVIAR SUGESTÃO →</button>
+                  </div>
+                </form>
+
+                <div class="feedback-history" id="fb-history" hidden>
+                  <div class="feedback-history-header">
+                    <span class="hw-kicker">SUAS SUGESTÕES ENVIADAS (<span id="fb-count">0</span>)</span>
+                    <button class="feedback-clear-btn" type="button" id="fb-clear" title="Limpar histórico local">Limpar</button>
+                  </div>
+                  <ul class="feedback-list" id="fb-list" aria-label="Lista de sugestões salvas"></ul>
+                </div>
               </article>
             </div>
 

@@ -18,6 +18,7 @@ const CONFIG = {
     topics: 'loading.topics',
     theme: 'loading.theme',
     translations: 'loading.tr',
+    feedbacks: 'loading.feedbacks',
   },
 
   // Tradução automática de conteúdo em inglês (descrições da RAWG)
@@ -29,7 +30,7 @@ const CONFIG = {
 
   // Paginação do Acervo (scroll infinito desativado por padrão; ative com true a qualquer momento)
   PAGINATION: {
-    pageSize: 12,
+    pageSize: 15,
     infiniteScroll: false,
   },
 };

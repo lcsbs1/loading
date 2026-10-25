@@ -894,7 +894,7 @@ section { padding-block: var(--section); position: relative; }
   align-items: center;
   gap: .5rem;
   font: 700 0.6875rem/1.2 var(--mono);
-  color: var(--fg);
+  color: #D4D4D4;
   letter-spacing: .03em;
 }
 .spec-footer .rawg-dock-copy {
@@ -1304,6 +1304,131 @@ section { padding-block: var(--section); position: relative; }
 .stat-yellow { color: var(--hw-yellow); }
 .stat-red { color: var(--hw-vermilion); }
 .stat-light { color: #FFFFFF; }
+
+/* ───────── Card 05: Feedback da Comunidade ───────── */
+.spec-card--feedback {
+  border-color: var(--line-strong);
+  transition: border-color .2s ease;
+}
+.spec-card--feedback:focus-within {
+  border-color: var(--hw-vermilion);
+}
+.feedback-form {
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+  margin-top: .35rem;
+}
+.feedback-grid {
+  display: grid;
+  gap: .65rem;
+}
+@media (min-width: 32rem) {
+  .feedback-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.feedback-select {
+  cursor: pointer;
+  appearance: auto;
+}
+.feedback-textarea {
+  min-height: 5.5rem;
+  resize: vertical;
+}
+.feedback-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  padding-top: .4rem;
+}
+.btn--feedback {
+  min-height: 40px;
+  padding: .5rem 1rem;
+}
+.feedback-status {
+  font-family: var(--mono);
+  font-size: var(--t-micro);
+  font-weight: 700;
+  margin-top: -.25rem;
+}
+.feedback-status.is-success {
+  color: #10B981;
+}
+.feedback-status.is-error {
+  color: var(--hw-vermilion);
+}
+
+/* Histórico de Sugestões Enviadas */
+.feedback-history {
+  margin-top: .85rem;
+  padding-top: .75rem;
+  border-top: 1px dashed var(--line-strong);
+}
+.feedback-history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: .5rem;
+}
+.feedback-clear-btn {
+  background: none;
+  border: none;
+  font: 700 var(--t-micro)/1 var(--mono);
+  color: var(--muted);
+  cursor: pointer;
+  text-decoration: underline;
+  padding: .2rem .4rem;
+}
+.feedback-clear-btn:hover {
+  color: var(--hw-vermilion);
+}
+.feedback-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  max-height: 12rem;
+  overflow-y: auto;
+  padding: 0;
+  margin: 0;
+}
+.feedback-item {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: .6rem .75rem;
+  display: flex;
+  flex-direction: column;
+  gap: .25rem;
+  font-size: var(--t-small);
+}
+.feedback-item-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+}
+.feedback-item-meta {
+  font: 700 var(--t-micro)/1.2 var(--mono);
+  color: var(--muted);
+}
+.feedback-item-tag {
+  font: 700 var(--t-micro)/1 var(--mono);
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--line);
+  color: var(--hw-vermilion);
+}
+.feedback-item-msg {
+  font-family: var(--sans);
+  color: var(--fg);
+  line-height: 1.4;
+  word-break: break-word;
+}
 
 /* ───────── 03 · Fórum Comunitário Centralizado & Dock API RAWG ───────── */
 .bento-forum-grid {

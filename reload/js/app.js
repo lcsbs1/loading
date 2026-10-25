@@ -11,8 +11,9 @@
     theme: 'loading.theme',
     featuredData: 'loading.featured.data',
     featuredTime: 'loading.featured.timestamp',
+    feedbacks: 'loading.feedbacks',
   };
-  const PAGE_SIZE = (typeof CONFIG !== 'undefined' && CONFIG.PAGINATION && CONFIG.PAGINATION.pageSize) ? CONFIG.PAGINATION.pageSize : 12;
+  const PAGE_SIZE = (typeof CONFIG !== 'undefined' && CONFIG.PAGINATION && CONFIG.PAGINATION.pageSize) ? CONFIG.PAGINATION.pageSize : 15;
   const ENABLE_INFINITE_SCROLL = (typeof CONFIG !== 'undefined' && CONFIG.PAGINATION && typeof CONFIG.PAGINATION.infiniteScroll === 'boolean') ? CONFIG.PAGINATION.infiniteScroll : false;
 
   /* ── Acervo local (funciona sem chave/offline) ── */
@@ -1175,6 +1176,129 @@
     $(`#topic-${t.id}`)?.scrollIntoView({ block: 'nearest' });
   });
 
+  /* ── 04 · Feedback e Sugestões da Comunidade (Módulo 03 / Bento) ── */
+  const fbCategoryLabels = {
+    site: 'SITE',
+    comunidade: 'COMUNIDADE',
+    acervo: 'ACERVO',
+    outro: 'SUGESTÃO',
+  };
+
+  const loadFeedbacks = () => {
+    try {
+      const stored = JSON.parse(localStorage.getItem(LS.feedbacks));
+      return Array.isArray(stored) ? stored : [];
+    } catch {
+      return [];
+    }
+  };
+
+  let feedbacks = loadFeedbacks();
+  const saveFeedbacks = () => {
+    try {
+      localStorage.setItem(LS.feedbacks, JSON.stringify(feedbacks));
+    } catch {}
+  };
+
+  const fbElements = {
+    form: $('#feedback-form'),
+    category: $('#fb-category'),
+    author: $('#fb-author'),
+    message: $('#fb-message'),
+    status: $('#fb-status'),
+    history: $('#fb-history'),
+    list: $('#fb-list'),
+    count: $('#fb-count'),
+    clearBtn: $('#fb-clear'),
+  };
+
+  function feedbackItemEl(fb) {
+    const catLabel = fbCategoryLabels[fb.category] || 'SUGESTÃO';
+    const timeText = ago(fb.at);
+    return h('li', { class: 'feedback-item', id: `fb-${fb.id}` },
+      h('div', { class: 'feedback-item-top' },
+        h('span', { class: 'feedback-item-meta' }, `${fb.author || 'Anônimo'} · ${timeText}`),
+        h('span', { class: 'feedback-item-tag' }, `[${catLabel}]`)
+      ),
+      h('p', { class: 'feedback-item-msg', text: fb.message })
+    );
+  }
+
+  function renderFeedbacks() {
+    if (!fbElements.history || !fbElements.list) return;
+    if (feedbacks.length === 0) {
+      fbElements.history.hidden = true;
+      fbElements.list.replaceChildren();
+      if (fbElements.count) fbElements.count.textContent = '0';
+      return;
+    }
+    fbElements.history.hidden = false;
+    if (fbElements.count) fbElements.count.textContent = String(feedbacks.length);
+    fbElements.list.replaceChildren(...feedbacks.map(feedbackItemEl));
+  }
+
+  function initFeedbacks() {
+    if (!fbElements.form) return;
+
+    renderFeedbacks();
+
+    fbElements.form.addEventListener('submit', e => {
+      e.preventDefault();
+      const rawMsg = fbElements.message?.value || '';
+      const message = clean(rawMsg, 500);
+
+      if (message.length < 6) {
+        if (fbElements.status) {
+          fbElements.status.textContent = 'A sugestão precisa ter pelo menos 6 caracteres.';
+          fbElements.status.className = 'status feedback-status is-error';
+        }
+        fbElements.message?.setAttribute('aria-invalid', 'true');
+        fbElements.message?.focus();
+        return;
+      }
+
+      fbElements.message?.removeAttribute('aria-invalid');
+      const author = clean(fbElements.author?.value, 40) || 'Anônimo';
+      const category = fbElements.category?.value || 'site';
+
+      const newFeedback = {
+        id: 'fb_' + Date.now().toString(36),
+        author,
+        category,
+        message,
+        at: Date.now(),
+      };
+
+      feedbacks.unshift(newFeedback);
+      saveFeedbacks();
+
+      fbElements.message.value = '';
+      if (fbElements.status) {
+        fbElements.status.textContent = '✔ Sugestão enviada com sucesso! Obrigado pela colaboração.';
+        fbElements.status.className = 'status feedback-status is-success';
+        setTimeout(() => {
+          if (fbElements.status && fbElements.status.textContent.includes('sucesso')) {
+            fbElements.status.textContent = '';
+            fbElements.status.className = 'status feedback-status';
+          }
+        }, 5000);
+      }
+
+      renderFeedbacks();
+    });
+
+    fbElements.clearBtn?.addEventListener('click', () => {
+      if (!confirm('Deseja limpar as sugestões salvas no seu navegador?')) return;
+      feedbacks = [];
+      saveFeedbacks();
+      renderFeedbacks();
+      if (fbElements.status) {
+        fbElements.status.textContent = 'Histórico local limpo.';
+        fbElements.status.className = 'status feedback-status';
+      }
+    });
+  }
+
   /* ── Navegação ativa no scroll (pílula deslizante proporcional à rolagem) ── */
   let scrollTicking = false;
   const siteNav = document.querySelector('.site-nav');
@@ -1273,6 +1397,7 @@
   $('#year').textContent = new Date().getFullYear();
   loadFeaturedTrending();
   renderTopics();
+  initFeedbacks();
   loadGames();
   updateScrollEffects();
 })();
