@@ -42,6 +42,7 @@ const criticalFiles = [
   'reload/assets/snake/body.svg',
   'reload/assets/snake/seed.svg',
   'supabase/migrations/20261028152110_forum_feedback_auth.sql',
+  'supabase/migrations/20261028202100_author_display_from_profile.sql',
   '.env.example',
 ];
 
@@ -163,5 +164,19 @@ if (!serveContent.includes('AUTH_MOVED') || !serveContent.includes('410')) {
   fail('serve.js deve responder 410 em /api/auth/*');
 }
 ok('serve.js retira Auth API local (410)');
+
+if (!serveContent.includes('resolveSafePath') || !serveContent.includes('startsWith(rootWithSep)')) {
+  fail('serve.js deve bloquear path traversal fora da raiz do projeto');
+}
+ok('serve.js bloqueia path traversal');
+
+const authorDisplayMigration = fs.readFileSync(
+  path.join(ROOT, 'supabase/migrations/20261028202100_author_display_from_profile.sql'),
+  'utf8'
+);
+if (!authorDisplayMigration.includes('set_author_display_from_profile')) {
+  fail('migration de author_display ausente/incompleta');
+}
+ok('Migration author_display a partir do profile verificada');
 
 console.log('\nBuild verificado com sucesso.');

@@ -4,7 +4,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-const ROOT = path.join(__dirname, '..');
+const ROOT = path.resolve(path.join(__dirname, '..'));
 const PORT = Number(process.env.PORT) || 3000;
 const HOST = process.env.HOST || '127.0.0.1';
 
@@ -31,13 +31,45 @@ function sendJson(res, status, body) {
   res.end(payload);
 }
 
+function sendText(res, status, body) {
+  res.writeHead(status, { 'Content-Type': 'text/plain; charset=UTF-8' });
+  res.end(body);
+}
+
+function resolveSafePath(urlPath) {
+  if (!urlPath || urlPath.includes('\0')) return null;
+
+  let decoded;
+  try {
+    decoded = decodeURI(urlPath.split('?')[0]);
+  } catch {
+    return null;
+  }
+
+  if (decoded.includes('\0')) return null;
+
+  // Normalize URL path separators and reject absolute Windows paths.
+  let normalized = decoded.replace(/\\/g, '/');
+  if (normalized === '/' || normalized === '') normalized = '/reload/index.html';
+
+  // Strip leading slashes so join stays under ROOT, then resolve.
+  const relative = normalized.replace(/^\/+/, '');
+  const candidate = path.resolve(ROOT, relative);
+  const rootWithSep = ROOT.endsWith(path.sep) ? ROOT : ROOT + path.sep;
+
+  if (candidate !== ROOT && !candidate.startsWith(rootWithSep)) {
+    return null;
+  }
+
+  return candidate;
+}
+
 const server = http.createServer((req, res) => {
   let reqPath;
   try {
     reqPath = decodeURI((req.url || '/').split('?')[0]);
   } catch {
-    res.writeHead(400, { 'Content-Type': 'text/plain; charset=UTF-8' });
-    res.end('Bad Request');
+    sendText(res, 400, 'Bad Request');
     return;
   }
 
@@ -53,18 +85,25 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  if (reqPath === '/' || reqPath === '') reqPath = '/reload/index.html';
-
-  let filePath = path.join(ROOT, reqPath);
+  let filePath = resolveSafePath(req.url || '/');
+  if (!filePath) {
+    sendText(res, 400, 'Bad Request');
+    return;
+  }
 
   if (fs.existsSync(filePath) && fs.statSync(filePath).isDirectory()) {
-    filePath = path.join(filePath, 'index.html');
+    const indexPath = path.resolve(filePath, 'index.html');
+    const rootWithSep = ROOT.endsWith(path.sep) ? ROOT : ROOT + path.sep;
+    if (indexPath !== ROOT && !indexPath.startsWith(rootWithSep)) {
+      sendText(res, 404, '404 Not Found');
+      return;
+    }
+    filePath = indexPath;
   }
 
   fs.stat(filePath, (err, stats) => {
     if (err || !stats.isFile()) {
-      res.writeHead(404, { 'Content-Type': 'text/plain; charset=UTF-8' });
-      res.end('404 Not Found');
+      sendText(res, 404, '404 Not Found');
       return;
     }
 
