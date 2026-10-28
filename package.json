@@ -6,15 +6,14 @@
   "scripts": {
     "build": "node scripts/build.js",
     "test": "node scripts/build.js",
-    "start": "node scripts/serve.js",
-    "test:auth": "node server/tests/auth.test.js"
+    "start": "node scripts/serve.js"
   },
   "keywords": [
     "games",
     "rawg",
-    "snake-game",
-    "minimalism",
-    "canvas"
+    "supabase",
+    "forum",
+    "minimalism"
   ],
   "author": "Loading...",
   "license": "MIT"

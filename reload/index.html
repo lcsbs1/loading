@@ -123,7 +123,7 @@
           <div class="auth-topbar">
             <div class="auth-topbar-left">
               <span class="hw-badge hw-badge--yellow">SISTEMA DE IDENTIDADE // LOADING</span>
-              <span class="hw-meta">JWT HMAC · SCRYPT HASH</span>
+              <span class="hw-meta">SUPABASE AUTH · RLS</span>
             </div>
             <button class="auth-close-btn" id="auth-close" type="button" aria-label="Voltar ao acervo">✕ VOLTAR AO ACERVO</button>
           </div>
@@ -362,7 +362,7 @@
                 <span class="hw-badge hw-badge--dark">FÓRUM // COMUNIDADE</span>
                 <h2 class="bento-heading" id="t-forum">ANÁLISES &amp; TÓPICOS POPULARES</h2>
               </div>
-              <span class="hw-meta">ARMAZENAMENTO LOCAL · ZERO ADS</span>
+              <span class="hw-meta">SUPABASE · CONTA OBRIGATÓRIA · ZERO ADS</span>
             </div>
 
             <!-- Filtro do Fórum: barra de busca instantânea para filtrar tópicos por jogo, título ou autor -->
@@ -381,17 +381,18 @@
                   <span class="form-kicker">+ DIÁRIO DA COMUNIDADE</span>
                   <h3 class="strong" id="t-new">Registrar nova avaliação ou abrir tópico</h3>
                 </div>
-                <span class="hw-meta">LOCALSTORAGE</span>
+                <span class="hw-meta">SUPABASE · CONTA OBRIGATÓRIA</span>
               </div>
+              <p class="muted forum-auth-hint" id="forum-auth-hint">Entre na sua conta para publicar avaliações e respostas.</p>
               <div class="form-row">
-                <div class="field">
-                  <label class="label" for="f-author">SEU PERFIL</label>
-                  <input class="input" id="f-author" name="author" maxlength="40" placeholder="Anônimo" autocomplete="nickname">
-                </div>
                 <div class="field">
                   <label class="label" for="f-game">JOGO / ROM</label>
                   <input class="input" id="f-game" name="game" maxlength="80" list="game-list" placeholder="Ex.: Elden Ring">
                   <datalist id="game-list"></datalist>
+                </div>
+                <div class="field">
+                  <label class="label" for="f-author-display">PUBLICANDO COMO</label>
+                  <input class="input" id="f-author-display" type="text" readonly value="Faça login para publicar" aria-live="polite">
                 </div>
               </div>
               <div class="field">
@@ -404,8 +405,8 @@
               </div>
               <p class="status" id="f-err" aria-live="assertive"></p>
               <div class="form-actions-bar">
-                <span class="label">Salvo localmente no seu navegador · Zero rastreadores.</span>
-                <button class="btn btn--primary" type="submit">PUBLICAR NO FÓRUM →</button>
+                <span class="label">Registro permanente na comunidade · Conta obrigatória.</span>
+                <button class="btn btn--primary" type="submit" id="topic-submit">PUBLICAR NO FÓRUM →</button>
               </div>
             </form>
           </div>
@@ -490,8 +491,8 @@
                       </select>
                     </div>
                     <div class="field">
-                      <label class="label" for="fb-author">SEU NOME OU APELIDO</label>
-                      <input class="input" id="fb-author" name="author" maxlength="40" placeholder="Anônimo / @membro" autocomplete="nickname">
+                      <label class="label" for="fb-author-display">ENVIANDO COMO</label>
+                      <input class="input" id="fb-author-display" type="text" readonly value="Faça login para enviar" aria-live="polite">
                     </div>
                   </div>
 
@@ -503,17 +504,16 @@
                   <p class="status feedback-status" id="fb-status" aria-live="polite"></p>
 
                   <div class="feedback-actions">
-                    <span class="label">Salvo localmente · Zero rastreadores</span>
+                    <span class="label">Registro permanente · Conta obrigatória</span>
                     <button class="btn btn--primary btn--feedback" type="submit" id="fb-submit">ENVIAR SUGESTÃO →</button>
                   </div>
                 </form>
 
                 <div class="feedback-history" id="fb-history" hidden>
                   <div class="feedback-history-header">
-                    <span class="hw-kicker">SUAS SUGESTÕES ENVIADAS (<span id="fb-count">0</span>)</span>
-                    <button class="feedback-clear-btn" type="button" id="fb-clear" title="Limpar histórico local">Limpar</button>
+                    <span class="hw-kicker">SUGESTÕES DA COMUNIDADE (<span id="fb-count">0</span>)</span>
                   </div>
-                  <ul class="feedback-list" id="fb-list" aria-label="Lista de sugestões salvas"></ul>
+                  <ul class="feedback-list" id="fb-list" aria-label="Lista de sugestões da comunidade"></ul>
                 </div>
               </article>
             </div>
@@ -593,7 +593,10 @@
   </button>
 
   <!-- Chaves de API e Scripts modularizados -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.8/dist/umd/supabase.min.js"></script>
   <script src="js/config.js"></script>
+  <script src="js/config.local.js"></script>
+  <script src="js/supabaseClient.js"></script>
   <script src="js/i18n.js"></script>
   <script src="js/app.js"></script>
 </body>

@@ -3,10 +3,10 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
-const { handleApi, isAuthApi } = require('../server');
-const config = require('../server/config');
 
 const ROOT = path.join(__dirname, '..');
+const PORT = Number(process.env.PORT) || 3000;
+const HOST = process.env.HOST || '127.0.0.1';
 
 const MIME_TYPES = {
   '.html': 'text/html; charset=UTF-8',
@@ -22,7 +22,16 @@ const MIME_TYPES = {
   '.woff2': 'font/woff2',
 };
 
-const server = http.createServer(async (req, res) => {
+function sendJson(res, status, body) {
+  const payload = JSON.stringify(body);
+  res.writeHead(status, {
+    'Content-Type': 'application/json; charset=UTF-8',
+    'Content-Length': Buffer.byteLength(payload),
+  });
+  res.end(payload);
+}
+
+const server = http.createServer((req, res) => {
   let reqPath;
   try {
     reqPath = decodeURI((req.url || '/').split('?')[0]);
@@ -34,8 +43,13 @@ const server = http.createServer(async (req, res) => {
 
   const pathname = reqPath.replace(/\/+$/, '') || '/';
 
-  if (isAuthApi(pathname) || pathname.startsWith('/api/auth')) {
-    await handleApi(req, res);
+  if (pathname === '/api/auth' || pathname.startsWith('/api/auth/')) {
+    sendJson(res, 410, {
+      error: {
+        code: 'AUTH_MOVED',
+        message: 'Auth moved to Supabase. Use the browser client (supabase.auth).',
+      },
+    });
     return;
   }
 
@@ -64,8 +78,8 @@ const server = http.createServer(async (req, res) => {
   });
 });
 
-server.listen(config.port, config.host, () => {
-  console.log(`\n🚀 Servidor local ativo em: http://localhost:${config.port}`);
-  console.log(`⚡ Aplicação pronta em: http://localhost:${config.port}/reload/index.html`);
-  console.log(`🔐 Auth API em: http://localhost:${config.port}/api/auth/*\n`);
+server.listen(PORT, HOST, () => {
+  console.log(`\nServidor local ativo em: http://localhost:${PORT}`);
+  console.log(`Aplicacao: http://localhost:${PORT}/reload/index.html`);
+  console.log(`Auth/forum/feedback: Supabase (client-side)\n`);
 });

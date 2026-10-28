@@ -12,15 +12,15 @@ const CONFIG = {
   // Endpoint base da API RAWG
   API_BASE_URL: 'https://api.rawg.io/api',
 
+  // Supabase (Auth + fórum/feedback permanentes). Anon/publishable key é segura no browser.
+  SUPABASE_URL: 'https://kljsbctjldyanqakqevo.supabase.co',
+  SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtsanNiY3RqbGR5YW5xYWtxZXZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMyMDAyODYsImV4cCI6MjEwODc3NjI4Nn0.cA62lQp0GhHBIkU_Dp9yIoXbLXuj5hsqQWx7hplb-QM',
+
   // Identificadores de armazenamento local (localStorage)
   STORAGE_KEYS: {
     key: 'loading.rawgKey',
-    topics: 'loading.topics',
     theme: 'loading.theme',
     translations: 'loading.tr',
-    feedbacks: 'loading.feedbacks',
-    token: 'loading.token',
-    user: 'loading.user',
   },
 
   // Tradução automática de conteúdo em inglês (descrições da RAWG)

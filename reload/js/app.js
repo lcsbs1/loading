@@ -7,12 +7,67 @@
   const API = (typeof CONFIG !== 'undefined' && CONFIG.API_BASE_URL) ? CONFIG.API_BASE_URL : 'https://api.rawg.io/api';
   const LS = (typeof CONFIG !== 'undefined' && CONFIG.STORAGE_KEYS) ? CONFIG.STORAGE_KEYS : {
     key: 'loading.rawgKey',
-    topics: 'loading.topics',
     theme: 'loading.theme',
     featuredData: 'loading.featured.data',
     featuredTime: 'loading.featured.timestamp',
-    feedbacks: 'loading.feedbacks',
   };
+
+  const getSb = () => (typeof LoadingSupabase !== 'undefined' ? LoadingSupabase.getClient() : null);
+
+  let authSessionUser = null;
+
+  function displayNameOf(user) {
+    if (!user) return '';
+    return user.displayName || user.name || [user.firstName, user.lastName].filter(Boolean).join(' ') || (user.email ? user.email.split('@')[0] : 'membro');
+  }
+
+  function mapProfileUser(profile, authUser) {
+    if (!authUser) return null;
+    const firstName = profile?.first_name || authUser.user_metadata?.first_name || '';
+    const lastName = profile?.last_name || authUser.user_metadata?.last_name || '';
+    const displayName = profile?.display_name || [firstName, lastName].filter(Boolean).join(' ') || (authUser.email || '').split('@')[0] || 'membro';
+    return {
+      id: authUser.id,
+      email: authUser.email || '',
+      firstName,
+      lastName,
+      name: displayName,
+      displayName,
+      createdAt: profile?.created_at || authUser.created_at || null,
+    };
+  }
+
+  async function fetchProfileFor(authUser) {
+    const sb = getSb();
+    if (!sb || !authUser) return mapProfileUser(null, authUser);
+    const { data } = await sb.from('profiles').select('id, first_name, last_name, display_name, created_at').eq('id', authUser.id).maybeSingle();
+    return mapProfileUser(data, authUser);
+  }
+
+  function requireAuth(message) {
+    if (authSessionUser) return true;
+    if (message) {
+      const err = $('#f-err');
+      const fb = $('#fb-status');
+      if (err) err.textContent = message;
+      if (fb) {
+        fb.textContent = message;
+        fb.className = 'status feedback-status is-error';
+      }
+    }
+    window.location.hash = '#auth';
+    return false;
+  }
+
+  function syncAuthorDisplays() {
+    const label = authSessionUser ? displayNameOf(authSessionUser) : 'Faça login para publicar';
+    const fDisp = $('#f-author-display');
+    const fbDisp = $('#fb-author-display');
+    if (fDisp) fDisp.value = label;
+    if (fbDisp) fbDisp.value = authSessionUser ? label : 'Faça login para enviar';
+    const hint = $('#forum-auth-hint');
+    if (hint) hint.hidden = Boolean(authSessionUser);
+  }
   const PAGE_SIZE = (typeof CONFIG !== 'undefined' && CONFIG.PAGINATION && CONFIG.PAGINATION.pageSize) ? CONFIG.PAGINATION.pageSize : 15;
   const ENABLE_INFINITE_SCROLL = (typeof CONFIG !== 'undefined' && CONFIG.PAGINATION && typeof CONFIG.PAGINATION.infiniteScroll === 'boolean') ? CONFIG.PAGINATION.infiniteScroll : false;
 
@@ -1057,38 +1112,8 @@
     });
   }
 
-  /* ── Avaliações & Fórum (Estilo Popular Reviews do Letterboxd) ── */
-  const now = Date.now(), H = 3600e3;
-  const SEED_TOPICS = [
-    { id: 't1', pinned: true, author: 'Loading...', game: 'Elden Ring', title: 'Boas-vindas: compartilhe suas avaliações e listas',
-      body: 'Abra a ficha de qualquer jogo no acervo e clique em “Escrever avaliação no fórum” para publicar sua análise.\nCite a plataforma em que jogou e evite spoilers no título.', at: now - 72 * H,
-      replies: [
-        { author: 'marina_ds', body: 'Excelente iniciativa! Comecei minha lista pelos RPGs de PS2 e a nostalgia bateu forte.', at: now - 48 * H },
-        { author: 'tarnished_br', body: 'Acabei de fechar a DLC no PC. A direção de arte do Reino das Sombras é absurda.', at: now - 28 * H },
-      ] },
-    { id: 't2', author: 'ana_retro', game: 'Half-Life 2', title: 'Half-Life 2 ainda se sustenta em 2026?',
-      body: 'Rejoguei no PC e a física continua impressionante. O ritmo de Ravenholm é o melhor da série pra mim.', at: now - 20 * H,
-      replies: [{ author: 'gordon', body: 'Envelheceu muito bem. Os episódios valem a pena logo depois.', at: now - 18 * H }] },
-    { id: 't3', author: 'lucas', game: 'Hollow Knight', title: 'Direção de arte impecável e mapa interconectado',
-      body: 'A transição de Dirtmouth para Greenpath com a trilha de Christopher Larkin é um dos momentos mais marcantes dos jogos independentes.', at: now - 5 * H,
-      replies: [
-        { author: 'hornet_fan', body: 'Concordo demais! A Cidade das Lágrimas com a chuva caindo no fundo e o piano tocando é inesquecível.', at: now - 3 * H },
-      ] },
-  ];
-  const loadTopics = () => {
-    try {
-      const t = JSON.parse(localStorage.getItem(LS.topics));
-      if (Array.isArray(t)) {
-        t.forEach(item => {
-          if (item && item.author === 'Reload') item.author = 'Loading...';
-        });
-        return t;
-      }
-    } catch {}
-    return SEED_TOPICS;
-  };
-  let topics = loadTopics();
-  const saveTopics = () => { try { localStorage.setItem(LS.topics, JSON.stringify(topics)); } catch {} };
+  /* ── Avaliações & Fórum (Supabase permanente) ── */
+  let topics = [];
 
   const rtf = new Intl.RelativeTimeFormat('pt-BR', { numeric: 'auto' });
   const ago = t => {
@@ -1098,7 +1123,49 @@
     return 'agora';
   };
   const clean = (s, max) => String(s || '').replace(/\s+\n/g, '\n').trim().slice(0, max);
-  const lastActivity = t => Math.max(t.at, ...t.replies.map(r => r.at));
+  const lastActivity = t => Math.max(t.at, ...(t.replies.length ? t.replies.map(r => r.at) : [t.at]));
+
+  function mapTopicRow(row) {
+    const replies = (row.forum_replies || [])
+      .slice()
+      .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+      .map(r => ({
+        id: r.id,
+        author: r.author_display,
+        authorId: r.author_id,
+        body: r.body,
+        at: new Date(r.created_at).getTime(),
+      }));
+    return {
+      id: row.id,
+      author: row.author_display,
+      authorId: row.author_id,
+      game: row.game || 'Geral',
+      title: row.title,
+      body: row.body,
+      pinned: Boolean(row.pinned),
+      at: new Date(row.created_at).getTime(),
+      replies,
+    };
+  }
+
+  async function loadTopicsFromServer() {
+    const sb = getSb();
+    if (!sb) {
+      topics = [];
+      return;
+    }
+    const { data, error } = await sb
+      .from('forum_topics')
+      .select('id, author_id, author_display, game, title, body, pinned, created_at, forum_replies(id, author_id, author_display, body, created_at)')
+      .order('created_at', { ascending: false });
+    if (error) {
+      console.error('[forum] load', error);
+      topics = [];
+      return;
+    }
+    topics = (data || []).map(mapTopicRow);
+  }
 
   function findPosterForGame(gameName) {
     if (!gameName) return null;
@@ -1113,16 +1180,33 @@
   function topicEl(t) {
     const replyForm = h('form', { class: 'reply-form', novalidate: true },
       h('label', { class: 'sr-only', for: `r-${t.id}`, text: `Responder a ${t.title}` }),
-      h('textarea', { class: 'input', id: `r-${t.id}`, name: 'body', maxlength: '1000', required: true, placeholder: 'Comentar nesta avaliação…' }),
+      h('textarea', { class: 'input', id: `r-${t.id}`, name: 'body', maxlength: '1000', required: true, placeholder: authSessionUser ? 'Comentar nesta avaliação…' : 'Entre na conta para comentar…' }),
       h('div', {}, h('button', { class: 'btn', type: 'submit', text: 'Responder' })));
-    replyForm.addEventListener('submit', e => {
+    replyForm.addEventListener('submit', async e => {
       e.preventDefault();
+      if (!requireAuth('Entre na sua conta para responder neste tópico.')) return;
       const field = replyForm.elements.body;
       const body = clean(field.value, 1000);
       if (body.length < 2) { field.focus(); return; }
-      const author = clean($('#f-author').value, 40) || 'Anônimo';
-      t.replies.push({ author, body, at: Date.now() });
-      saveTopics(); renderTopics(t.id);
+      const sb = getSb();
+      if (!sb) {
+        els.fErr.textContent = 'Supabase não configurado.';
+        return;
+      }
+      const { error } = await sb.from('forum_replies').insert({
+        topic_id: t.id,
+        author_id: authSessionUser.id,
+        author_display: displayNameOf(authSessionUser),
+        body,
+      });
+      if (error) {
+        els.fErr.textContent = error.message || 'Não foi possível publicar a resposta.';
+        return;
+      }
+      field.value = '';
+      els.fErr.textContent = 'Resposta publicada.';
+      await loadTopicsFromServer();
+      renderTopics(t.id);
     });
 
     const n = t.replies.length;
@@ -1161,45 +1245,79 @@
   }
 
   function renderTopics(openId) {
-    const q = els.forumQ.value.trim().toLowerCase();
+    if (!els.topics) return;
+    const q = (els.forumQ?.value || '').trim().toLowerCase();
     const list = topics
       .filter(t => !q || [t.title, t.game, t.author, t.body].join(' ').toLowerCase().includes(q))
       .sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0) || lastActivity(b) - lastActivity(a));
-    els.topics.replaceChildren(...(list.length ? list.map(topicEl) : [h('p', { class: 'muted empty', text: 'Nenhuma avaliação encontrada.' })]));
+    const emptyMsg = getSb()
+      ? (q ? 'Nenhuma avaliação encontrada.' : 'Nenhuma avaliação ainda. Seja o primeiro a publicar (é preciso entrar na conta).')
+      : 'Configure o Supabase para carregar o fórum.';
+    els.topics.replaceChildren(...(list.length ? list.map(topicEl) : [h('p', { class: 'muted empty', text: emptyMsg })]));
     topics.forEach(t => t.game && knownGames.add(t.game));
     refreshDatalist();
     if (openId) {
       const d = $(`#topic-${openId} details`);
-      if (d) { d.open = true; d.querySelector('summary').focus(); }
+      if (d) { d.open = true; d.querySelector('summary')?.focus(); }
     }
   }
 
   let lastDatalistSize = 0;
   function refreshDatalist() {
+    if (!els.gameList) return;
     if (knownGames.size === lastDatalistSize) return;
     lastDatalistSize = knownGames.size;
     els.gameList.replaceChildren(...[...knownGames].sort().slice(0, 300).map(v => h('option', { value: v })));
   }
 
-  els.forumQ.addEventListener('input', debounce(() => renderTopics(), 200));
+  els.forumQ?.addEventListener('input', debounce(() => renderTopics(), 200));
 
-  els.form.addEventListener('submit', e => {
+  els.form?.addEventListener('submit', async e => {
     e.preventDefault();
+    if (!requireAuth('Entre na sua conta para publicar no fórum.')) return;
     const f = els.form.elements;
-    const title = clean(f.title.value, 120), body = clean(f.body.value, 2000);
+    const title = clean(f.title.value, 120);
+    const body = clean(f.body.value, 2000);
+    const game = clean(f.game.value, 80) || 'Geral';
     if (title.length < 4) { els.fErr.textContent = 'O título precisa de pelo menos 4 caracteres.'; f.title.setAttribute('aria-invalid', 'true'); f.title.focus(); return; }
     if (body.length < 10) { els.fErr.textContent = 'A avaliação precisa de pelo menos 10 caracteres.'; f.body.setAttribute('aria-invalid', 'true'); f.body.focus(); return; }
     f.title.removeAttribute('aria-invalid'); f.body.removeAttribute('aria-invalid');
-    const t = { id: 'u' + Date.now().toString(36), author: clean(f.author.value, 40) || 'Anônimo', game: clean(f.game.value, 80) || 'Geral', title, body, at: Date.now(), replies: [] };
-    topics.unshift(t); saveTopics();
-    f.title.value = ''; f.body.value = ''; f.game.value = '';
+
+    const sb = getSb();
+    if (!sb) {
+      els.fErr.textContent = 'Supabase não configurado.';
+      return;
+    }
+
+    const submitBtn = $('#topic-submit');
+    if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'PUBLICANDO…'; }
+
+    const { data, error } = await sb.from('forum_topics').insert({
+      author_id: authSessionUser.id,
+      author_display: displayNameOf(authSessionUser),
+      game,
+      title,
+      body,
+    }).select('id').single();
+
+    if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'PUBLICAR NO FÓRUM →'; }
+
+    if (error) {
+      els.fErr.textContent = error.message || 'Não foi possível publicar a avaliação.';
+      return;
+    }
+
+    f.title.value = '';
+    f.body.value = '';
+    f.game.value = '';
     els.fErr.textContent = 'Avaliação publicada.';
-    els.forumQ.value = '';
-    renderTopics();
-    $(`#topic-${t.id}`)?.scrollIntoView({ block: 'nearest' });
+    if (els.forumQ) els.forumQ.value = '';
+    await loadTopicsFromServer();
+    renderTopics(data?.id);
+    if (data?.id) $(`#topic-${data.id}`)?.scrollIntoView({ block: 'nearest' });
   });
 
-  /* ── 04 · Feedback e Sugestões da Comunidade (Módulo 03 / Bento) ── */
+  /* ── 04 · Feedback e Sugestões da Comunidade (Supabase) ── */
   const fbCategoryLabels = {
     site: 'SITE',
     comunidade: 'COMUNIDADE',
@@ -1207,32 +1325,16 @@
     outro: 'SUGESTÃO',
   };
 
-  const loadFeedbacks = () => {
-    try {
-      const stored = JSON.parse(localStorage.getItem(LS.feedbacks));
-      return Array.isArray(stored) ? stored : [];
-    } catch {
-      return [];
-    }
-  };
-
-  let feedbacks = loadFeedbacks();
-  const saveFeedbacks = () => {
-    try {
-      localStorage.setItem(LS.feedbacks, JSON.stringify(feedbacks));
-    } catch {}
-  };
+  let feedbacks = [];
 
   const fbElements = {
     form: $('#feedback-form'),
     category: $('#fb-category'),
-    author: $('#fb-author'),
     message: $('#fb-message'),
     status: $('#fb-status'),
     history: $('#fb-history'),
     list: $('#fb-list'),
     count: $('#fb-count'),
-    clearBtn: $('#fb-clear'),
   };
 
   function feedbackItemEl(fb) {
@@ -1240,7 +1342,7 @@
     const timeText = ago(fb.at);
     return h('li', { class: 'feedback-item', id: `fb-${fb.id}` },
       h('div', { class: 'feedback-item-top' },
-        h('span', { class: 'feedback-item-meta' }, `${fb.author || 'Anônimo'} · ${timeText}`),
+        h('span', { class: 'feedback-item-meta' }, `${fb.author || 'membro'} · ${timeText}`),
         h('span', { class: 'feedback-item-tag' }, `[${catLabel}]`)
       ),
       h('p', { class: 'feedback-item-msg', text: fb.message })
@@ -1260,13 +1362,40 @@
     fbElements.list.replaceChildren(...feedbacks.map(feedbackItemEl));
   }
 
+  async function loadFeedbacksFromServer() {
+    const sb = getSb();
+    if (!sb) {
+      feedbacks = [];
+      return;
+    }
+    const { data, error } = await sb
+      .from('feedbacks')
+      .select('id, author_id, author_display, category, message, created_at')
+      .order('created_at', { ascending: false });
+    if (error) {
+      console.error('[feedback]', error);
+      feedbacks = [];
+      return;
+    }
+    feedbacks = (data || []).map(row => ({
+      id: row.id,
+      author: row.author_display,
+      authorId: row.author_id,
+      category: row.category,
+      message: row.message,
+      at: new Date(row.created_at).getTime(),
+    }));
+  }
+
   function initFeedbacks() {
     if (!fbElements.form) return;
 
     renderFeedbacks();
 
-    fbElements.form.addEventListener('submit', e => {
+    fbElements.form.addEventListener('submit', async e => {
       e.preventDefault();
+      if (!requireAuth('Entre na sua conta para enviar uma sugestão.')) return;
+
       const rawMsg = fbElements.message?.value || '';
       const message = clean(rawMsg, 500);
 
@@ -1281,19 +1410,38 @@
       }
 
       fbElements.message?.removeAttribute('aria-invalid');
-      const author = clean(fbElements.author?.value, 40) || 'Anônimo';
       const category = fbElements.category?.value || 'site';
+      const sb = getSb();
+      if (!sb) {
+        if (fbElements.status) {
+          fbElements.status.textContent = 'Supabase não configurado.';
+          fbElements.status.className = 'status feedback-status is-error';
+        }
+        return;
+      }
 
-      const newFeedback = {
-        id: 'fb_' + Date.now().toString(36),
-        author,
+      if (fbElements.form.querySelector('#fb-submit')) {
+        const btn = $('#fb-submit');
+        if (btn) { btn.disabled = true; btn.textContent = 'ENVIANDO…'; }
+      }
+
+      const { error } = await sb.from('feedbacks').insert({
+        author_id: authSessionUser.id,
+        author_display: displayNameOf(authSessionUser),
         category,
         message,
-        at: Date.now(),
-      };
+      });
 
-      feedbacks.unshift(newFeedback);
-      saveFeedbacks();
+      const btn = $('#fb-submit');
+      if (btn) { btn.disabled = false; btn.textContent = 'ENVIAR SUGESTÃO →'; }
+
+      if (error) {
+        if (fbElements.status) {
+          fbElements.status.textContent = error.message || 'Não foi possível enviar a sugestão.';
+          fbElements.status.className = 'status feedback-status is-error';
+        }
+        return;
+      }
 
       fbElements.message.value = '';
       if (fbElements.status) {
@@ -1307,19 +1455,16 @@
         }, 5000);
       }
 
+      await loadFeedbacksFromServer();
       renderFeedbacks();
     });
+  }
 
-    fbElements.clearBtn?.addEventListener('click', () => {
-      if (!confirm('Deseja limpar as sugestões salvas no seu navegador?')) return;
-      feedbacks = [];
-      saveFeedbacks();
-      renderFeedbacks();
-      if (fbElements.status) {
-        fbElements.status.textContent = 'Histórico local limpo.';
-        fbElements.status.className = 'status feedback-status';
-      }
-    });
+  async function refreshCommunityData() {
+    await Promise.all([loadTopicsFromServer(), loadFeedbacksFromServer()]);
+    renderTopics();
+    renderFeedbacks();
+    syncAuthorDisplays();
   }
 
   /* ── Navegação ativa no scroll (pílula deslizante proporcional à rolagem) ── */
@@ -1419,13 +1564,11 @@
 
   $('#year').textContent = new Date().getFullYear();
   loadFeaturedTrending();
-  renderTopics();
   initFeedbacks();
+  syncAuthorDisplays();
+  refreshCommunityData();
 
-  /* ── 05 · Roteador SPA de Vertentes (#auth vs Catálogo) & Autenticação Unificada ── */
-  const AUTH_TOKEN_KEY = (LS && LS.token) || 'loading.token';
-  const AUTH_USER_KEY = (LS && LS.user) || 'loading.user';
-
+  /* ── 05 · Roteador SPA de Vertentes (#auth vs Catálogo) & Autenticação Supabase ── */
   const authEls = {
     btn: $('#auth-btn'),
     btnIcon: $('#auth-btn .auth-btn-icon'),
@@ -1456,7 +1599,6 @@
     },
   };
 
-  let authSessionUser = null;
   let lastCatalogHash = '#inicio';
 
   function formatAuthHandle(user) {
@@ -1467,6 +1609,7 @@
 
   function updateHeaderAuthUI(user) {
     authSessionUser = user || null;
+    syncAuthorDisplays();
     if (!authEls.btn) return;
     if (user) {
       const handle = formatAuthHandle(user);
@@ -1475,12 +1618,6 @@
       authEls.btn.setAttribute('title', `Conectado como ${user.name || user.email} · Clique para sair`);
       if (authEls.btnIcon) authEls.btnIcon.textContent = '👤';
       if (authEls.btnLabel) authEls.btnLabel.textContent = `@${handle} · SAIR`;
-
-      const displayName = user.name || [user.firstName, user.lastName].filter(Boolean).join(' ') || handle;
-      const fAuthor = $('#f-author');
-      const fbAuthor = $('#fb-author');
-      if (fAuthor && !fAuthor.value) fAuthor.value = displayName;
-      if (fbAuthor && !fbAuthor.value) fbAuthor.value = displayName;
     } else {
       authEls.btn.classList.remove('is-logged');
       authEls.btn.setAttribute('aria-label', 'Entrar ou criar conta');
@@ -1570,22 +1707,19 @@
     }
   }
 
-  function parseAuthApiError(payload, status) {
-    const errObj = (payload && typeof payload.error === 'object' && payload.error) ? payload.error : payload;
-    const code = errObj && typeof errObj.code === 'string' ? errObj.code : '';
-    const byCode = {
-      EMAIL_TAKEN: 'Este e-mail já está cadastrado.',
-      INVALID_CREDENTIALS: 'E-mail ou senha incorretos.',
-      UNAUTHORIZED: 'Sessão expirada. Entre novamente.',
-      VALIDATION_ERROR: 'Verifique os campos destacados e tente de novo.',
-    };
-    const message = (errObj && errObj.message)
-      || (typeof payload?.error === 'string' ? payload.error : '')
-      || payload?.message
-      || byCode[code]
-      || (status === 409 ? byCode.EMAIL_TAKEN : status === 401 ? byCode.INVALID_CREDENTIALS : 'Não foi possível concluir a solicitação.');
-    const fields = (errObj && errObj.fields && typeof errObj.fields === 'object') ? errObj.fields : {};
-    return { message, fields };
+  function mapSupabaseAuthError(error, fallback) {
+    const msg = (error && error.message) ? String(error.message) : '';
+    const lower = msg.toLowerCase();
+    if (lower.includes('already registered') || lower.includes('user already')) {
+      return 'Este e-mail já está cadastrado.';
+    }
+    if (lower.includes('invalid login') || lower.includes('invalid credentials')) {
+      return 'E-mail ou senha incorretos.';
+    }
+    if (lower.includes('email not confirmed')) {
+      return 'Confirme seu e-mail antes de entrar (verifique a caixa de entrada).';
+    }
+    return msg || fallback || 'Não foi possível concluir a solicitação.';
   }
 
   async function handleLoginSubmit(e) {
@@ -1614,44 +1748,25 @@
       return;
     }
 
+    const sb = getSb();
+    if (!sb) {
+      setAuthAlert(authEls.loginAlert, 'Supabase não configurado. Defina SUPABASE_URL e SUPABASE_ANON_KEY.', 'error');
+      return;
+    }
+
     if (authEls.loginSubmit) {
       authEls.loginSubmit.disabled = true;
       authEls.loginSubmit.textContent = 'AUTENTICANDO…';
     }
 
     try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-      const data = await res.json().catch(() => ({}));
-
-      if (!res.ok) {
-        const { message, fields } = parseAuthApiError(data, res.status);
-        if (fields.email && authEls.errs.loginEmail) {
-          authEls.errs.loginEmail.textContent = fields.email;
-          authEls.errs.loginEmail.hidden = false;
-          authEls.loginEmail?.setAttribute('aria-invalid', 'true');
-        }
-        if (fields.password && authEls.errs.loginPassword) {
-          authEls.errs.loginPassword.textContent = fields.password;
-          authEls.errs.loginPassword.hidden = false;
-          authEls.loginPassword?.setAttribute('aria-invalid', 'true');
-        }
-        setAuthAlert(authEls.loginAlert, message, 'error');
+      const { data, error } = await sb.auth.signInWithPassword({ email, password });
+      if (error) {
+        setAuthAlert(authEls.loginAlert, mapSupabaseAuthError(error, 'E-mail ou senha incorretos.'), 'error');
         return;
       }
 
-      const token = data.accessToken || data.token;
-      const user = data.user;
-      if (token) {
-        try { localStorage.setItem(AUTH_TOKEN_KEY, token); } catch {}
-      }
-      if (user) {
-        try { localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user)); } catch {}
-      }
-
+      const user = await fetchProfileFor(data.user);
       updateHeaderAuthUI(user);
       setAuthAlert(authEls.loginAlert, `✔ Bem-vindo de volta, ${user?.firstName || user?.name || email}!`, 'success');
       authEls.formLogin?.reset();
@@ -1661,8 +1776,8 @@
           window.location.hash = lastCatalogHash || '#inicio';
         }
       }, 600);
-    } catch {
-      setAuthAlert(authEls.loginAlert, 'Erro de conexão com /api/auth/login. Verifique se o servidor está ativo.', 'error');
+    } catch (err) {
+      setAuthAlert(authEls.loginAlert, mapSupabaseAuthError(err, 'Erro de conexão com o Supabase Auth.'), 'error');
     } finally {
       if (authEls.loginSubmit) {
         authEls.loginSubmit.disabled = false;
@@ -1715,6 +1830,12 @@
     }
     if (hasErr) return;
 
+    const sb = getSb();
+    if (!sb) {
+      setAuthAlert(authEls.regAlert, 'Supabase não configurado. Defina SUPABASE_URL e SUPABASE_ANON_KEY.', 'error');
+      return;
+    }
+
     if (authEls.regSubmit) {
       authEls.regSubmit.disabled = true;
       authEls.regSubmit.textContent = 'REGISTRANDO PERFIL…';
@@ -1722,59 +1843,50 @@
 
     try {
       const name = `${firstName} ${lastName}`.trim();
-      const res = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify({ firstName, lastName, name, email, password }),
+      const { data, error } = await sb.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            first_name: firstName,
+            last_name: lastName,
+            name,
+          },
+        },
       });
-      const data = await res.json().catch(() => ({}));
 
-      if (!res.ok) {
-        const { message, fields } = parseAuthApiError(data, res.status);
-        if (fields.firstName && authEls.errs.regFirstName) {
-          authEls.errs.regFirstName.textContent = fields.firstName;
-          authEls.errs.regFirstName.hidden = false;
-          authEls.regFirstName?.setAttribute('aria-invalid', 'true');
-        }
-        if (fields.lastName && authEls.errs.regLastName) {
-          authEls.errs.regLastName.textContent = fields.lastName;
-          authEls.errs.regLastName.hidden = false;
-          authEls.regLastName?.setAttribute('aria-invalid', 'true');
-        }
-        if (fields.email && authEls.errs.regEmail) {
-          authEls.errs.regEmail.textContent = fields.email;
+      if (error) {
+        const message = mapSupabaseAuthError(error, 'Não foi possível criar a conta.');
+        if (message.includes('já está cadastrado') && authEls.errs.regEmail) {
+          authEls.errs.regEmail.textContent = message;
           authEls.errs.regEmail.hidden = false;
           authEls.regEmail?.setAttribute('aria-invalid', 'true');
-        }
-        if (fields.password && authEls.errs.regPassword) {
-          authEls.errs.regPassword.textContent = fields.password;
-          authEls.errs.regPassword.hidden = false;
-          authEls.regPassword?.setAttribute('aria-invalid', 'true');
         }
         setAuthAlert(authEls.regAlert, message, 'error');
         return;
       }
 
-      const token = data.accessToken || data.token;
-      const user = data.user;
-      if (token) {
-        try { localStorage.setItem(AUTH_TOKEN_KEY, token); } catch {}
+      if (data.session && data.user) {
+        const user = await fetchProfileFor(data.user);
+        updateHeaderAuthUI(user);
+        setAuthAlert(authEls.regAlert, `✔ Conta criada com sucesso! Bem-vindo, ${user?.firstName || name}!`, 'success');
+        authEls.formRegister?.reset();
+        setTimeout(() => {
+          if (window.location.hash.startsWith('#auth')) {
+            window.location.hash = lastCatalogHash || '#inicio';
+          }
+        }, 650);
+      } else {
+        switchAuthTab('login');
+        setAuthAlert(
+          authEls.loginAlert,
+          '✔ Conta criada. Se a confirmação de e-mail estiver ativa, confirme antes de entrar; caso contrário, faça login.',
+          'success'
+        );
+        authEls.formRegister?.reset();
       }
-      if (user) {
-        try { localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user)); } catch {}
-      }
-
-      updateHeaderAuthUI(user);
-      setAuthAlert(authEls.regAlert, `✔ Conta criada com sucesso! Bem-vindo, ${user?.firstName || name}!`, 'success');
-      authEls.formRegister?.reset();
-
-      setTimeout(() => {
-        if (window.location.hash.startsWith('#auth')) {
-          window.location.hash = lastCatalogHash || '#inicio';
-        }
-      }, 650);
-    } catch {
-      setAuthAlert(authEls.regAlert, 'Erro de conexão com /api/auth/register. Verifique se o servidor está ativo.', 'error');
+    } catch (err) {
+      setAuthAlert(authEls.regAlert, mapSupabaseAuthError(err, 'Erro de conexão com o Supabase Auth.'), 'error');
     } finally {
       if (authEls.regSubmit) {
         authEls.regSubmit.disabled = false;
@@ -1783,10 +1895,10 @@
     }
   }
 
-  function handleLogout() {
+  async function handleLogout() {
+    const sb = getSb();
     try {
-      localStorage.removeItem(AUTH_TOKEN_KEY);
-      localStorage.removeItem(AUTH_USER_KEY);
+      if (sb) await sb.auth.signOut();
     } catch {}
     updateHeaderAuthUI(null);
     if (window.location.hash.startsWith('#auth')) {
@@ -1796,45 +1908,34 @@
   }
 
   async function restoreAuthSession() {
-    let token = null;
-    let cachedUser = null;
-    try {
-      token = localStorage.getItem(AUTH_TOKEN_KEY);
-      const rawUser = localStorage.getItem(AUTH_USER_KEY);
-      if (rawUser) cachedUser = JSON.parse(rawUser);
-    } catch {}
-
-    if (!token) {
+    const sb = getSb();
+    if (!sb) {
       updateHeaderAuthUI(null);
       return;
     }
 
-    if (cachedUser) {
-      updateHeaderAuthUI(cachedUser);
-    }
-
     try {
-      const res = await fetch('/api/auth/me', {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-      if (res.status === 401) {
-        handleLogout();
+      const { data, error } = await sb.auth.getSession();
+      if (error || !data.session?.user) {
+        updateHeaderAuthUI(null);
         return;
       }
-      if (res.ok) {
-        const data = await res.json().catch(() => ({}));
-        if (data && data.user) {
-          try { localStorage.setItem(AUTH_USER_KEY, JSON.stringify(data.user)); } catch {}
-          updateHeaderAuthUI(data.user);
-        }
-      }
+      const user = await fetchProfileFor(data.session.user);
+      updateHeaderAuthUI(user);
     } catch {
-      // Mantém estado em cache se offline
+      updateHeaderAuthUI(null);
     }
+
+    sb.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_OUT' || !session?.user) {
+        updateHeaderAuthUI(null);
+        return;
+      }
+      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED' || event === 'INITIAL_SESSION') {
+        const user = await fetchProfileFor(session.user);
+        updateHeaderAuthUI(user);
+      }
+    });
   }
 
   function initSpaAuth() {
