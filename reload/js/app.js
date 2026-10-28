@@ -186,40 +186,56 @@
     heroMetaBadge: $('#hero-meta-badge'),
   };
 
-  /* ── Tema manual (Claro padrão estilo Hardware Tátil & Bento, Escuro e Auto) ── */
-  let themeIdx = 1; // Claro como padrão visual da Opção 2
-  const urlTheme = new URLSearchParams(location.search).get('theme');
-  const storedTheme = urlTheme || localStorage.getItem(LS.theme) || 'light';
-  if (storedTheme === 'dark') {
-    themeIdx = 2;
-    document.documentElement.dataset.theme = 'dark';
-  } else if (storedTheme === 'auto') {
-    themeIdx = 0;
-    delete document.documentElement.dataset.theme;
-  } else {
-    themeIdx = 1;
-    document.documentElement.dataset.theme = 'light';
-  }
-
-  const updateThemeBtn = () => {
-    const mode = ['AUTO', 'CLARO', 'ESCURO'][themeIdx];
-    if (els.themeBtn) els.themeBtn.textContent = `TEMA: ${mode}`;
+  /* ── Gerenciamento de Tema (Sol/Lua + Auto via Sistema) ── */
+  const getSystemDark = () => {
+    return !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
   };
-  updateThemeBtn();
-  els.themeBtn?.addEventListener('click', () => {
-    themeIdx = (themeIdx + 1) % 3;
-    if (themeIdx === 0) {
-      delete document.documentElement.dataset.theme;
-      localStorage.setItem(LS.theme, 'auto');
-    } else if (themeIdx === 1) {
-      document.documentElement.dataset.theme = 'light';
-      localStorage.setItem(LS.theme, 'light');
-    } else {
-      document.documentElement.dataset.theme = 'dark';
-      localStorage.setItem(LS.theme, 'dark');
+
+  const getStored = () => {
+    try {
+      const val = localStorage.getItem(LS.theme);
+      if (val === 'light' || val === 'dark') return val;
+      return null; // auto legado ou ausente = null
+    } catch (_) {
+      return null;
     }
-    updateThemeBtn();
+  };
+
+  const applyTheme = (theme) => {
+    const isDark = theme === 'dark';
+    document.documentElement.dataset.theme = isDark ? 'dark' : 'light';
+    if (els.themeBtn) {
+      els.themeBtn.setAttribute('aria-pressed', isDark ? 'true' : 'false');
+      els.themeBtn.setAttribute('aria-label', isDark ? 'Alternar para tema claro' : 'Alternar para tema escuro');
+      els.themeBtn.setAttribute('title', isDark ? 'Tema escuro ativo (clique para tema claro)' : 'Tema claro ativo (clique para tema escuro)');
+    }
+  };
+
+  const initialTheme = getStored() || (getSystemDark() ? 'dark' : 'light');
+  applyTheme(initialTheme);
+
+  els.themeBtn?.addEventListener('click', () => {
+    const current = document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
+    const next = current === 'dark' ? 'light' : 'dark';
+    try {
+      localStorage.setItem(LS.theme, next);
+    } catch (_) {}
+    applyTheme(next);
   });
+
+  const mediaDark = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+  if (mediaDark) {
+    const handleMediaChange = (e) => {
+      if (getStored() === null) {
+        applyTheme(e.matches ? 'dark' : 'light');
+      }
+    };
+    if (mediaDark.addEventListener) {
+      mediaDark.addEventListener('change', handleMediaChange);
+    } else if (mediaDark.addListener) {
+      mediaDark.addListener(handleMediaChange);
+    }
+  }
 
   /* ── Atalho de teclado CTRL+K para busca rápida ── */
   window.addEventListener('keydown', e => {

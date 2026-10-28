@@ -556,19 +556,65 @@ textarea.input { min-height: 6.5rem; resize: vertical; line-height: 1.5; }
   pointer-events: none;
 }
 
-.chip--theme {
-  min-height: 36px;
-  padding: .5rem .875rem;
-  background: var(--hw-vermilion);
-  border: 1px solid #161616;
-  border-radius: 6px;
-  color: #FFFFFF;
-  font: 700 0.75rem/1.2 var(--mono);
-  white-space: nowrap;
+/* ───────── Botão Fixo de Tema (FAB Sol/Lua) ───────── */
+.theme-fab {
+  position: fixed;
+  right: max(1.25rem, env(safe-area-inset-right));
+  bottom: max(1.25rem, env(safe-area-inset-bottom));
+  z-index: 90;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1.5px solid var(--line-strong);
+  background: var(--bg-elevated);
+  color: var(--fg);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16), 0 2px 0 var(--line-strong);
+  cursor: pointer;
+  transition: transform .15s var(--ease), background-color .2s, border-color .2s, color .2s, box-shadow .15s;
 }
-.chip--theme:hover {
-  background: var(--hw-vermilion-hover);
-  color: #FFFFFF;
+.theme-fab:hover {
+  background: var(--surface-hover);
+  border-color: var(--line-strong);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22), 0 3px 0 var(--line-strong);
+}
+.theme-fab:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.14), 0 1px 0 var(--line-strong);
+}
+.theme-fab:focus-visible {
+  outline: 2px solid var(--hw-yellow);
+  outline-offset: 3px;
+}
+.theme-fab-icon {
+  width: 22px;
+  height: 22px;
+  pointer-events: none;
+  transition: transform .25s var(--ease), opacity .2s;
+}
+:root:not([data-theme="dark"]) .theme-fab .theme-fab-icon--moon {
+  display: none;
+}
+:root:not([data-theme="dark"]) .theme-fab .theme-fab-icon--sun {
+  display: block;
+  color: #B45309;
+}
+:root[data-theme="dark"] .theme-fab .theme-fab-icon--sun {
+  display: none;
+}
+:root[data-theme="dark"] .theme-fab .theme-fab-icon--moon {
+  display: block;
+  color: var(--hw-yellow);
+}
+@media (max-width: 48rem) {
+  .theme-fab {
+    right: max(1rem, env(safe-area-inset-right));
+    bottom: max(1rem, env(safe-area-inset-bottom));
+  }
 }
 
 /* ───────── 01 · Tactile Bento Hero ───────── */
@@ -1713,9 +1759,11 @@ section { padding-block: var(--section); position: relative; }
   background: var(--bg-elevated);
   border-top: 2px solid var(--line-strong);
   padding-block: 1.5rem;
+  padding-bottom: clamp(2.5rem, 5vw, 4rem);
   margin-top: 1rem;
 }
 .footer-inner {
+  padding-right: clamp(1rem, 4vw, 4.5rem);
   display: flex;
   flex-wrap: wrap;
   align-items: center;

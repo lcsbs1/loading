@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-BR" data-theme="light">
+<html lang="pt-BR">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -19,6 +19,15 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400..700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;family=Space+Grotesk:wght@600;700&amp;display=swap" rel="stylesheet">
   <link rel="preconnect" href="https://api.rawg.io" crossorigin>
+  <script>
+    (function () {
+      try {
+        var s = localStorage.getItem('loading.theme');
+        var t = (s === 'light' || s === 'dark') ? s : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.dataset.theme = t;
+      } catch (e) {}
+    })();
+  </script>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -99,7 +108,7 @@
             <kbd class="search-kbd" aria-hidden="true">CTRL+K</kbd>
           </div>
         </form>
-        <button class="chip chip--theme" id="theme-btn" type="button" aria-label="Alternar tema de cores">TEMA: CLARO</button>
+
         <button class="chip chip--auth" id="auth-btn" type="button" aria-label="Entrar ou criar conta"><span class="auth-btn-icon">👤</span> <span class="auth-btn-label">ENTRAR / REGISTRO</span></button>
       </div>
     </div>
@@ -571,6 +580,17 @@
       </aside>
     </div>
   </dialog>
+
+  <!-- Botão Fixo de Alternância de Tema (FAB Sol / Lua) -->
+  <button id="theme-btn" class="theme-fab" type="button" aria-label="Alternar tema" aria-pressed="false">
+    <svg class="theme-fab-icon theme-fab-icon--sun" viewBox="0 0 24 24" aria-hidden="true">
+      <circle cx="12" cy="12" r="4" fill="currentColor"/>
+      <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-fab-icon theme-fab-icon--moon" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+    </svg>
+  </button>
 
   <!-- Chaves de API e Scripts modularizados -->
   <script src="js/config.js"></script>
