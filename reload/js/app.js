@@ -1045,12 +1045,19 @@
   const now = Date.now(), H = 3600e3;
   const SEED_TOPICS = [
     { id: 't1', pinned: true, author: 'Loading...', game: 'Elden Ring', title: 'Boas-vindas: compartilhe suas avaliações e listas',
-      body: 'Abra a ficha de qualquer jogo no acervo e clique em “Escrever avaliação no fórum” para publicar sua análise.\nCite a plataforma em que jogou e evite spoilers no título.', at: now - 72 * H, replies: [] },
+      body: 'Abra a ficha de qualquer jogo no acervo e clique em “Escrever avaliação no fórum” para publicar sua análise.\nCite a plataforma em que jogou e evite spoilers no título.', at: now - 72 * H,
+      replies: [
+        { author: 'marina_ds', body: 'Excelente iniciativa! Comecei minha lista pelos RPGs de PS2 e a nostalgia bateu forte.', at: now - 48 * H },
+        { author: 'tarnished_br', body: 'Acabei de fechar a DLC no PC. A direção de arte do Reino das Sombras é absurda.', at: now - 28 * H },
+      ] },
     { id: 't2', author: 'ana_retro', game: 'Half-Life 2', title: 'Half-Life 2 ainda se sustenta em 2026?',
       body: 'Rejoguei no PC e a física continua impressionante. O ritmo de Ravenholm é o melhor da série pra mim.', at: now - 20 * H,
       replies: [{ author: 'gordon', body: 'Envelheceu muito bem. Os episódios valem a pena logo depois.', at: now - 18 * H }] },
     { id: 't3', author: 'lucas', game: 'Hollow Knight', title: 'Direção de arte impecável e mapa interconectado',
-      body: 'A transição de Dirtmouth para Greenpath com a trilha de Christopher Larkin é um dos momentos mais marcantes dos jogos independentes.', at: now - 5 * H, replies: [] },
+      body: 'A transição de Dirtmouth para Greenpath com a trilha de Christopher Larkin é um dos momentos mais marcantes dos jogos independentes.', at: now - 5 * H,
+      replies: [
+        { author: 'hornet_fan', body: 'Concordo demais! A Cidade das Lágrimas com a chuva caindo no fundo e o piano tocando é inesquecível.', at: now - 3 * H },
+      ] },
   ];
   const loadTopics = () => {
     try {
@@ -1398,6 +1405,468 @@
   loadFeaturedTrending();
   renderTopics();
   initFeedbacks();
+
+  /* ── 05 · Roteador SPA de Vertentes (#auth vs Catálogo) & Autenticação Unificada ── */
+  const AUTH_TOKEN_KEY = (LS && LS.token) || 'loading.token';
+  const AUTH_USER_KEY = (LS && LS.user) || 'loading.user';
+
+  const authEls = {
+    btn: $('#auth-btn'),
+    btnIcon: $('#auth-btn .auth-btn-icon'),
+    btnLabel: $('#auth-btn .auth-btn-label'),
+    view: $('#view-auth'),
+    closeBtn: $('#auth-close'),
+    tabLogin: $('#tab-login'),
+    tabRegister: $('#tab-register'),
+    formLogin: $('#form-login'),
+    formRegister: $('#form-register'),
+    loginEmail: $('#login-email'),
+    loginPassword: $('#login-password'),
+    loginAlert: $('#login-alert'),
+    loginSubmit: $('#login-submit'),
+    regFirstName: $('#reg-first-name'),
+    regLastName: $('#reg-last-name'),
+    regEmail: $('#reg-email'),
+    regPassword: $('#reg-password'),
+    regAlert: $('#register-alert'),
+    regSubmit: $('#register-submit'),
+    errs: {
+      loginEmail: $('#err-login-email'),
+      loginPassword: $('#err-login-password'),
+      regFirstName: $('#err-reg-firstName'),
+      regLastName: $('#err-reg-lastName'),
+      regEmail: $('#err-reg-email'),
+      regPassword: $('#err-reg-password'),
+    },
+  };
+
+  let authSessionUser = null;
+  let lastCatalogHash = '#inicio';
+
+  function formatAuthHandle(user) {
+    if (!user) return '';
+    const base = user.firstName || (user.name ? user.name.split(/\s+/)[0] : '') || (user.email ? user.email.split('@')[0] : 'membro');
+    return base.toLowerCase().replace(/[^a-z0-9_.-]/gi, '') || 'membro';
+  }
+
+  function updateHeaderAuthUI(user) {
+    authSessionUser = user || null;
+    if (!authEls.btn) return;
+    if (user) {
+      const handle = formatAuthHandle(user);
+      authEls.btn.classList.add('is-logged');
+      authEls.btn.setAttribute('aria-label', `Conectado como @${handle}. Clique para sair da conta`);
+      authEls.btn.setAttribute('title', `Conectado como ${user.name || user.email} · Clique para sair`);
+      if (authEls.btnIcon) authEls.btnIcon.textContent = '👤';
+      if (authEls.btnLabel) authEls.btnLabel.textContent = `@${handle} · SAIR`;
+
+      const displayName = user.name || [user.firstName, user.lastName].filter(Boolean).join(' ') || handle;
+      const fAuthor = $('#f-author');
+      const fbAuthor = $('#fb-author');
+      if (fAuthor && !fAuthor.value) fAuthor.value = displayName;
+      if (fbAuthor && !fbAuthor.value) fbAuthor.value = displayName;
+    } else {
+      authEls.btn.classList.remove('is-logged');
+      authEls.btn.setAttribute('aria-label', 'Entrar ou criar conta');
+      authEls.btn.removeAttribute('title');
+      if (authEls.btnIcon) authEls.btnIcon.textContent = '👤';
+      if (authEls.btnLabel) authEls.btnLabel.textContent = 'ENTRAR / REGISTRO';
+    }
+  }
+
+  function clearAuthFeedback() {
+    [authEls.loginAlert, authEls.regAlert].forEach(el => {
+      if (el) {
+        el.hidden = true;
+        el.textContent = '';
+        el.className = 'status auth-alert';
+      }
+    });
+    Object.values(authEls.errs).forEach(el => {
+      if (el) {
+        el.hidden = true;
+        el.textContent = '';
+      }
+    });
+    [authEls.loginEmail, authEls.loginPassword, authEls.regFirstName, authEls.regLastName, authEls.regEmail, authEls.regPassword].forEach(inp => {
+      if (inp) inp.removeAttribute('aria-invalid');
+    });
+  }
+
+  function setAuthAlert(el, message, type = 'error') {
+    if (!el) return;
+    if (!message) {
+      el.hidden = true;
+      el.textContent = '';
+      el.className = 'status auth-alert';
+      return;
+    }
+    el.hidden = false;
+    el.textContent = message;
+    el.className = `status auth-alert is-${type}`;
+  }
+
+  function switchAuthTab(mode = 'login') {
+    const isLogin = mode !== 'register';
+    clearAuthFeedback();
+    if (authEls.tabLogin) {
+      authEls.tabLogin.classList.toggle('active', isLogin);
+      authEls.tabLogin.setAttribute('aria-selected', String(isLogin));
+    }
+    if (authEls.tabRegister) {
+      authEls.tabRegister.classList.toggle('active', !isLogin);
+      authEls.tabRegister.setAttribute('aria-selected', String(!isLogin));
+    }
+    if (authEls.formLogin) authEls.formLogin.hidden = !isLogin;
+    if (authEls.formRegister) authEls.formRegister.hidden = isLogin;
+  }
+
+  function syncSpaPartition() {
+    if (!authEls.view) return;
+    const hash = window.location.hash || '#inicio';
+    const isAuthView = hash === '#auth' || hash === '#auth-login' || hash === '#auth-register';
+
+    if (isAuthView) {
+      if (hash === '#auth-register') switchAuthTab('register');
+      else if (hash === '#auth-login') switchAuthTab('login');
+
+      document.body.dataset.view = 'auth';
+      authEls.view.hidden = false;
+      authEls.view.classList.remove('is-leaving');
+      authEls.view.classList.add('is-entering');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      if (['#inicio', '#acervo', '#forum'].includes(hash)) {
+        lastCatalogHash = hash;
+      }
+      const wasAuth = document.body.dataset.view === 'auth';
+      delete document.body.dataset.view;
+      authEls.view.classList.remove('is-entering');
+      authEls.view.hidden = true;
+
+      if (wasAuth) {
+        requestScrollEffects();
+        const targetSec = document.querySelector(lastCatalogHash);
+        if (targetSec) {
+          targetSec.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+    }
+  }
+
+  function parseAuthApiError(payload, status) {
+    const errObj = (payload && typeof payload.error === 'object' && payload.error) ? payload.error : payload;
+    const code = errObj && typeof errObj.code === 'string' ? errObj.code : '';
+    const byCode = {
+      EMAIL_TAKEN: 'Este e-mail já está cadastrado.',
+      INVALID_CREDENTIALS: 'E-mail ou senha incorretos.',
+      UNAUTHORIZED: 'Sessão expirada. Entre novamente.',
+      VALIDATION_ERROR: 'Verifique os campos destacados e tente de novo.',
+    };
+    const message = (errObj && errObj.message)
+      || (typeof payload?.error === 'string' ? payload.error : '')
+      || payload?.message
+      || byCode[code]
+      || (status === 409 ? byCode.EMAIL_TAKEN : status === 401 ? byCode.INVALID_CREDENTIALS : 'Não foi possível concluir a solicitação.');
+    const fields = (errObj && errObj.fields && typeof errObj.fields === 'object') ? errObj.fields : {};
+    return { message, fields };
+  }
+
+  async function handleLoginSubmit(e) {
+    e.preventDefault();
+    clearAuthFeedback();
+
+    const email = (authEls.loginEmail?.value || '').trim();
+    const password = authEls.loginPassword?.value || '';
+
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      if (authEls.errs.loginEmail) {
+        authEls.errs.loginEmail.textContent = 'Informe um e-mail válido.';
+        authEls.errs.loginEmail.hidden = false;
+      }
+      authEls.loginEmail?.setAttribute('aria-invalid', 'true');
+      authEls.loginEmail?.focus();
+      return;
+    }
+    if (!password || password.length < 8) {
+      if (authEls.errs.loginPassword) {
+        authEls.errs.loginPassword.textContent = 'A senha deve ter pelo menos 8 caracteres.';
+        authEls.errs.loginPassword.hidden = false;
+      }
+      authEls.loginPassword?.setAttribute('aria-invalid', 'true');
+      authEls.loginPassword?.focus();
+      return;
+    }
+
+    if (authEls.loginSubmit) {
+      authEls.loginSubmit.disabled = true;
+      authEls.loginSubmit.textContent = 'AUTENTICANDO…';
+    }
+
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        const { message, fields } = parseAuthApiError(data, res.status);
+        if (fields.email && authEls.errs.loginEmail) {
+          authEls.errs.loginEmail.textContent = fields.email;
+          authEls.errs.loginEmail.hidden = false;
+          authEls.loginEmail?.setAttribute('aria-invalid', 'true');
+        }
+        if (fields.password && authEls.errs.loginPassword) {
+          authEls.errs.loginPassword.textContent = fields.password;
+          authEls.errs.loginPassword.hidden = false;
+          authEls.loginPassword?.setAttribute('aria-invalid', 'true');
+        }
+        setAuthAlert(authEls.loginAlert, message, 'error');
+        return;
+      }
+
+      const token = data.accessToken || data.token;
+      const user = data.user;
+      if (token) {
+        try { localStorage.setItem(AUTH_TOKEN_KEY, token); } catch {}
+      }
+      if (user) {
+        try { localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user)); } catch {}
+      }
+
+      updateHeaderAuthUI(user);
+      setAuthAlert(authEls.loginAlert, `✔ Bem-vindo de volta, ${user?.firstName || user?.name || email}!`, 'success');
+      authEls.formLogin?.reset();
+
+      setTimeout(() => {
+        if (window.location.hash.startsWith('#auth')) {
+          window.location.hash = lastCatalogHash || '#inicio';
+        }
+      }, 600);
+    } catch {
+      setAuthAlert(authEls.loginAlert, 'Erro de conexão com /api/auth/login. Verifique se o servidor está ativo.', 'error');
+    } finally {
+      if (authEls.loginSubmit) {
+        authEls.loginSubmit.disabled = false;
+        authEls.loginSubmit.textContent = 'ENTRAR NA CONTA →';
+      }
+    }
+  }
+
+  async function handleRegisterSubmit(e) {
+    e.preventDefault();
+    clearAuthFeedback();
+
+    const firstName = (authEls.regFirstName?.value || '').trim();
+    const lastName = (authEls.regLastName?.value || '').trim();
+    const email = (authEls.regEmail?.value || '').trim();
+    const password = authEls.regPassword?.value || '';
+
+    let hasErr = false;
+    if (!firstName || firstName.length > 50) {
+      if (authEls.errs.regFirstName) {
+        authEls.errs.regFirstName.textContent = 'Informe seu nome (1 a 50 caracteres).';
+        authEls.errs.regFirstName.hidden = false;
+      }
+      authEls.regFirstName?.setAttribute('aria-invalid', 'true');
+      hasErr = true;
+    }
+    if (!lastName || lastName.length > 50) {
+      if (authEls.errs.regLastName) {
+        authEls.errs.regLastName.textContent = 'Informe seu sobrenome (1 a 50 caracteres).';
+        authEls.errs.regLastName.hidden = false;
+      }
+      authEls.regLastName?.setAttribute('aria-invalid', 'true');
+      hasErr = true;
+    }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      if (authEls.errs.regEmail) {
+        authEls.errs.regEmail.textContent = 'Informe um endereço de e-mail válido.';
+        authEls.errs.regEmail.hidden = false;
+      }
+      authEls.regEmail?.setAttribute('aria-invalid', 'true');
+      hasErr = true;
+    }
+    if (!password || password.length < 8) {
+      if (authEls.errs.regPassword) {
+        authEls.errs.regPassword.textContent = 'A senha precisa ter no mínimo 8 caracteres.';
+        authEls.errs.regPassword.hidden = false;
+      }
+      authEls.regPassword?.setAttribute('aria-invalid', 'true');
+      hasErr = true;
+    }
+    if (hasErr) return;
+
+    if (authEls.regSubmit) {
+      authEls.regSubmit.disabled = true;
+      authEls.regSubmit.textContent = 'REGISTRANDO PERFIL…';
+    }
+
+    try {
+      const name = `${firstName} ${lastName}`.trim();
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ firstName, lastName, name, email, password }),
+      });
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        const { message, fields } = parseAuthApiError(data, res.status);
+        if (fields.firstName && authEls.errs.regFirstName) {
+          authEls.errs.regFirstName.textContent = fields.firstName;
+          authEls.errs.regFirstName.hidden = false;
+          authEls.regFirstName?.setAttribute('aria-invalid', 'true');
+        }
+        if (fields.lastName && authEls.errs.regLastName) {
+          authEls.errs.regLastName.textContent = fields.lastName;
+          authEls.errs.regLastName.hidden = false;
+          authEls.regLastName?.setAttribute('aria-invalid', 'true');
+        }
+        if (fields.email && authEls.errs.regEmail) {
+          authEls.errs.regEmail.textContent = fields.email;
+          authEls.errs.regEmail.hidden = false;
+          authEls.regEmail?.setAttribute('aria-invalid', 'true');
+        }
+        if (fields.password && authEls.errs.regPassword) {
+          authEls.errs.regPassword.textContent = fields.password;
+          authEls.errs.regPassword.hidden = false;
+          authEls.regPassword?.setAttribute('aria-invalid', 'true');
+        }
+        setAuthAlert(authEls.regAlert, message, 'error');
+        return;
+      }
+
+      const token = data.accessToken || data.token;
+      const user = data.user;
+      if (token) {
+        try { localStorage.setItem(AUTH_TOKEN_KEY, token); } catch {}
+      }
+      if (user) {
+        try { localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user)); } catch {}
+      }
+
+      updateHeaderAuthUI(user);
+      setAuthAlert(authEls.regAlert, `✔ Conta criada com sucesso! Bem-vindo, ${user?.firstName || name}!`, 'success');
+      authEls.formRegister?.reset();
+
+      setTimeout(() => {
+        if (window.location.hash.startsWith('#auth')) {
+          window.location.hash = lastCatalogHash || '#inicio';
+        }
+      }, 650);
+    } catch {
+      setAuthAlert(authEls.regAlert, 'Erro de conexão com /api/auth/register. Verifique se o servidor está ativo.', 'error');
+    } finally {
+      if (authEls.regSubmit) {
+        authEls.regSubmit.disabled = false;
+        authEls.regSubmit.textContent = 'CRIAR CONTA & ATIVAR →';
+      }
+    }
+  }
+
+  function handleLogout() {
+    try {
+      localStorage.removeItem(AUTH_TOKEN_KEY);
+      localStorage.removeItem(AUTH_USER_KEY);
+    } catch {}
+    updateHeaderAuthUI(null);
+    if (window.location.hash.startsWith('#auth')) {
+      switchAuthTab('login');
+      setAuthAlert(authEls.loginAlert, 'Sessão encerrada com sucesso.', 'success');
+    }
+  }
+
+  async function restoreAuthSession() {
+    let token = null;
+    let cachedUser = null;
+    try {
+      token = localStorage.getItem(AUTH_TOKEN_KEY);
+      const rawUser = localStorage.getItem(AUTH_USER_KEY);
+      if (rawUser) cachedUser = JSON.parse(rawUser);
+    } catch {}
+
+    if (!token) {
+      updateHeaderAuthUI(null);
+      return;
+    }
+
+    if (cachedUser) {
+      updateHeaderAuthUI(cachedUser);
+    }
+
+    try {
+      const res = await fetch('/api/auth/me', {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      if (res.status === 401) {
+        handleLogout();
+        return;
+      }
+      if (res.ok) {
+        const data = await res.json().catch(() => ({}));
+        if (data && data.user) {
+          try { localStorage.setItem(AUTH_USER_KEY, JSON.stringify(data.user)); } catch {}
+          updateHeaderAuthUI(data.user);
+        }
+      }
+    } catch {
+      // Mantém estado em cache se offline
+    }
+  }
+
+  function initSpaAuth() {
+    if (!authEls.view) return;
+
+    // Clique no botão do cabeçalho: se logado faz logout; se deslogado abre a vertente #auth
+    authEls.btn?.addEventListener('click', () => {
+      if (authSessionUser) {
+        handleLogout();
+      } else {
+        window.location.hash = '#auth';
+      }
+    });
+
+    // Botão fechar / voltar ao acervo
+    authEls.closeBtn?.addEventListener('click', () => {
+      window.location.hash = lastCatalogHash || '#inicio';
+    });
+
+    // Alternância de abas Login / Registro
+    authEls.tabLogin?.addEventListener('click', () => switchAuthTab('login'));
+    authEls.tabRegister?.addEventListener('click', () => switchAuthTab('register'));
+
+    // Toggles de visibilidade de senha
+    document.querySelectorAll('.auth-pw-toggle').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetId = btn.getAttribute('data-target');
+        const input = targetId ? document.getElementById(targetId) : null;
+        if (!input) return;
+        const show = input.type === 'password';
+        input.type = show ? 'text' : 'password';
+        btn.setAttribute('aria-pressed', String(show));
+        const useEl = btn.querySelector('use');
+        if (useEl) useEl.setAttribute('href', show ? '#icon-eye-off' : '#icon-eye');
+      });
+    });
+
+    // Submissão dos formulários
+    authEls.formLogin?.addEventListener('submit', handleLoginSubmit);
+    authEls.formRegister?.addEventListener('submit', handleRegisterSubmit);
+
+    // Roteamento por hash (#auth vs #inicio/#acervo/#forum)
+    window.addEventListener('hashchange', syncSpaPartition);
+    syncSpaPartition();
+    restoreAuthSession();
+  }
+
+  initSpaAuth();
   loadGames();
   updateScrollEffects();
 })();

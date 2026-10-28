@@ -7,4 +7,8 @@ Thumbs.db
 skills-lock.json
 .mcp.json
 andrej-karpathy-skills-main/
+.env
+server/data/users.json
+server/data/*.tmp
+*.tmp
 

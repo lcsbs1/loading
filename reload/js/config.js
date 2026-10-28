@@ -19,6 +19,8 @@ const CONFIG = {
     theme: 'loading.theme',
     translations: 'loading.tr',
     feedbacks: 'loading.feedbacks',
+    token: 'loading.token',
+    user: 'loading.user',
   },
 
   // Tradução automática de conteúdo em inglês (descrições da RAWG)

@@ -515,8 +515,12 @@ textarea.input { min-height: 6.5rem; resize: vertical; line-height: 1.5; }
 .header-controls {
   display: flex;
   align-items: center;
-  gap: .625rem;
+  gap: .5rem;
   margin-left: auto;
+}
+/* Auth no canto superior direito, após o TEMA, com respiro entre os dois */
+.header-controls .chip--auth {
+  margin-inline-start: .75rem;
 }
 @media (min-width: 68rem) {
   .site-nav { display: flex; }
@@ -1431,6 +1435,7 @@ section { padding-block: var(--section); position: relative; }
 }
 
 /* ───────── 03 · Fórum Comunitário Centralizado & Dock API RAWG ───────── */
+/* Grade Principal do Fórum: alinha a coluna do fórum e a coluna lateral de recursos com a mesma altura */
 .bento-forum-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -1446,6 +1451,13 @@ section { padding-block: var(--section); position: relative; }
   }
 }
 
+/* Módulo do Fórum: layout em coluna flexível para permitir que o formulário fique ancorado na base */
+.bento-module--forum {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Cabeçalho do Fórum: agrupa badge de identificação, título da seção e metadados de privacidade */
 .forum-header-bar {
   display: flex;
   flex-wrap: wrap;
@@ -1461,10 +1473,12 @@ section { padding-block: var(--section); position: relative; }
   gap: .65rem;
 }
 
+/* Filtro de Busca do Fórum: campo de pesquisa rápida por jogo, título ou autor */
 .forum-filter {
   margin-bottom: 1.25rem;
 }
 
+/* Lista / Grade de Tópicos: exibe os cards de avaliações da comunidade em até 2 colunas */
 .topics {
   display: grid;
   grid-template-columns: 1fr;
@@ -1477,6 +1491,7 @@ section { padding-block: var(--section); position: relative; }
   }
 }
 
+/* Card Individual de Tópico / Avaliação: estrutura interna, cabeçalho, metadados e corpo do texto */
 .topic {
   display: flex;
   flex-direction: column;
@@ -1550,6 +1565,8 @@ section { padding-block: var(--section); position: relative; }
   font-size: 0.85rem;
   line-height: 1.48;
 }
+
+/* Gaveta de Comentários e Respostas (details/summary) dentro de cada tópico */
 .topic details { margin-top: .25rem; }
 .topic summary {
   cursor: pointer;
@@ -1574,7 +1591,10 @@ section { padding-block: var(--section); position: relative; }
 .reply-form { display: grid; gap: .5rem; margin-top: .5rem; }
 .reply-form textarea.input { min-height: 4rem; }
 
-/* Formulário de Publicação */
+/* Formulário de Publicação (+ Diário da Comunidade): empurrado para o pé do módulo com margin-top: auto */
+.bento-module--forum > .form {
+  margin-top: auto;
+}
 .form {
   display: grid;
   gap: .875rem;
@@ -2219,4 +2239,310 @@ dialog[data-desc-state="loading"] .dlg-aside {
   .card.card--reveal { opacity: 1 !important; transform: none !important; }
   .cascade-item { opacity: 1 !important; transform: none !important; filter: none !important; }
   .js .reveal { opacity: 1; transform: none; }
+}
+
+/* ───────── 04 · Partição SPA de Autenticação (.partition-auth & .auth-card) ───────── */
+/* Botão de Conta / Autenticação no Cabeçalho */
+.chip--auth {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  min-height: 36px;
+  padding: .5rem .875rem;
+  background: var(--chassis);
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  color: #FFFFFF;
+  font: 700 0.75rem/1.2 var(--mono);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color .15s var(--ease), border-color .15s var(--ease), color .15s var(--ease), transform .12s var(--ease);
+}
+.chip--auth:hover {
+  background: var(--hw-yellow);
+  border-color: #161616;
+  color: #161616;
+  transform: translateY(-1px);
+}
+.chip--auth.is-logged {
+  background: var(--bg-elevated);
+  border-color: var(--hw-yellow);
+  color: var(--fg);
+  box-shadow: inset 0 0 0 1px var(--hw-yellow);
+}
+.chip--auth.is-logged:hover {
+  background: var(--hw-vermilion);
+  border-color: #161616;
+  color: #FFFFFF;
+  box-shadow: none;
+}
+.auth-btn-icon {
+  font-size: 0.85rem;
+  line-height: 1;
+}
+
+/* Chaveamento de Vertente SPA (oculta seções do catálogo quando a vertente auth está ativa) */
+body[data-view="auth"] #inicio,
+body[data-view="auth"] #acervo,
+body[data-view="auth"] #forum {
+  display: none !important;
+}
+
+/* Contêiner da Partição de Autenticação com Transição Suave sem Recarregar a Página */
+.partition-auth {
+  min-height: calc(100dvh - 9.5rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-block: clamp(2rem, 5vh, 4rem);
+}
+.partition-auth.is-entering {
+  animation: spa-partition-enter .32s var(--ease) both;
+}
+.partition-auth.is-leaving {
+  animation: spa-partition-leave .2s var(--ease) both;
+}
+@keyframes spa-partition-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes spa-partition-leave {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+/* Cartão Central 2-em-1 (Login & Registro) com Glassmorphism e Estética Bento */
+.auth-card {
+  width: min(100%, 34rem);
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  background: color-mix(in srgb, var(--bg-elevated) 92%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 2px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.14), 0 4px 0 var(--line-strong);
+}
+
+.auth-topbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--line);
+}
+.auth-topbar-left {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .5rem .75rem;
+  min-width: 0;
+  flex: 1 1 12rem;
+}
+
+.auth-close-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  flex: 0 0 auto;
+  margin-inline-start: auto;
+  min-height: 32px;
+  padding: .35rem .75rem;
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  color: var(--fg);
+  font: 700 0.6875rem/1.2 var(--mono);
+  letter-spacing: .03em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color .15s, color .15s, border-color .15s;
+}
+.auth-close-btn:hover {
+  background: var(--hw-vermilion);
+  border-color: #161616;
+  color: #FFFFFF;
+}
+
+.auth-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .45rem;
+  text-align: center;
+}
+.auth-header .bento-heading {
+  max-width: 22ch;
+  text-wrap: balance;
+}
+.auth-subtitle {
+  max-width: 36ch;
+  font: 400 0.9rem/1.5 var(--sans);
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+/* Alternador de Abas (Login / Registro) */
+.auth-tab-switch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .375rem;
+  padding: 4px;
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+}
+.auth-tab {
+  min-height: 40px;
+  padding: .5rem .75rem;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: var(--muted);
+  font: 700 0.75rem/1.2 var(--mono);
+  letter-spacing: .03em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color .16s var(--ease), color .16s var(--ease), border-color .16s var(--ease), box-shadow .16s var(--ease);
+}
+.auth-tab:hover:not(.active) {
+  background: var(--bg-elevated);
+  color: var(--fg);
+}
+.auth-tab.active {
+  background: var(--hw-yellow);
+  border-color: #161616;
+  color: #161616;
+  box-shadow: 0 2px 0 #161616;
+}
+
+/* Formulários de Login e Registro */
+.auth-form {
+  display: grid;
+  gap: 1.1rem;
+  width: 100%;
+  padding: 1.25rem;
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  animation: fade .2s var(--ease);
+}
+.auth-form .field {
+  width: 100%;
+}
+.auth-form .input,
+.auth-form .auth-pw-wrap {
+  width: 100%;
+}
+
+.auth-pw-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.auth-pw-input {
+  padding-right: 2.75rem;
+}
+.auth-pw-toggle {
+  position: absolute;
+  right: .5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: 0;
+  border-radius: 4px;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color .15s, background-color .15s;
+}
+.auth-pw-toggle:hover {
+  color: var(--fg);
+  background: var(--surface-hover);
+}
+.auth-pw-hint {
+  font: 500 0.7rem/1.35 var(--mono);
+  color: var(--muted);
+}
+
+.auth-field-err {
+  font: 700 0.7rem/1.3 var(--mono);
+  color: var(--hw-vermilion);
+}
+
+.auth-alert {
+  padding: .65rem .85rem;
+  border-radius: 6px;
+  border: 1px solid var(--line-strong);
+  background: var(--bg-elevated);
+  font: 700 0.75rem/1.4 var(--mono);
+}
+.auth-alert.is-error {
+  border-color: var(--hw-vermilion);
+  background: rgba(224, 79, 51, 0.1);
+  color: var(--hw-vermilion);
+}
+.auth-alert.is-success {
+  border-color: #10B981;
+  background: rgba(16, 185, 129, 0.12);
+  color: #10B981;
+}
+
+.auth-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  justify-items: stretch;
+  gap: .75rem;
+  padding: .85rem 1rem;
+  background: #161616;
+  border-radius: 8px;
+  color: #FFFFFF;
+  margin-top: .35rem;
+}
+.auth-actions .label {
+  margin: 0;
+  color: #D4D4D4;
+  text-align: center;
+  font: 500 0.6875rem/1.4 var(--mono);
+  letter-spacing: .02em;
+  text-transform: uppercase;
+}
+.auth-actions .auth-submit {
+  width: 100%;
+  justify-self: stretch;
+}
+.auth-submit:disabled {
+  opacity: .65;
+  cursor: wait;
+}
+
+@media (min-width: 28rem) {
+  .auth-tab {
+    font-size: 0.78rem;
+  }
 }
