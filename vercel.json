@@ -2,16 +2,27 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "npm run build",
   "installCommand": "npm install",
-  "outputDirectory": ".",
+  "outputDirectory": "reload",
+  "functions": {
+    "api/**/*.js": {
+      "maxDuration": 15
+    }
+  },
   "rewrites": [
-    { "source": "/", "destination": "/reload/index.html" }
+    { "source": "/reload/(.*)", "destination": "/$1" },
+    { "source": "/reload", "destination": "/index.html" }
   ],
   "headers": [
     {
       "source": "/(.*)",
       "headers": [
         { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "X-Frame-Options", "value": "DENY" },
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://media.rawg.io https://shared.akamai.steamstatic.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co; form-action 'self'"
+        }
       ]
     }
   ]

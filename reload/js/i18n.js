@@ -65,12 +65,24 @@ const I18N = (() => {
     } catch {}
   };
 
-  /* Decodificador de entidades HTML retornadas por APIs de tradução */
+  /* Decodificador de entidades HTML sem interpretar markup. */
   const decodeHtml = str => {
     if (!str || !str.includes('&')) return str;
-    const t = document.createElement('textarea');
-    t.innerHTML = str;
-    return t.value;
+    return String(str)
+      .replace(/&#(\d+);/g, (_, n) => {
+        const code = Number(n);
+        return code > 0 && code <= 0x10ffff ? String.fromCodePoint(code) : '';
+      })
+      .replace(/&#x([0-9a-f]+);/gi, (_, n) => {
+        const code = parseInt(n, 16);
+        return code > 0 && code <= 0x10ffff ? String.fromCodePoint(code) : '';
+      })
+      .replace(/&quot;/g, '"')
+      .replace(/&apos;/g, "'")
+      .replace(/&#39;/g, "'")
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&amp;/g, '&');
   };
 
   /* 3a. Tradutor On-Device Nativo (Chrome 138+ / W3C Translation API) */
@@ -128,9 +140,8 @@ const I18N = (() => {
         q: piece,
         langpair: `en|${C.target || 'pt-BR'}`,
       });
-      if (C.email) params.set('de', C.email);
 
-      const res = await fetch(`https://api.mymemory.translated.net/get?${params}`);
+      const res = await fetch(`/api/translate?${params}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
 

@@ -22,7 +22,9 @@ npm start
 
 Abra `http://localhost:3000/reload/index.html`.
 
-As chaves do Supabase ficam em `reload/js/config.js` (anon/publishable). Opcionalmente sobrescreva em `reload/js/config.local.js`.
+Copie `.env.example` para `.env` e preencha `RAWG_KEY` e, se quiser a cota maior do MyMemory, `MYMEMORY_EMAIL`. Esses valores ficam no servidor (`/api/rawg` e `/api/translate`). O browser não recebe a chave.
+
+As chaves do Supabase ficam em `reload/js/config.js` (anon/publishable). Opcionalmente sobrescreva em `reload/js/config.local.js`. Na Vercel, defina `RAWG_KEY` e `MYMEMORY_EMAIL` em Production e Preview. O deploy publica só a pasta `reload/` mais essas funções; SQL, README e `scripts/` não têm URL.
 
 ### Setup Supabase (já aplicado no projeto `loading`)
 1. Schema/RLS: `supabase/migrations/20261028152110_forum_feedback_auth.sql`

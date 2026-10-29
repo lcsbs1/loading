@@ -146,6 +146,62 @@ if (!configContent.includes('SUPABASE_URL') || !configContent.includes('SUPABASE
 }
 ok('Config Supabase presente');
 
+if (/RAWG_KEY\s*:\s*['"][a-f0-9]{32}['"]/i.test(configContent) || /icloud\.com/i.test(configContent)) {
+  fail('config.js ainda publica chave RAWG ou e-mail');
+}
+if (!configContent.includes("API_BASE_URL: '/api/rawg'")) {
+  fail('config.js deve apontar o catálogo para /api/rawg');
+}
+ok('Config pública sem chave RAWG e sem e-mail');
+
+const localConfig = fs.readFileSync(path.join(ROOT, 'reload/js/config.local.js'), 'utf8');
+if (/[a-f0-9]{32}/i.test(localConfig) || /@/.test(localConfig)) {
+  fail('config.local.js não pode carregar segredo');
+}
+ok('config.local.js sem segredo');
+
+if (appContent.includes('api.rawg.io') || appContent.includes('key=${') || appContent.includes('state.key')) {
+  fail('app.js ainda chama a RAWG direto ou envia key');
+}
+if (!appContent.includes('/api/rawg')) {
+  fail('app.js deve usar o proxy /api/rawg');
+}
+ok('app.js usa o proxy da RAWG');
+
+const i18nContent = fs.readFileSync(path.join(ROOT, 'reload/js/i18n.js'), 'utf8');
+if (i18nContent.includes('api.mymemory.translated.net') || i18nContent.includes('innerHTML')) {
+  fail('i18n.js ainda chama MyMemory direto ou usa innerHTML');
+}
+if (!i18nContent.includes('/api/translate')) {
+  fail('i18n.js deve usar /api/translate');
+}
+ok('i18n.js usa o proxy de tradução');
+
+const vercelConfig = JSON.parse(fs.readFileSync(path.join(ROOT, 'vercel.json'), 'utf8'));
+if (vercelConfig.outputDirectory !== 'reload') {
+  fail('vercel.json deve publicar só a pasta reload');
+}
+if (!String(vercelConfig.headers?.[0]?.headers?.map(h => h.key)).includes('Content-Security-Policy')) {
+  fail('vercel.json sem Content-Security-Policy');
+}
+ok('Deploy estático restrito a reload/');
+
+const upstream = require(path.join(ROOT, 'lib', 'upstream'));
+if (upstream.rawgSegmentsAllowed(['games', '..', 'screenshots'])) {
+  fail('proxy aceitou path traversal');
+}
+if (!upstream.rawgSegmentsAllowed(['games', '123', 'screenshots'])) {
+  fail('proxy recusou screenshots de jogo');
+}
+if (upstream.rawgSegmentsAllowed(['games', 'not-a-number'])) {
+  fail('proxy aceitou id de jogo inválido');
+}
+const rewritten = upstream.rewriteRawgPaging('https://api.rawg.io/api/games?key=secretkey&page=2&page_size=15');
+if (!rewritten || rewritten.includes('key=') || !rewritten.startsWith('/api/rawg/games?')) {
+  fail('paginação da RAWG ainda pode devolver a chave');
+}
+ok('Proxy da RAWG recusa caminhos e tira a chave da paginação');
+
 const migrationHooks = [
   'create table public.profiles',
   'create table public.forum_topics',

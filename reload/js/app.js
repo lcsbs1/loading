@@ -2,9 +2,8 @@
   'use strict';
   document.documentElement.classList.add('js');
 
-  /* Obtém chaves e endpoints de js/config.js com fallback seguro */
-  const RAWG_KEY = (typeof CONFIG !== 'undefined' && CONFIG.RAWG_KEY) ? CONFIG.RAWG_KEY : '';
-  const API = (typeof CONFIG !== 'undefined' && CONFIG.API_BASE_URL) ? CONFIG.API_BASE_URL : 'https://api.rawg.io/api';
+  /* Catálogo passa pelo proxy /api/rawg. A chave da RAWG não fica no browser. */
+  const API = (typeof CONFIG !== 'undefined' && CONFIG.API_BASE_URL) ? CONFIG.API_BASE_URL : '/api/rawg';
   const LS = (typeof CONFIG !== 'undefined' && CONFIG.STORAGE_KEYS) ? CONFIG.STORAGE_KEYS : {
     key: 'loading.rawgKey',
     theme: 'loading.theme',
@@ -203,8 +202,9 @@
   const debounce = (fn, ms) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; };
 
   /* ── Estado ── */
+  try { localStorage.removeItem('loading.rawgKey'); } catch (_) {}
+
   const state = {
-    key: localStorage.getItem(LS.key) || RAWG_KEY,
     query: '',
     platform: '',
     next: null,
@@ -510,20 +510,18 @@
     // Cache expirado ou ausente: buscar jogos do momento na RAWG ou rotacionar seed
     let trendingGames = null;
 
-    if (state.key) {
-      try {
-        const todayStr = new Date().toISOString().slice(0, 10);
-        const past120Str = new Date(now - 120 * 86400000).toISOString().slice(0, 10);
-        const url = `${API}/games?key=${state.key}&dates=${past120Str},${todayStr}&ordering=-added&page_size=6`;
-        const res = await fetch(url);
-        if (res.ok) {
-          const json = await res.json();
-          if (json.results && json.results.length >= 6) {
-            trendingGames = json.results.map(fromRawg);
-          }
+    try {
+      const todayStr = new Date().toISOString().slice(0, 10);
+      const past120Str = new Date(now - 120 * 86400000).toISOString().slice(0, 10);
+      const url = `${API}/games?dates=${past120Str},${todayStr}&ordering=-added&page_size=6`;
+      const res = await fetch(url);
+      if (res.ok) {
+        const json = await res.json();
+        if (json.results && json.results.length >= 6) {
+          trendingGames = json.results.map(fromRawg);
         }
-      } catch (_) {}
-    }
+      }
+    } catch (_) {}
 
     if (!trendingGames || trendingGames.length < 6) {
       trendingGames = getWeeklySeedGames();
@@ -623,7 +621,6 @@
 
   let loadingMore = false;
   async function loadGames(append = false, isRefresh = false) {
-    if (!state.key) return loadSeed(isRefresh);
     if (append) {
       if (loadingMore || !state.next) return;
       loadingMore = true;
@@ -643,7 +640,7 @@
     let url;
     if (append && state.next) url = state.next;
     else {
-      const p = new URLSearchParams({ key: state.key, page_size: String(PAGE_SIZE) });
+      const p = new URLSearchParams({ page_size: String(PAGE_SIZE) });
       if (state.query) { p.set('search', state.query); p.set('search_precise', 'true'); }
       else {
         p.set('ordering', '-added');
@@ -937,10 +934,10 @@
 
   /* Busca o conjunto completo de screenshots do jogo (além das ~6 da listagem) */
   async function loadScreenshots(g) {
-    if (g.source !== 'rawg' || g.shotsFetched || !state.key) return;
+    if (g.source !== 'rawg' || g.shotsFetched) return;
     g.shotsFetched = true;
     try {
-      const res = await fetch(`${API}/games/${g.id}/screenshots?key=${encodeURIComponent(state.key)}&page_size=20`);
+      const res = await fetch(`${API}/games/${encodeURIComponent(g.id)}/screenshots?page_size=20`);
       if (!res.ok) return;
       const d = await res.json();
       const before = galleryOf(g).length;
@@ -985,7 +982,7 @@
 
       try {
         if (needsFetch) {
-          const res = await fetch(`${API}/games/${g.id}?key=${encodeURIComponent(state.key)}`);
+          const res = await fetch(`${API}/games/${encodeURIComponent(g.id)}`);
           if (!res.ok) throw new Error();
           const d = await res.json();
           if (state.current !== g) return;
@@ -1091,25 +1088,6 @@
       }
     }, { rootMargin: '350px 0px' });
     infiniteScrollIo.observe(els.moreWrap);
-  }
-
-  /* ── Chave (suporte de fallback sem elementos na tela) ── */
-  const keyInput = $('#api-key');
-  if (keyInput) {
-    keyInput.value = localStorage.getItem(LS.key) || '';
-    $('#config')?.addEventListener('submit', e => {
-      e.preventDefault();
-      const v = keyInput.value.trim();
-      if (!/^[a-f0-9]{32}$/i.test(v)) return;
-      localStorage.setItem(LS.key, v); state.key = v;
-      apiCache.clear();
-      loadGames();
-    });
-    $('#key-clear')?.addEventListener('click', () => {
-      localStorage.removeItem(LS.key); keyInput.value = ''; state.key = RAWG_KEY;
-      apiCache.clear();
-      loadGames();
-    });
   }
 
   /* ── Avaliações & Fórum (Supabase permanente) ── */
