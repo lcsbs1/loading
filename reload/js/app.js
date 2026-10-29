@@ -15,32 +15,59 @@
 
   let authSessionUser = null;
 
+  const LEVEL_TITLES = {
+    1: 'Novato',
+    2: 'Crítico',
+    3: 'Analista',
+    4: 'Destaque',
+    5: 'Lenda do acervo',
+  };
+  const levelTitle = (level) => LEVEL_TITLES[level] || LEVEL_TITLES[1];
+  const PROFILE_SELECT = 'id, first_name, last_name, display_name, apelido, bio, status_line, level, xp, topics_count, replies_count, favorites_count, importance_score, created_at';
+
   function displayNameOf(user) {
     if (!user) return '';
-    return user.displayName || user.name || [user.firstName, user.lastName].filter(Boolean).join(' ') || (user.email ? user.email.split('@')[0] : 'membro');
+    return user.apelido || user.displayName || user.name || [user.firstName, user.lastName].filter(Boolean).join(' ') || (user.email ? user.email.split('@')[0] : 'membro');
   }
 
   function mapProfileUser(profile, authUser) {
-    if (!authUser) return null;
-    const firstName = profile?.first_name || authUser.user_metadata?.first_name || '';
-    const lastName = profile?.last_name || authUser.user_metadata?.last_name || '';
-    const displayName = profile?.display_name || [firstName, lastName].filter(Boolean).join(' ') || (authUser.email || '').split('@')[0] || 'membro';
+    if (!authUser && !profile) return null;
+    const firstName = profile?.first_name || authUser?.user_metadata?.first_name || '';
+    const lastName = profile?.last_name || authUser?.user_metadata?.last_name || '';
+    const apelido = profile?.apelido || authUser?.user_metadata?.apelido || '';
+    const displayName = apelido || profile?.display_name || [firstName, lastName].filter(Boolean).join(' ') || (authUser?.email || '').split('@')[0] || 'membro';
     return {
-      id: authUser.id,
-      email: authUser.email || '',
+      id: profile?.id || authUser?.id,
+      email: authUser?.email || '',
       firstName,
       lastName,
+      apelido,
+      bio: profile?.bio || '',
+      statusLine: profile?.status_line || '',
+      level: profile?.level || 1,
+      xp: profile?.xp || 0,
+      topicsCount: profile?.topics_count || 0,
+      repliesCount: profile?.replies_count || 0,
+      favoritesCount: profile?.favorites_count || 0,
+      importanceScore: profile?.importance_score || 0,
       name: displayName,
       displayName,
-      createdAt: profile?.created_at || authUser.created_at || null,
+      createdAt: profile?.created_at || authUser?.created_at || null,
     };
   }
 
   async function fetchProfileFor(authUser) {
     const sb = getSb();
     if (!sb || !authUser) return mapProfileUser(null, authUser);
-    const { data } = await sb.from('profiles').select('id, first_name, last_name, display_name, created_at').eq('id', authUser.id).maybeSingle();
+    const { data } = await sb.from('profiles').select(PROFILE_SELECT).eq('id', authUser.id).maybeSingle();
     return mapProfileUser(data, authUser);
+  }
+
+  async function fetchProfileById(id) {
+    const sb = getSb();
+    if (!sb || !id) return null;
+    const { data } = await sb.from('profiles').select(PROFILE_SELECT).eq('id', id).maybeSingle();
+    return data ? mapProfileUser(data, { id: data.id }) : null;
   }
 
   function requireAuth(message) {
@@ -971,6 +998,7 @@
     $('#g-sub').textContent = [year(g.released), g.platforms.join(' · ')].filter(Boolean).join(' — ');
     fillSpecs(g);
     renderDescription(g, cascade);
+    syncFavoriteButton(g);
   }
 
   async function openGame(g) {
@@ -1046,9 +1074,79 @@
   $('#g-discuss').addEventListener('click', () => {
     els.dlg.close();
     $('#f-game').value = state.current?.name || '';
+    window.location.hash = '#forum';
     $('#forum').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
     $('#f-title').focus({ preventScroll: true });
   });
+
+  function gameKeyOf(g) {
+    if (!g) return '';
+    return String(g.id != null ? g.id : g.name || '').toLowerCase().trim().slice(0, 80);
+  }
+
+  async function syncFavoriteButton(g) {
+    const btn = $('#g-favorite');
+    const status = $('#g-fav-status');
+    if (!btn) return;
+    if (status) { status.hidden = true; status.textContent = ''; }
+    if (!g || !authSessionUser) {
+      btn.setAttribute('aria-pressed', 'false');
+      btn.classList.remove('is-faved');
+      btn.textContent = '♡ FAVORITAR';
+      return;
+    }
+    const sb = getSb();
+    if (!sb) return;
+    const key = gameKeyOf(g);
+    const { data } = await sb.from('profile_favorites').select('game_key').eq('user_id', authSessionUser.id).eq('game_key', key).maybeSingle();
+    const faved = Boolean(data);
+    btn.setAttribute('aria-pressed', String(faved));
+    btn.classList.toggle('is-faved', faved);
+    btn.textContent = faved ? '♥ NOS FAVORITOS' : '♡ FAVORITAR';
+  }
+
+  $('#g-favorite')?.addEventListener('click', async () => {
+    const status = $('#g-fav-status');
+    if (!requireAuth('Entre na conta para favoritar jogos.')) return;
+    const g = state.current;
+    if (!g) return;
+    const sb = getSb();
+    if (!sb) {
+      if (status) { status.hidden = false; status.textContent = 'Supabase não configurado.'; }
+      return;
+    }
+    const key = gameKeyOf(g);
+    const btn = $('#g-favorite');
+    const pressed = btn?.getAttribute('aria-pressed') === 'true';
+    if (pressed) {
+      const { error } = await sb.from('profile_favorites').delete().eq('user_id', authSessionUser.id).eq('game_key', key);
+      if (error && status) { status.hidden = false; status.textContent = error.message; return; }
+    } else {
+      const nextPos = Math.min(8, (authSessionUser.favoritesCount || 0) + 1);
+      const { error } = await sb.from('profile_favorites').insert({
+        user_id: authSessionUser.id,
+        game_key: key,
+        game_name: String(g.name || 'Jogo').slice(0, 120),
+        poster_url: g.image || null,
+        position: nextPos,
+      });
+      if (error) {
+        if (status) {
+          status.hidden = false;
+          status.textContent = /8|limit|check|favorites/i.test(error.message || '')
+            ? 'Limite de 8 favoritos atingido. Remova um no perfil.'
+            : (error.message || 'Não foi possível favoritar.');
+        }
+        return;
+      }
+    }
+    const user = await fetchProfileFor({ id: authSessionUser.id, email: authSessionUser.email, user_metadata: {}, created_at: authSessionUser.createdAt });
+    if (user) updateHeaderAuthUI(user);
+    await syncFavoriteButton(g);
+    await Promise.all([loadCommunityRanking(), loadRecentBadges()]);
+    syncCommunityMeChip();
+  });
+
 
   /* ── Busca & filtros ── */
   const onSearch = debounce(() => { state.query = els.q.value.trim(); state.next = null; loadGames(); }, 350);
@@ -1217,7 +1315,9 @@
         h('h3', { id: `th-${t.id}` }, t.title),
         h('p', { class: 'topic-meta' },
           h('span', { text: 'Avaliado por ' }),
-          h('span', { class: 'topic-author', text: t.author }),
+          t.authorId
+            ? h('a', { class: 'topic-author topic-author-link', href: `#membro/${t.authorId}`, text: t.author })
+            : h('span', { class: 'topic-author', text: t.author }),
           h('span', { 'aria-hidden': 'true', text: '·' }),
           h('time', { datetime: new Date(t.at).toISOString(), text: ago(t.at) })
         ),
@@ -1225,7 +1325,12 @@
         h('details', {},
           h('summary', { text: n ? `💬 ${n} comentário${n > 1 ? 's' : ''}` : '💬 Comentar' }),
           n ? h('ol', { class: 'replies' }, t.replies.map(r => h('li', { class: 'reply' },
-            h('p', { class: 'label' }, `${r.author} · `, h('time', { datetime: new Date(r.at).toISOString(), text: ago(r.at) })),
+            h('p', { class: 'label' },
+              r.authorId
+                ? h('a', { class: 'topic-author-link', href: `#membro/${r.authorId}`, text: r.author })
+                : h('span', { text: r.author }),
+              h('span', { text: ' · ' }),
+              h('time', { datetime: new Date(r.at).toISOString(), text: ago(r.at) })),
             h('p', { text: r.body })))) : null,
           replyForm)
       )
@@ -1448,11 +1553,96 @@
     });
   }
 
+  async function loadCommunityRanking() {
+    const list = $('#community-rank-list');
+    if (!list) return;
+    const sb = getSb();
+    if (!sb) {
+      list.replaceChildren(h('li', { class: 'muted', text: 'Supabase não configurado.' }));
+      return;
+    }
+    const { data, error } = await sb
+      .from('profiles')
+      .select('id, apelido, display_name, level, importance_score, xp')
+      .order('importance_score', { ascending: false })
+      .limit(5);
+    if (error) {
+      list.replaceChildren(h('li', { class: 'muted', text: 'Não foi possível carregar o ranking.' }));
+      return;
+    }
+    const rows = data || [];
+    if (!rows.length) {
+      list.replaceChildren(h('li', { class: 'muted', text: 'Nenhum membro ranqueado ainda.' }));
+      return;
+    }
+    list.replaceChildren(...rows.map((p, i) => {
+      const nick = p.apelido || p.display_name || 'membro';
+      return h('li', {},
+        h('span', { class: 'label', text: `#${i + 1}` }),
+        h('a', { href: `#membro/${p.id}`, text: `@${nick}` }),
+        h('span', { class: 'muted', text: `Nv.${p.level || 1} · ${p.importance_score || 0} pts` })
+      );
+    }));
+  }
+
+  async function loadRecentBadges() {
+    const feed = $('#community-badge-feed');
+    if (!feed) return;
+    const sb = getSb();
+    if (!sb) {
+      feed.replaceChildren(h('li', { class: 'muted', text: 'Supabase não configurado.' }));
+      return;
+    }
+    const { data, error } = await sb
+      .from('user_badges')
+      .select('earned_at, badge_code, user_id, badge_definitions(title), profiles(apelido, display_name)')
+      .order('earned_at', { ascending: false })
+      .limit(8);
+    if (error) {
+      feed.replaceChildren(h('li', { class: 'muted', text: 'Sem conquistas recentes.' }));
+      return;
+    }
+    const rows = data || [];
+    if (!rows.length) {
+      feed.replaceChildren(h('li', { class: 'muted', text: 'Publique ou favorite para desbloquear insígnias.' }));
+      return;
+    }
+    feed.replaceChildren(...rows.map((row) => {
+      const nick = row.profiles?.apelido || row.profiles?.display_name || 'membro';
+      const title = row.badge_definitions?.title || row.badge_code;
+      return h('li', {},
+        h('a', { href: `#membro/${row.user_id}`, text: `@${nick}` }),
+        h('span', { text: `ganhou “${title}”` })
+      );
+    }));
+  }
+
+  function syncCommunityMeChip() {
+    const card = $('#community-me-card');
+    if (!card) return;
+    if (!authSessionUser) {
+      card.hidden = true;
+      return;
+    }
+    card.hidden = false;
+    const title = $('#community-me-title');
+    const meta = $('#community-me-meta');
+    const nick = displayNameOf(authSessionUser);
+    if (title) title.textContent = `@${nick}`;
+    if (meta) meta.textContent = `Nv.${authSessionUser.level || 1} · ${levelTitle(authSessionUser.level || 1)} · ${authSessionUser.xp || 0} XP`;
+  }
+
   async function refreshCommunityData() {
-    await Promise.all([loadTopicsFromServer(), loadFeedbacksFromServer()]);
+    await Promise.all([
+      loadTopicsFromServer(),
+      loadFeedbacksFromServer(),
+      loadCommunityRanking(),
+      loadRecentBadges(),
+    ]);
     renderTopics();
     renderFeedbacks();
     syncAuthorDisplays();
+    syncCommunityMeChip();
   }
 
   /* ── Navegação ativa no scroll (pílula deslizante proporcional à rolagem) ── */
@@ -1561,7 +1751,12 @@
     btn: $('#auth-btn'),
     btnIcon: $('#auth-btn .auth-btn-icon'),
     btnLabel: $('#auth-btn .auth-btn-label'),
+    menu: $('#auth-menu'),
+    menuWrap: $('#auth-menu-wrap'),
+    menuLogout: $('#auth-menu-logout'),
     view: $('#view-auth'),
+    viewPerfil: $('#view-perfil'),
+    viewMembro: $('#view-membro'),
     closeBtn: $('#auth-close'),
     tabLogin: $('#tab-login'),
     tabRegister: $('#tab-register'),
@@ -1573,6 +1768,7 @@
     loginSubmit: $('#login-submit'),
     regFirstName: $('#reg-first-name'),
     regLastName: $('#reg-last-name'),
+    regApelido: $('#reg-apelido'),
     regEmail: $('#reg-email'),
     regPassword: $('#reg-password'),
     regAlert: $('#register-alert'),
@@ -1582,31 +1778,42 @@
       loginPassword: $('#err-login-password'),
       regFirstName: $('#err-reg-firstName'),
       regLastName: $('#err-reg-lastName'),
+      regApelido: $('#err-reg-apelido'),
       regEmail: $('#err-reg-email'),
       regPassword: $('#err-reg-password'),
     },
   };
 
   let lastCatalogHash = '#inicio';
+  let authMenuOpen = false;
 
   function formatAuthHandle(user) {
     if (!user) return '';
-    const base = user.firstName || (user.name ? user.name.split(/\s+/)[0] : '') || (user.email ? user.email.split('@')[0] : 'membro');
-    return base.toLowerCase().replace(/[^a-z0-9_.-]/gi, '') || 'membro';
+    const base = user.apelido || user.firstName || (user.name ? user.name.split(/\s+/)[0] : '') || (user.email ? user.email.split('@')[0] : 'membro');
+    return String(base).toLowerCase().replace(/[^a-z0-9_]/g, '') || 'membro';
+  }
+
+  function setAuthMenuOpen(open) {
+    authMenuOpen = Boolean(open) && Boolean(authSessionUser);
+    if (authEls.menu) authEls.menu.hidden = !authMenuOpen;
+    if (authEls.btn) authEls.btn.setAttribute('aria-expanded', String(authMenuOpen));
   }
 
   function updateHeaderAuthUI(user) {
     authSessionUser = user || null;
     syncAuthorDisplays();
+    syncCommunityMeChip();
     if (!authEls.btn) return;
     if (user) {
       const handle = formatAuthHandle(user);
+      const lvl = user.level || 1;
       authEls.btn.classList.add('is-logged');
-      authEls.btn.setAttribute('aria-label', `Conectado como @${handle}. Clique para sair da conta`);
-      authEls.btn.setAttribute('title', `Conectado como ${user.name || user.email} · Clique para sair`);
+      authEls.btn.setAttribute('aria-label', `Conta @${handle}, nível ${lvl}. Abrir menu`);
+      authEls.btn.setAttribute('title', `@${handle} · Nv.${lvl} ${levelTitle(lvl)}`);
       if (authEls.btnIcon) authEls.btnIcon.textContent = '👤';
-      if (authEls.btnLabel) authEls.btnLabel.textContent = `@${handle} · SAIR`;
+      if (authEls.btnLabel) authEls.btnLabel.textContent = `@${handle} · Nv.${lvl}`;
     } else {
+      setAuthMenuOpen(false);
       authEls.btn.classList.remove('is-logged');
       authEls.btn.setAttribute('aria-label', 'Entrar ou criar conta');
       authEls.btn.removeAttribute('title');
@@ -1687,37 +1894,67 @@
     syncSpaPartition();
   }
 
+  function hidePartitionViews() {
+    if (authEls.view) {
+      authEls.view.classList.remove('is-entering');
+      authEls.view.hidden = true;
+    }
+    if (authEls.viewPerfil) authEls.viewPerfil.hidden = true;
+    if (authEls.viewMembro) authEls.viewMembro.hidden = true;
+  }
+
   function syncSpaPartition() {
     if (!authEls.view) return;
     if (isAuthCallbackUrl()) return;
     const hash = window.location.hash || '#inicio';
     const isAuthView = hash === '#auth' || hash === '#auth-login' || hash === '#auth-register';
+    const isPerfil = hash === '#perfil';
+    const membroMatch = hash.match(/^#membro\/([0-9a-f-]{36})$/i);
 
     if (isAuthView) {
       if (hash === '#auth-register') switchAuthTab('register');
       else if (hash === '#auth-login') switchAuthTab('login');
-
+      hidePartitionViews();
       document.body.dataset.view = 'auth';
       authEls.view.hidden = false;
-      authEls.view.classList.remove('is-leaving');
       authEls.view.classList.add('is-entering');
       window.scrollTo({ top: 0, behavior: 'smooth' });
-    } else {
-      if (['#inicio', '#acervo', '#forum'].includes(hash)) {
-        lastCatalogHash = hash;
-      }
-      const wasAuth = document.body.dataset.view === 'auth';
-      delete document.body.dataset.view;
-      authEls.view.classList.remove('is-entering');
-      authEls.view.hidden = true;
+      return;
+    }
 
-      if (wasAuth) {
-        requestScrollEffects();
-        const targetSec = document.querySelector(lastCatalogHash);
-        if (targetSec) {
-          targetSec.scrollIntoView({ behavior: 'smooth' });
-        }
+    if (isPerfil) {
+      if (!authSessionUser) {
+        window.location.hash = '#auth';
+        return;
       }
+      hidePartitionViews();
+      document.body.dataset.view = 'perfil';
+      if (authEls.viewPerfil) authEls.viewPerfil.hidden = false;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      loadPerfilView();
+      return;
+    }
+
+    if (membroMatch) {
+      hidePartitionViews();
+      document.body.dataset.view = 'membro';
+      if (authEls.viewMembro) authEls.viewMembro.hidden = false;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      loadMembroView(membroMatch[1]);
+      return;
+    }
+
+    if (['#inicio', '#acervo', '#forum'].includes(hash)) {
+      lastCatalogHash = hash;
+    }
+    const wasPartition = ['auth', 'perfil', 'membro'].includes(document.body.dataset.view);
+    delete document.body.dataset.view;
+    hidePartitionViews();
+
+    if (wasPartition) {
+      requestScrollEffects();
+      const targetSec = document.querySelector(lastCatalogHash);
+      if (targetSec) targetSec.scrollIntoView({ behavior: 'smooth' });
     }
   }
 
@@ -1806,6 +2043,7 @@
 
     const firstName = (authEls.regFirstName?.value || '').trim();
     const lastName = (authEls.regLastName?.value || '').trim();
+    const apelidoRaw = (authEls.regApelido?.value || '').trim().toLowerCase();
     const email = (authEls.regEmail?.value || '').trim();
     const password = authEls.regPassword?.value || '';
 
@@ -1842,6 +2080,14 @@
       authEls.regPassword?.setAttribute('aria-invalid', 'true');
       hasErr = true;
     }
+    if (apelidoRaw && !/^[a-z0-9_]{3,24}$/.test(apelidoRaw)) {
+      if (authEls.errs.regApelido) {
+        authEls.errs.regApelido.textContent = 'Apelido: 3–24 caracteres (a-z, 0-9, _).';
+        authEls.errs.regApelido.hidden = false;
+      }
+      authEls.regApelido?.setAttribute('aria-invalid', 'true');
+      hasErr = true;
+    }
     if (hasErr) return;
 
     const sb = getSb();
@@ -1857,16 +2103,18 @@
 
     try {
       const name = `${firstName} ${lastName}`.trim();
+      const meta = {
+        first_name: firstName,
+        last_name: lastName,
+        name,
+      };
+      if (apelidoRaw) meta.apelido = apelidoRaw;
       const { data, error } = await sb.auth.signUp({
         email,
         password,
         options: {
           emailRedirectTo: `${window.location.origin}${window.location.pathname}`,
-          data: {
-            first_name: firstName,
-            last_name: lastName,
-            name,
-          },
+          data: meta,
         },
       });
 
@@ -1959,28 +2207,234 @@
     });
   }
 
+  async function renderFavGrid(targetId, userId, { removable = false } = {}) {
+    const grid = document.getElementById(targetId);
+    if (!grid) return;
+    const sb = getSb();
+    if (!sb || !userId) {
+      grid.replaceChildren(h('li', { class: 'muted', text: 'Nenhum favorito.' }));
+      return;
+    }
+    const { data } = await sb
+      .from('profile_favorites')
+      .select('game_key, game_name, poster_url, position')
+      .eq('user_id', userId)
+      .order('position', { ascending: true });
+    const rows = data || [];
+    const countEl = $('#perfil-fav-count');
+    if (countEl && removable) countEl.textContent = String(rows.length);
+    if (!rows.length) {
+      grid.replaceChildren(h('li', { class: 'muted', text: 'Nenhum jogo favorito ainda.' }));
+      return;
+    }
+    grid.replaceChildren(...rows.map((row) => h('li', {},
+      row.poster_url
+        ? h('img', { src: rawgCrop(row.poster_url), alt: '', loading: 'lazy', decoding: 'async' })
+        : h('span', { class: 'monogram', text: initials(row.game_name || '?') }),
+      h('span', { class: 'label', text: row.game_name || row.game_key }),
+      removable
+        ? h('button', {
+          type: 'button',
+          text: 'Remover',
+          onclick: async () => {
+            await sb.from('profile_favorites').delete().eq('user_id', userId).eq('game_key', row.game_key);
+            const authUser = { id: authSessionUser.id, email: authSessionUser.email, created_at: authSessionUser.createdAt, user_metadata: {} };
+            const user = await fetchProfileFor(authUser);
+            if (user) updateHeaderAuthUI(user);
+            await renderFavGrid(targetId, userId, { removable: true });
+            await Promise.all([loadCommunityRanking(), loadRecentBadges()]);
+          },
+        })
+        : null
+    )));
+  }
+
+  async function renderBadgeList(targetId, userId) {
+    const list = document.getElementById(targetId);
+    if (!list) return;
+    const sb = getSb();
+    if (!sb || !userId) {
+      list.replaceChildren(h('li', { class: 'muted', text: 'Sem insígnias.' }));
+      return;
+    }
+    const { data } = await sb
+      .from('user_badges')
+      .select('badge_code, earned_at, badge_definitions(title, description)')
+      .eq('user_id', userId)
+      .order('earned_at', { ascending: false });
+    const rows = data || [];
+    if (!rows.length) {
+      list.replaceChildren(h('li', { class: 'muted', text: 'Nenhuma insígnia ainda. Publique na comunidade!' }));
+      return;
+    }
+    list.replaceChildren(...rows.map((row) => h('li', {},
+      h('strong', { text: row.badge_definitions?.title || row.badge_code }),
+      h('span', { class: 'muted', text: row.badge_definitions?.description || '' })
+    )));
+  }
+
+  async function loadPerfilView() {
+    if (!authSessionUser) return;
+    const sb = getSb();
+    const user = sb
+      ? await fetchProfileFor({ id: authSessionUser.id, email: authSessionUser.email, created_at: authSessionUser.createdAt, user_metadata: {} })
+      : authSessionUser;
+    if (user) updateHeaderAuthUI(user);
+    const u = authSessionUser;
+    const apelido = $('#perfil-apelido');
+    const first = $('#perfil-first');
+    const last = $('#perfil-last');
+    const bio = $('#perfil-bio');
+    const status = $('#perfil-status');
+    const chip = $('#perfil-level-chip');
+    const xpLine = $('#perfil-xp-line');
+    if (apelido) apelido.value = u.apelido || '';
+    if (first) first.value = u.firstName || '';
+    if (last) last.value = u.lastName || '';
+    if (bio) bio.value = u.bio || '';
+    if (status) status.value = u.statusLine || '';
+    if (chip) chip.textContent = `Nv.${u.level || 1} · ${levelTitle(u.level || 1)}`;
+    if (xpLine) xpLine.textContent = `${u.xp || 0} XP · ${u.importanceScore || 0} importância · ${u.topicsCount || 0} publicações`;
+    await Promise.all([
+      renderFavGrid('perfil-fav-grid', u.id, { removable: true }),
+      renderBadgeList('perfil-badge-list', u.id),
+    ]);
+  }
+
+  async function loadMembroView(id) {
+    const title = $('#t-membro');
+    const bio = $('#membro-bio');
+    const meta = $('#membro-meta');
+    const chip = $('#membro-level-chip');
+    const statusLine = $('#membro-status-line');
+    const topicsList = $('#membro-topics');
+    const profile = await fetchProfileById(id);
+    if (!profile) {
+      if (title) title.textContent = 'Membro não encontrado';
+      if (bio) bio.textContent = '';
+      if (meta) meta.textContent = '';
+      return;
+    }
+    const nick = displayNameOf(profile);
+    if (title) title.textContent = `@${nick}`;
+    if (bio) bio.textContent = profile.bio || 'Sem bio ainda.';
+    if (statusLine) statusLine.textContent = profile.statusLine ? `JOGANDO · ${profile.statusLine}` : 'PERFIL PÚBLICO';
+    if (chip) chip.textContent = `Nv.${profile.level || 1} · ${levelTitle(profile.level || 1)}`;
+    if (meta) meta.textContent = `${profile.xp || 0} XP · ${profile.topicsCount || 0} tópicos · ${profile.favoritesCount || 0} favoritos`;
+    await Promise.all([
+      renderFavGrid('membro-fav-grid', id, { removable: false }),
+      renderBadgeList('membro-badge-list', id),
+    ]);
+    if (topicsList) {
+      const mine = topics.filter((t) => t.authorId === id).slice(0, 8);
+      if (!mine.length) {
+        topicsList.replaceChildren(h('li', { class: 'muted', text: 'Nenhuma publicação ainda.' }));
+      } else {
+        topicsList.replaceChildren(...mine.map((t) => h('li', {},
+          h('a', { href: `#forum`, text: t.title }),
+          h('span', { class: 'muted', text: ` · ${t.game}` })
+        )));
+      }
+    }
+  }
+
+  async function handlePerfilSubmit(e) {
+    e.preventDefault();
+    const alertEl = $('#perfil-alert');
+    if (!authSessionUser) {
+      window.location.hash = '#auth';
+      return;
+    }
+    const apelido = ($('#perfil-apelido')?.value || '').trim().toLowerCase();
+    const firstName = ($('#perfil-first')?.value || '').trim();
+    const lastName = ($('#perfil-last')?.value || '').trim();
+    const bio = ($('#perfil-bio')?.value || '').trim();
+    const statusLine = ($('#perfil-status')?.value || '').trim();
+    if (!/^[a-z0-9_]{3,24}$/.test(apelido)) {
+      if (alertEl) {
+        alertEl.hidden = false;
+        alertEl.className = 'status auth-alert is-error';
+        alertEl.textContent = 'Apelido inválido (3–24: a-z, 0-9, _).';
+      }
+      return;
+    }
+    const sb = getSb();
+    if (!sb) return;
+    const displayName = [firstName, lastName].filter(Boolean).join(' ') || apelido;
+    const { error } = await sb.from('profiles').update({
+      apelido,
+      first_name: firstName.slice(0, 50),
+      last_name: lastName.slice(0, 50),
+      bio: bio.slice(0, 280),
+      status_line: statusLine.slice(0, 80),
+      display_name: displayName.slice(0, 120),
+    }).eq('id', authSessionUser.id);
+    if (error) {
+      if (alertEl) {
+        alertEl.hidden = false;
+        alertEl.className = 'status auth-alert is-error';
+        const msg = String(error.message || error.code || '');
+        const code = String(error.code || '');
+        const isTaken = code === '23505'
+          || /duplicate key|unique constraint|profiles_apelido/i.test(msg);
+        const missingCol = code === '42703' || /column .*apelido.*does not exist/i.test(msg);
+        alertEl.textContent = isTaken
+          ? 'Este apelido já está em uso.'
+          : missingCol
+            ? 'Schema desatualizado: aplique a migration de Comunidade no Supabase.'
+            : (msg || 'Não foi possível salvar.');
+      }
+      return;
+    }
+    const user = await fetchProfileFor({ id: authSessionUser.id, email: authSessionUser.email, created_at: authSessionUser.createdAt, user_metadata: {} });
+    if (user) updateHeaderAuthUI(user);
+    if (alertEl) {
+      alertEl.hidden = false;
+      alertEl.className = 'status auth-alert is-success';
+      alertEl.textContent = '✔ Perfil atualizado.';
+    }
+    await loadPerfilView();
+    await Promise.all([loadCommunityRanking(), loadRecentBadges()]);
+  }
+
   function initSpaAuth() {
     if (!authEls.view) return;
 
-    // Clique no botão do cabeçalho: se logado faz logout; se deslogado abre a vertente #auth
-    authEls.btn?.addEventListener('click', () => {
+    authEls.btn?.addEventListener('click', (e) => {
+      e.stopPropagation();
       if (authSessionUser) {
-        handleLogout();
+        setAuthMenuOpen(!authMenuOpen);
       } else {
         window.location.hash = '#auth';
       }
     });
 
-    // Botão fechar / voltar ao acervo
+    authEls.menuLogout?.addEventListener('click', () => {
+      setAuthMenuOpen(false);
+      handleLogout();
+    });
+
+    authEls.menu?.querySelectorAll('a').forEach((a) => {
+      a.addEventListener('click', () => setAuthMenuOpen(false));
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!authMenuOpen) return;
+      if (authEls.menuWrap?.contains(e.target)) return;
+      setAuthMenuOpen(false);
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') setAuthMenuOpen(false);
+    });
+
     authEls.closeBtn?.addEventListener('click', () => {
       window.location.hash = lastCatalogHash || '#inicio';
     });
 
-    // Alternância de abas Login / Registro
     authEls.tabLogin?.addEventListener('click', () => switchAuthTab('login'));
     authEls.tabRegister?.addEventListener('click', () => switchAuthTab('register'));
 
-    // Toggles de visibilidade de senha
     document.querySelectorAll('.auth-pw-toggle').forEach(btn => {
       btn.addEventListener('click', () => {
         const targetId = btn.getAttribute('data-target');
@@ -1994,11 +2448,10 @@
       });
     });
 
-    // Submissão dos formulários
     authEls.formLogin?.addEventListener('submit', handleLoginSubmit);
     authEls.formRegister?.addEventListener('submit', handleRegisterSubmit);
+    $('#form-perfil')?.addEventListener('submit', handlePerfilSubmit);
 
-    // Roteamento por hash (#auth vs #inicio/#acervo/#forum)
     window.addEventListener('hashchange', syncSpaPartition);
     syncSpaPartition();
     restoreAuthSession();

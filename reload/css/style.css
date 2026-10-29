@@ -2594,3 +2594,138 @@ body[data-view="auth"] #forum {
     font-size: 0.78rem;
   }
 }
+
+/* ───────── Comunidade: menu conta, ranking, perfil ───────── */
+.auth-menu-wrap {
+  position: relative;
+}
+.auth-dropdown-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + .4rem);
+  z-index: 80;
+  min-width: 12.5rem;
+  padding: .35rem;
+  background: var(--surface-elevated, #161616);
+  border: 1px solid color-mix(in srgb, var(--text, #fff) 18%, transparent);
+  border-radius: 10px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, .35);
+  display: grid;
+  gap: .15rem;
+}
+.auth-menu-item {
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+  padding: .55rem .7rem;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  font: 600 0.72rem/1.2 var(--mono, ui-monospace, monospace);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+}
+.auth-menu-item:hover,
+.auth-menu-item:focus-visible {
+  background: color-mix(in srgb, var(--hw-yellow, #f5c518) 22%, transparent);
+  outline: none;
+}
+.auth-menu-item--logout {
+  color: #ff6b6b;
+}
+.community-rank-list,
+.community-badge-feed,
+.profile-badge-list,
+.membro-topics,
+.profile-fav-grid {
+  list-style: none;
+  margin: .75rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: .45rem;
+}
+.community-rank-list li,
+.community-badge-feed li,
+.profile-badge-list li,
+.membro-topics li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .35rem .65rem;
+  align-items: baseline;
+  font: 500 0.8rem/1.35 var(--sans, system-ui, sans-serif);
+}
+.community-rank-list a,
+.membro-topics a,
+.topic-author-link {
+  color: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.profile-fav-grid {
+  grid-template-columns: repeat(auto-fill, minmax(5.5rem, 1fr));
+  gap: .65rem;
+}
+.profile-fav-grid li {
+  display: grid;
+  gap: .35rem;
+  margin: 0;
+}
+.profile-fav-grid img {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: 6px;
+  background: #111;
+}
+.profile-fav-grid button {
+  font: 600 0.65rem/1 var(--mono, ui-monospace, monospace);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  border: 0;
+  background: transparent;
+  color: #ff6b6b;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+}
+.partition-profile {
+  padding: 2rem 0 4rem;
+}
+body[data-view="auth"] #inicio,
+body[data-view="auth"] #acervo,
+body[data-view="auth"] #forum,
+body[data-view="perfil"] #inicio,
+body[data-view="perfil"] #acervo,
+body[data-view="perfil"] #forum,
+body[data-view="membro"] #inicio,
+body[data-view="membro"] #acervo,
+body[data-view="membro"] #forum {
+  display: none !important;
+}
+body[data-view="perfil"] #view-auth,
+body[data-view="membro"] #view-auth {
+  display: none !important;
+}
+.profile-card .profile-section {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid color-mix(in srgb, currentColor 14%, transparent);
+}
+.dlg-actions {
+  display: grid;
+  gap: .65rem;
+}
+.dlg-fav-status {
+  margin: 0;
+  font-size: 0.75rem;
+}
+.btn.is-faved {
+  background: color-mix(in srgb, #ff6b6b 22%, transparent);
+  border-color: #ff6b6b;
+}

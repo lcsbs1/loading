@@ -144,6 +144,13 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // Real redirect so relative css/js under /reload/ resolve correctly in the browser.
+  if (pathname === '/') {
+    res.writeHead(302, { Location: '/reload/index.html', 'Cache-Control': 'no-cache' });
+    res.end();
+    return;
+  }
+
   let filePath = resolveSafePath(req.url || '/');
   if (!filePath) {
     sendText(res, 404, '404 Not Found');

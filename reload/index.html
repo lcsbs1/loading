@@ -96,7 +96,7 @@
         <span class="site-nav-pill" aria-hidden="true"></span>
         <a class="active" href="#inicio">[01] DESTAQUES</a>
         <a href="#acervo">[02] ACERVO</a>
-        <a href="#forum">[03] FÓRUM</a>
+        <a href="#forum">[03] COMUNIDADE</a>
       </nav>
 
       <div class="header-controls">
@@ -108,7 +108,14 @@
           </div>
         </form>
 
-        <button class="chip chip--auth" id="auth-btn" type="button" aria-label="Entrar ou criar conta"><span class="auth-btn-icon">👤</span> <span class="auth-btn-label">ENTRAR / REGISTRO</span></button>
+        <div class="auth-menu-wrap" id="auth-menu-wrap">
+          <button class="chip chip--auth" id="auth-btn" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="Entrar ou criar conta"><span class="auth-btn-icon">👤</span> <span class="auth-btn-label">ENTRAR / REGISTRO</span></button>
+          <div class="auth-dropdown-menu" id="auth-menu" role="menu" hidden>
+            <a class="auth-menu-item" id="auth-menu-profile" href="#perfil" role="menuitem"><span class="auth-menu-icon" aria-hidden="true">👤</span> <span>MEU PERFIL</span></a>
+            <a class="auth-menu-item" href="#forum" role="menuitem"><span class="auth-menu-icon" aria-hidden="true">💬</span> <span>COMUNIDADE</span></a>
+            <button class="auth-menu-item auth-menu-item--logout" id="auth-menu-logout" type="button" role="menuitem"><span class="auth-menu-icon" aria-hidden="true">⏻</span> <span>SAIR DA CONTA</span></button>
+          </div>
+        </div>
       </div>
     </div>
   </header>
@@ -183,6 +190,13 @@
             </div>
 
             <div class="field">
+              <label class="label" for="reg-apelido">APELIDO <span class="muted">(opcional)</span></label>
+              <input class="input" id="reg-apelido" name="apelido" type="text" minlength="3" maxlength="24" pattern="[a-zA-Z0-9_]{3,24}" placeholder="Ex.: ada_lovelace" autocomplete="username" spellcheck="false">
+              <span class="auth-pw-hint">3–24 chars · a-z, 0-9 e _. Vazio = geramos um.</span>
+              <span class="auth-field-err" id="err-reg-apelido" role="alert" hidden></span>
+            </div>
+
+            <div class="field">
               <label class="label" for="reg-email">E-MAIL <span aria-hidden="true">*</span></label>
               <input class="input" id="reg-email" name="email" type="email" required placeholder="voce@exemplo.com" autocomplete="email">
               <span class="auth-field-err" id="err-reg-email" role="alert" hidden></span>
@@ -244,7 +258,7 @@
             <div class="console-footer">
               <div class="hero-actions">
                 <a class="btn btn--primary" href="#acervo">INICIAR CATÁLOGO [ENTER]</a>
-                <a class="btn btn--secondary" href="#forum">ACESSAR FÓRUM</a>
+                <a class="btn btn--secondary" href="#forum">ACESSAR COMUNIDADE</a>
               </div>
               <div class="console-persist">
                 <span class="persist-title">MODO OFFLINE + CLOUD</span>
@@ -358,8 +372,8 @@
             <!-- Cabeçalho do Fórum: identifica a seção de análises da comunidade e o modo de armazenamento local sem anúncios -->
             <div class="forum-header-bar">
               <div class="forum-header-left">
-                <span class="hw-badge hw-badge--dark">FÓRUM // COMUNIDADE</span>
-                <h2 class="bento-heading" id="t-forum">ANÁLISES &amp; TÓPICOS POPULARES</h2>
+                <span class="hw-badge hw-badge--dark">COMUNIDADE // FÓRUM</span>
+                <h2 class="bento-heading" id="t-forum">ANÁLISES, PERFIS &amp; INSÍGNIAS</h2>
               </div>
               <span class="hw-meta">SUPABASE · CONTA OBRIGATÓRIA · ZERO ADS</span>
             </div>
@@ -419,9 +433,37 @@
             </div>
 
             <div class="bento-spec-inner">
+              <article class="spec-card spec-card--dark reveal" id="community-me-card" hidden>
+                <div class="spec-card-top">
+                  <span class="spec-num spec-num--yellow">SUA CONTA // 00</span>
+                  <span class="spec-tag spec-tag--light">[NÍVEL]</span>
+                </div>
+                <h3 class="spec-title spec-title--light" id="community-me-title">@membro</h3>
+                <p class="spec-desc spec-desc--light" id="community-me-meta">Nv.1 · Novato · 0 XP</p>
+                <a class="btn btn--secondary" href="#perfil" id="community-me-edit">EDITAR PERFIL →</a>
+              </article>
+
+              <article class="spec-card spec-card--yellow reveal" id="community-rank-card" aria-labelledby="t-rank">
+                <div class="spec-card-top">
+                  <span class="spec-num">MEMBROS // 01</span>
+                  <span class="spec-tag">[DESTAQUE]</span>
+                </div>
+                <h3 class="spec-title" id="t-rank">Membros em destaque</h3>
+                <ol class="community-rank-list" id="community-rank-list" aria-label="Ranking da comunidade"></ol>
+              </article>
+
+              <article class="spec-card spec-card--white reveal" id="community-badges-card" aria-labelledby="t-recent-badges">
+                <div class="spec-card-top">
+                  <span class="spec-num spec-num--red">INSÍGNIAS // 02</span>
+                  <span class="spec-tag">[CONQUISTAS]</span>
+                </div>
+                <h3 class="spec-title" id="t-recent-badges">Conquistas recentes</h3>
+                <ul class="community-badge-feed" id="community-badge-feed" aria-label="Conquistas recentes"></ul>
+              </article>
+
               <article class="spec-card spec-card--yellow reveal">
                 <div class="spec-card-top">
-                  <span class="spec-num">RECURSO // 01</span>
+                  <span class="spec-num">RECURSO // 03</span>
                   <span class="spec-tag">[HOVER ENGINE]</span>
                 </div>
                 <h3 class="spec-title">Preview Dinâmico de Gameplay</h3>
@@ -528,6 +570,97 @@
         </div>
       </div>
     </section>
+
+    <section class="partition-profile" id="view-perfil" hidden aria-labelledby="t-perfil">
+      <div class="wrap auth-container">
+        <div class="auth-card bento-module profile-card">
+          <div class="auth-topbar">
+            <div class="auth-topbar-left">
+              <span class="hw-badge hw-badge--yellow">PERFIL // EDITÁVEL</span>
+              <span class="hw-meta" id="perfil-level-chip">Nv.1 · Novato</span>
+            </div>
+            <a class="auth-close-btn" href="#forum">✕ VOLTAR À COMUNIDADE</a>
+          </div>
+          <div class="auth-header">
+            <span class="hw-kicker">SUA IDENTIDADE NA COMUNIDADE</span>
+            <h2 class="bento-heading" id="t-perfil">EDITAR PERFIL</h2>
+            <p class="auth-subtitle" id="perfil-xp-line">0 XP · importance server-side</p>
+          </div>
+          <form class="auth-form" id="form-perfil" novalidate>
+            <div class="form-row">
+              <div class="field">
+                <label class="label" for="perfil-apelido">APELIDO <span aria-hidden="true">*</span></label>
+                <input class="input" id="perfil-apelido" name="apelido" required minlength="3" maxlength="24" pattern="[a-z0-9_]{3,24}" spellcheck="false" autocomplete="username">
+              </div>
+              <div class="field">
+                <label class="label" for="perfil-status">JOGANDO AGORA</label>
+                <input class="input" id="perfil-status" name="status_line" maxlength="80" placeholder="Ex.: Elden Ring NG+">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="field">
+                <label class="label" for="perfil-first">NOME</label>
+                <input class="input" id="perfil-first" name="first_name" maxlength="50">
+              </div>
+              <div class="field">
+                <label class="label" for="perfil-last">SOBRENOME</label>
+                <input class="input" id="perfil-last" name="last_name" maxlength="50">
+              </div>
+            </div>
+            <div class="field">
+              <label class="label" for="perfil-bio">BIO</label>
+              <textarea class="input" id="perfil-bio" name="bio" maxlength="280" rows="3" placeholder="Quem você é na comunidade…"></textarea>
+            </div>
+            <p class="status auth-alert" id="perfil-alert" role="status" aria-live="polite" hidden></p>
+            <div class="auth-actions">
+              <span class="label">Apelido único · Stats só no servidor</span>
+              <button class="btn btn--primary" type="submit" id="perfil-submit">SALVAR PERFIL →</button>
+            </div>
+          </form>
+          <div class="profile-section">
+            <h3 class="strong">Jogos favoritos (<span id="perfil-fav-count">0</span>/8)</h3>
+            <ul class="profile-fav-grid" id="perfil-fav-grid" aria-label="Seus jogos favoritos"></ul>
+            <p class="muted">Favorite pelo diálogo do acervo.</p>
+          </div>
+          <div class="profile-section">
+            <h3 class="strong">Suas insígnias</h3>
+            <ul class="profile-badge-list" id="perfil-badge-list" aria-label="Suas insígnias"></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="partition-profile" id="view-membro" hidden aria-labelledby="t-membro">
+      <div class="wrap auth-container">
+        <div class="auth-card bento-module profile-card">
+          <div class="auth-topbar">
+            <div class="auth-topbar-left">
+              <span class="hw-badge hw-badge--dark">MEMBRO // PÚBLICO</span>
+              <span class="hw-meta" id="membro-level-chip">Nv.1 · Novato</span>
+            </div>
+            <a class="auth-close-btn" href="#forum">✕ VOLTAR À COMUNIDADE</a>
+          </div>
+          <div class="auth-header">
+            <span class="hw-kicker" id="membro-status-line"></span>
+            <h2 class="bento-heading" id="t-membro">@membro</h2>
+            <p class="auth-subtitle" id="membro-bio"></p>
+            <p class="muted" id="membro-meta"></p>
+          </div>
+          <div class="profile-section">
+            <h3 class="strong">Estante de favoritos</h3>
+            <ul class="profile-fav-grid" id="membro-fav-grid"></ul>
+          </div>
+          <div class="profile-section">
+            <h3 class="strong">Insígnias</h3>
+            <ul class="profile-badge-list" id="membro-badge-list"></ul>
+          </div>
+          <div class="profile-section">
+            <h3 class="strong">Últimas publicações</h3>
+            <ul class="membro-topics" id="membro-topics"></ul>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 
   <footer class="site-footer">
@@ -543,7 +676,7 @@
       <div class="footer-links">
         <a class="link" href="#inicio">[01] Destaques</a>
         <a class="link" href="#acervo">[02] Acervo</a>
-        <a class="link" href="#forum">[03] Fórum</a>
+        <a class="link" href="#forum">[03] Comunidade</a>
         <a class="link" href="https://github.com/" rel="noopener" target="_blank">GitHub ↗<span class="sr-only"> (abre em nova aba)</span></a>
       </div>
     </div>
@@ -574,7 +707,9 @@
         </div>
         <div class="desc" id="g-desc"></div>
         <div class="dlg-actions">
-          <button class="btn btn--primary" type="button" id="g-discuss">PUBLICAR ANÁLISE NO FÓRUM →</button>
+          <button class="btn btn--secondary" type="button" id="g-favorite" aria-pressed="false">♡ FAVORITAR</button>
+          <button class="btn btn--primary" type="button" id="g-discuss">PUBLICAR ANÁLISE NA COMUNIDADE →</button>
+          <p class="status dlg-fav-status" id="g-fav-status" role="status" aria-live="polite" hidden></p>
         </div>
       </aside>
     </div>
