@@ -1674,8 +1674,34 @@
     if (authEls.formRegister) authEls.formRegister.hidden = isLogin;
   }
 
+  function isAuthCallbackUrl() {
+    const hashParams = new URLSearchParams((window.location.hash || '').replace(/^#/, ''));
+    const query = new URLSearchParams(window.location.search || '');
+    return hashParams.has('access_token')
+      || hashParams.has('refresh_token')
+      || hashParams.has('error_description')
+      || query.has('code')
+      || query.has('error_description');
+  }
+
+  function leaveAuthCallback() {
+    const url = new URL(window.location.href);
+    url.searchParams.delete('code');
+    url.searchParams.delete('error');
+    url.searchParams.delete('error_code');
+    url.searchParams.delete('error_description');
+    url.hash = 'inicio';
+    const next = `${url.pathname}${url.search}${url.hash}`;
+    const current = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+    if (current !== next) {
+      history.replaceState(null, '', next);
+    }
+    syncSpaPartition();
+  }
+
   function syncSpaPartition() {
     if (!authEls.view) return;
+    if (isAuthCallbackUrl()) return;
     const hash = window.location.hash || '#inicio';
     const isAuthView = hash === '#auth' || hash === '#auth-login' || hash === '#auth-register';
 
@@ -1847,6 +1873,7 @@
         email,
         password,
         options: {
+          emailRedirectTo: `${window.location.origin}${window.location.pathname}`,
           data: {
             first_name: firstName,
             last_name: lastName,
@@ -1914,15 +1941,18 @@
       return;
     }
 
+    const openedFromCallback = isAuthCallbackUrl();
     try {
       const { data, error } = await sb.auth.getSession();
+      if (openedFromCallback) leaveAuthCallback();
       if (error || !data.session?.user) {
         updateHeaderAuthUI(null);
-        return;
+      } else {
+        const user = await fetchProfileFor(data.session.user);
+        updateHeaderAuthUI(user);
       }
-      const user = await fetchProfileFor(data.session.user);
-      updateHeaderAuthUI(user);
     } catch {
+      if (openedFromCallback) leaveAuthCallback();
       updateHeaderAuthUI(null);
     }
 
@@ -1934,6 +1964,9 @@
       if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED' || event === 'INITIAL_SESSION') {
         const user = await fetchProfileFor(session.user);
         updateHeaderAuthUI(user);
+        if (isAuthCallbackUrl() || (openedFromCallback && !window.location.hash.startsWith('#inicio'))) {
+          leaveAuthCallback();
+        }
       }
     });
   }

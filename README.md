@@ -26,8 +26,11 @@ As chaves do Supabase ficam em `reload/js/config.js` (anon/publishable). Opciona
 
 ### Setup Supabase (já aplicado no projeto `loading`)
 1. Schema/RLS: `supabase/migrations/20261028152110_forum_feedback_auth.sql`
-2. Auth → Email ligado; em lab local, desative **Confirm email**
-3. Site URL / Redirect: `http://localhost:3000` e `http://localhost:3000/reload/index.html`
+2. Auth → Email ligado. Em produção a confirmação de e-mail permanece ativa. No lab local, pode desativar **Confirm email**.
+3. URL Configuration:
+   - **Site URL:** `https://loading-lcsbs.vercel.app`
+   - **Redirect URLs:** `https://loading-lcsbs.vercel.app/**`, `https://loading-virid.vercel.app/**`, `http://localhost:3000/**`, `http://127.0.0.1:3000/**`
+4. O cadastro envia `emailRedirectTo` com a origem da página (`origin` + `pathname`). O link de confirmação só volta para essa origem se ela estiver na lista acima.
 
 ### Scripts
 - `npm start` — servidor estático
