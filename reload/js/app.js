@@ -802,6 +802,17 @@
     }
   }
 
+  function websiteLink(website) {
+    try {
+      const url = new URL(website);
+      if (url.protocol !== 'http:' && url.protocol !== 'https:') return null;
+      return h('div', {}, h('dt', { class: 'label', text: 'Site oficial' }),
+        h('dd', {}, h('a', { class: 'link', href: url.href, rel: 'noopener noreferrer', target: '_blank', text: `${url.hostname} ↗` })));
+    } catch {
+      return null;
+    }
+  }
+
   function fillSpecs(g) {
     $('#g-specs').replaceChildren(...[
       spec('Lançamento', fmtDate(g.released)),
@@ -811,8 +822,7 @@
       spec('Publicadora', g.publishers),
       spec('Metacritic', g.metacritic ? h('span', { class: 'spec-badge', text: String(g.metacritic) }) : null),
       spec('Nota RAWG', g.rating ? h('span', { class: 'spec-badge', text: `★ ${g.rating.toFixed(2)} / 5` }) : null),
-      g.website ? h('div', {}, h('dt', { class: 'label', text: 'Site oficial' }),
-        h('dd', {}, h('a', { class: 'link', href: g.website, rel: 'noopener', target: '_blank', text: new URL(g.website).hostname + ' ↗' }))) : null,
+      websiteLink(g.website),
     ].filter(Boolean));
   }
 
@@ -989,8 +999,8 @@
           const description = (d.description_raw || '').split(/\n\s*(Español|Русский|Deutsch|Français)\s*\n/)[0].trim();
           Object.assign(g, {
             description,
-            developers: (d.developers || []).map(x => x.name),
-            publishers: (d.publishers || []).map(x => x.name),
+            developers: (d.developers || []).map(x => x && x.name).filter(Boolean),
+            publishers: (d.publishers || []).map(x => x && x.name).filter(Boolean),
             genres: (d.genres && d.genres.length) ? d.genres.map(x => (typeof I18N !== 'undefined' ? I18N.genre(x.name) : x.name)) : g.genres,
             website: d.website || null,
             image: g.image || d.background_image,

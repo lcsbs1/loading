@@ -9,6 +9,9 @@
     }
   },
   "rewrites": [
+    { "source": "/api/rawg/games/:id/screenshots", "destination": "/api/rawg?segments=games/:id/screenshots" },
+    { "source": "/api/rawg/games/:id", "destination": "/api/rawg?segments=games/:id" },
+    { "source": "/api/rawg/games", "destination": "/api/rawg?segments=games" },
     { "source": "/reload/(.*)", "destination": "/$1" },
     { "source": "/reload", "destination": "/index.html" }
   ],

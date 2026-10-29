@@ -178,6 +178,10 @@ if (!i18nContent.includes('/api/translate')) {
 ok('i18n.js usa o proxy de tradução');
 
 const vercelConfig = JSON.parse(fs.readFileSync(path.join(ROOT, 'vercel.json'), 'utf8'));
+const rawgRoutes = JSON.stringify(vercelConfig.rewrites || []);
+if (!rawgRoutes.includes('/api/rawg/games/:id') || !rawgRoutes.includes('screenshots')) {
+  fail('vercel.json deve reescrever a ficha e os screenshots para /api/rawg');
+}
 if (vercelConfig.outputDirectory !== 'reload') {
   fail('vercel.json deve publicar só a pasta reload');
 }
