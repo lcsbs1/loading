@@ -8,7 +8,7 @@ npx skills add https://github.com/heygen-com/hyperframes --skill hyperframes-cli
 npx skills add https://github.com/mattpocock/skills --skill improve-codebase-architecture
 npx skills add https://github.com/mattpocock/skills --skill tdd
 npx skills add https://github.com/anthropics/skills --skill frontend-design
-npx skills add https://github.com/heygen-com/hyperframes --skill gsap
+npx skills add https://github.com/greensock/gsap-skills
 npx skills add https://github.com/lottiefiles/motion-design-skill --skill motion-design
 npx skills add https://github.com/obra/superpowers --skill systematic-debugging
 npx skills add https://github.com/anthropics/skills --skill webapp-testing

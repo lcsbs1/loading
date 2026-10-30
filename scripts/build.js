@@ -22,6 +22,10 @@ const jsFiles = [
   'reload/js/config.local.js',
   'reload/js/supabaseClient.js',
   'reload/js/i18n.js',
+  'reload/js/snake.js',
+  'reload/js/sfx.js',
+  'reload/js/pwa.js',
+  'reload/sw.js',
   'reload/js/app.js',
   'scripts/serve.js',
 ];
@@ -38,11 +42,16 @@ for (const file of jsFiles) {
 const criticalFiles = [
   'reload/index.html',
   'reload/css/style.css',
+  'reload/manifest.webmanifest',
+  'reload/assets/icons/icon.svg',
+  'reload/assets/icons/icon-192.png',
+  'reload/assets/icons/icon-512.png',
   'reload/assets/snake/head.svg',
   'reload/assets/snake/body.svg',
   'reload/assets/snake/seed.svg',
   'supabase/migrations/20261028152110_forum_feedback_auth.sql',
   'supabase/migrations/20261028202100_author_display_from_profile.sql',
+  'supabase/migrations/20261030180000_diario_reacoes.sql',
   '.env.example',
 ];
 
@@ -241,5 +250,54 @@ if (!authorDisplayMigration.includes('set_author_display_from_profile')) {
   fail('migration de author_display ausente/incompleta');
 }
 ok('Migration author_display a partir do profile verificada');
+
+// Verificações Loading... v2: PWA, Snake, Diário, Filtros e Reações
+const v2HtmlHooks = [
+  'id="platforms"',
+  'id="eras"',
+  'id="ordering"',
+  'id="g-log"',
+  'id="snake-dialog"',
+  'id="sfx-btn"',
+];
+for (const hook of v2HtmlHooks) {
+  if (!htmlContent.includes(hook)) {
+    fail(`Hook v2 ausente no HTML: ${hook}`);
+  }
+}
+ok('Hooks de filtros, diário, snake e sfx verificados no HTML');
+
+const swContent = fs.readFileSync(path.join(ROOT, 'reload/sw.js'), 'utf8');
+if (swContent.includes('cache.put(req, res)') && !swContent.includes('supabase.co')) {
+  fail('sw.js deve isolar o Supabase de cache offline');
+}
+ok('sw.js não intercepta chamadas de autenticação e dados do Supabase');
+
+const manifestContent = JSON.parse(fs.readFileSync(path.join(ROOT, 'reload/manifest.webmanifest'), 'utf8'));
+if (!manifestContent.name || !manifestContent.icons || manifestContent.icons.length < 3) {
+  fail('manifest.webmanifest incompleto');
+}
+ok('manifest.webmanifest verificado com ícones');
+
+const diarioMigration = fs.readFileSync(
+  path.join(ROOT, 'supabase/migrations/20261030180000_diario_reacoes.sql'),
+  'utf8'
+);
+if (!diarioMigration.includes('game_logs') || !diarioMigration.includes('forum_reactions') || !diarioMigration.includes('enable row level security')) {
+  fail('migration de diário e reações incompleta');
+}
+ok('Migration SQL de diário e reações verificada');
+
+if (!appContent.includes("from('game_logs')") || !appContent.includes("from('forum_reactions')")) {
+  fail('hooks de game_logs ou forum_reactions ausentes em app.js');
+}
+ok('Hooks de game_logs e forum_reactions verificados em app.js');
+
+try {
+  execSync('node --test scripts/snake.test.js', { stdio: 'pipe' });
+  ok('Testes unitários do minigame Snake executados com sucesso');
+} catch (err) {
+  fail(`Falha nos testes do Snake:\n${err.message}`);
+}
 
 console.log('\nBuild verificado com sucesso.');

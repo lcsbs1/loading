@@ -234,6 +234,8 @@
   const state = {
     query: '',
     platform: '',
+    era: '',
+    ordering: '-added',
     next: null,
     ctrl: null,
     current: null,
@@ -254,6 +256,9 @@
     refreshBtn: $('#acervo-refresh-btn'),
     q: $('#q'),
     platforms: $('#platforms'),
+    eras: $('#eras'),
+    ordering: $('#ordering'),
+    filtersReset: $('#filters-reset'),
     dlg: $('#game-dialog'),
     topics: $('#topics'),
     form: $('#topic-form'),
@@ -615,7 +620,29 @@
       return;
     }
     const q = state.query.toLowerCase();
-    const list = SEED.filter(g => (!q || g.name.toLowerCase().includes(q)));
+    let list = [...SEED, ...TRENDING_POOL].filter(g => {
+      if (q && !g.name.toLowerCase().includes(q)) return false;
+      if (state.platform) {
+        const platMap = {
+          '1': 'PC', '2': 'PlayStation', '3': 'Xbox', '7': 'Nintendo',
+          '11': 'SEGA', '9': 'Atari', '10': 'Commodore'
+        };
+        const targetPlat = platMap[state.platform];
+        if (targetPlat && !(g.platforms || []).some(p => p.toLowerCase().includes(targetPlat.toLowerCase()))) return false;
+      }
+      if (state.era) {
+        const parts = state.era.split(',');
+        const startY = parseInt(parts[0].slice(0, 4), 10);
+        const endY = parseInt(parts[1].slice(0, 4), 10);
+        const gY = parseInt(String(g.released || '').slice(0, 4), 10);
+        if (gY && (gY < startY || gY > endY)) return false;
+      }
+      return true;
+    });
+    if (state.ordering === '-metacritic') list.sort((a, b) => (b.metacritic || 0) - (a.metacritic || 0));
+    else if (state.ordering === '-released') list.sort((a, b) => String(b.released || '').localeCompare(String(a.released || '')));
+    else if (state.ordering === 'released') list.sort((a, b) => String(a.released || '').localeCompare(String(b.released || '')));
+    else if (state.ordering === 'name') list.sort((a, b) => a.name.localeCompare(b.name));
     render(list.map(g => ({ ...g, source: 'seed' })));
     if (els.more) els.more.hidden = true;
     if (els.infiniteLoader) els.infiniteLoader.hidden = true;
@@ -668,12 +695,16 @@
     if (append && state.next) url = state.next;
     else {
       const p = new URLSearchParams({ page_size: String(PAGE_SIZE) });
-      if (state.query) { p.set('search', state.query); p.set('search_precise', 'true'); }
-      else {
-        p.set('ordering', '-added');
+      if (state.query) {
+        p.set('search', state.query);
+        p.set('search_precise', 'true');
+        if (state.ordering && state.ordering !== '-added') p.set('ordering', state.ordering);
+      } else {
+        p.set('ordering', state.ordering || '-added');
         if (state.popularPage > 1) p.set('page', String(state.popularPage));
       }
       if (state.platform) p.set('parent_platforms', state.platform);
+      if (state.era) p.set('dates', state.era);
       url = `${API}/games?${p}`;
     }
 
@@ -999,6 +1030,7 @@
     fillSpecs(g);
     renderDescription(g, cascade);
     syncFavoriteButton(g);
+    syncLogPanel(g);
   }
 
   async function openGame(g) {
@@ -1105,6 +1137,157 @@
     btn.textContent = faved ? '♥ NOS FAVORITOS' : '♡ FAVORITAR';
   }
 
+  let currentLogState = null;
+  let gameLogsSupported = true;
+
+  async function syncLogPanel(g) {
+    const panel = $('#g-log');
+    if (!panel) return;
+    const msg = $('#g-log-msg');
+    const clearBtn = $('#g-log-clear');
+    const ratingText = $('#g-log-rating-text');
+    if (msg) { msg.hidden = true; msg.textContent = ''; }
+
+    panel.querySelectorAll('#g-log-status button').forEach(b => {
+      b.setAttribute('aria-checked', 'false');
+    });
+    panel.querySelectorAll('#g-log-rating .star-pick').forEach(b => {
+      b.setAttribute('aria-pressed', 'false');
+      b.classList.remove('is-active');
+    });
+    if (clearBtn) clearBtn.hidden = true;
+    if (ratingText) ratingText.textContent = 'Sem nota';
+    currentLogState = null;
+
+    if (!g || !authSessionUser || !gameLogsSupported) return;
+    const sb = getSb();
+    if (!sb) return;
+
+    try {
+      const key = gameKeyOf(g);
+      const { data, error } = await sb
+        .from('game_logs')
+        .select('id, status, rating')
+        .eq('user_id', authSessionUser.id)
+        .eq('game_key', key)
+        .maybeSingle();
+
+      if (error) {
+        if (error.code === '42P01' || error.code === 'PGRST205' || /does not exist|relation/i.test(error.message)) {
+          gameLogsSupported = false;
+          panel.hidden = true;
+          return;
+        }
+        return;
+      }
+
+      if (data) {
+        currentLogState = data;
+        const activeBtn = panel.querySelector(`#g-log-status button[data-status="${data.status}"]`);
+        if (activeBtn) activeBtn.setAttribute('aria-checked', 'true');
+        if (clearBtn) clearBtn.hidden = false;
+
+        if (data.rating) {
+          panel.querySelectorAll('#g-log-rating .star-pick').forEach(b => {
+            const val = parseInt(b.dataset.val, 10);
+            const active = val <= data.rating;
+            b.setAttribute('aria-pressed', String(active));
+            b.classList.toggle('is-active', active);
+          });
+          if (ratingText) ratingText.textContent = `Nota: ${data.rating}/5`;
+        }
+      }
+    } catch (_) {}
+  }
+
+  $('#g-log-status')?.addEventListener('click', async (e) => {
+    const btn = e.target.closest('button[data-status]');
+    if (!btn) return;
+    if (!requireAuth('Entre na sua conta para registrar no diário.')) return;
+    const g = state.current;
+    if (!g) return;
+    const sb = getSb();
+    if (!sb) return;
+
+    const newStatus = btn.dataset.status;
+    const key = gameKeyOf(g);
+    const yr = g.released ? parseInt(String(g.released).slice(0, 4), 10) : null;
+    const rating = currentLogState?.rating || null;
+
+    const { error } = await sb.from('game_logs').upsert({
+      user_id: authSessionUser.id,
+      game_key: key,
+      game_name: String(g.name || 'Jogo').slice(0, 160),
+      poster_url: g.image || '',
+      released_year: (yr && !isNaN(yr)) ? yr : null,
+      status: newStatus,
+      rating: rating,
+    }, { onConflict: 'user_id,game_key' });
+
+    if (error) {
+      const msg = $('#g-log-msg');
+      if (msg) {
+        msg.hidden = false;
+        msg.className = 'status log-status-msg is-error';
+        msg.textContent = error.message || 'Erro ao registrar no diário.';
+      }
+      return;
+    }
+
+    if (window.LoadingSfx) LoadingSfx.play('toggle');
+    await syncLogPanel(g);
+    const user = await fetchProfileFor({ id: authSessionUser.id, email: authSessionUser.email, user_metadata: {}, created_at: authSessionUser.createdAt });
+    if (user) updateHeaderAuthUI(user);
+    await Promise.all([loadCommunityRanking(), loadRecentBadges()]);
+    syncCommunityMeChip();
+  });
+
+  $('#g-log-rating')?.addEventListener('click', async (e) => {
+    const star = e.target.closest('.star-pick');
+    if (!star) return;
+    if (!requireAuth('Entre na sua conta para avaliar no diário.')) return;
+    const g = state.current;
+    if (!g) return;
+    const sb = getSb();
+    if (!sb) return;
+
+    const ratingVal = parseInt(star.dataset.val, 10);
+    const key = gameKeyOf(g);
+    const currentStatus = currentLogState?.status || 'jogando';
+    const yr = g.released ? parseInt(String(g.released).slice(0, 4), 10) : null;
+
+    const { error } = await sb.from('game_logs').upsert({
+      user_id: authSessionUser.id,
+      game_key: key,
+      game_name: String(g.name || 'Jogo').slice(0, 160),
+      poster_url: g.image || '',
+      released_year: (yr && !isNaN(yr)) ? yr : null,
+      status: currentStatus,
+      rating: ratingVal,
+    }, { onConflict: 'user_id,game_key' });
+
+    if (!error) {
+      if (window.LoadingSfx) LoadingSfx.play('click');
+      await syncLogPanel(g);
+      const user = await fetchProfileFor({ id: authSessionUser.id, email: authSessionUser.email, user_metadata: {}, created_at: authSessionUser.createdAt });
+      if (user) updateHeaderAuthUI(user);
+    }
+  });
+
+  $('#g-log-clear')?.addEventListener('click', async () => {
+    if (!authSessionUser || !state.current) return;
+    const sb = getSb();
+    if (!sb) return;
+    const key = gameKeyOf(state.current);
+    await sb.from('game_logs').delete().eq('user_id', authSessionUser.id).eq('game_key', key);
+    if (window.LoadingSfx) LoadingSfx.play('click');
+    await syncLogPanel(state.current);
+    const user = await fetchProfileFor({ id: authSessionUser.id, email: authSessionUser.email, user_metadata: {}, created_at: authSessionUser.createdAt });
+    if (user) updateHeaderAuthUI(user);
+    await Promise.all([loadCommunityRanking(), loadRecentBadges()]);
+    syncCommunityMeChip();
+  });
+
   $('#g-favorite')?.addEventListener('click', async () => {
     const status = $('#g-fav-status');
     if (!requireAuth('Entre na conta para favoritar jogos.')) return;
@@ -1155,12 +1338,59 @@
     e.preventDefault(); onSearch();
     $('#acervo').scrollIntoView({ behavior: 'smooth' });
   });
+  function updateFilterResetUI() {
+    const hasFilter = Boolean(state.platform || state.era || (state.ordering && state.ordering !== '-added'));
+    if (els.filtersReset) els.filtersReset.hidden = !hasFilter;
+  }
+
   if (els.platforms) {
     els.platforms.addEventListener('click', e => {
       const b = e.target.closest('button[data-p]');
       if (!b) return;
       els.platforms.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
-      state.platform = b.dataset.p; state.next = null; loadGames();
+      state.platform = b.dataset.p;
+      state.next = null;
+      updateFilterResetUI();
+      loadGames();
+    });
+  }
+
+  if (els.eras) {
+    els.eras.addEventListener('click', e => {
+      const b = e.target.closest('button[data-era]');
+      if (!b) return;
+      els.eras.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+      state.era = b.dataset.era;
+      state.next = null;
+      updateFilterResetUI();
+      loadGames();
+    });
+  }
+
+  if (els.ordering) {
+    els.ordering.addEventListener('change', () => {
+      state.ordering = els.ordering.value;
+      state.next = null;
+      updateFilterResetUI();
+      loadGames();
+    });
+  }
+
+  if (els.filtersReset) {
+    els.filtersReset.addEventListener('click', () => {
+      state.platform = '';
+      state.era = '';
+      state.ordering = '-added';
+      state.next = null;
+      if (els.platforms) {
+        els.platforms.querySelectorAll('button').forEach((x, i) => x.setAttribute('aria-pressed', String(i === 0)));
+      }
+      if (els.eras) {
+        els.eras.querySelectorAll('button').forEach((x, i) => x.setAttribute('aria-pressed', String(i === 0)));
+      }
+      if (els.ordering) els.ordering.value = '-added';
+      updateFilterResetUI();
+      loadGames();
     });
   }
 
@@ -1211,6 +1441,8 @@
   const clean = (s, max) => String(s || '').replace(/\s+\n/g, '\n').trim().slice(0, max);
   const lastActivity = t => Math.max(t.at, ...(t.replies.length ? t.replies.map(r => r.at) : [t.at]));
 
+  let forumReactionsMap = new Map();
+
   function mapTopicRow(row) {
     const replies = (row.forum_replies || [])
       .slice()
@@ -1229,6 +1461,7 @@
       game: row.game || 'Geral',
       title: row.title,
       body: row.body,
+      rating: row.rating || null,
       pinned: Boolean(row.pinned),
       at: new Date(row.created_at).getTime(),
       replies,
@@ -1243,7 +1476,7 @@
     }
     const { data, error } = await sb
       .from('forum_topics')
-      .select('id, author_id, author_display, game, title, body, pinned, created_at, forum_replies(id, author_id, author_display, body, created_at)')
+      .select('id, author_id, author_display, game, title, body, rating, pinned, created_at, forum_replies(id, author_id, author_display, body, created_at)')
       .order('created_at', { ascending: false });
     if (error) {
       console.error('[forum] load', error);
@@ -1251,6 +1484,29 @@
       return;
     }
     topics = (data || []).map(mapTopicRow);
+
+    // Carrega reações em lote para tópicos e respostas
+    try {
+      const allIds = [];
+      topics.forEach(t => {
+        allIds.push(t.id);
+        (t.replies || []).forEach(r => allIds.push(r.id));
+      });
+      if (allIds.length) {
+        const { data: reactData } = await sb
+          .from('forum_reactions')
+          .select('target_id, kind, user_id')
+          .in('target_id', allIds);
+        forumReactionsMap.clear();
+        (reactData || []).forEach(r => {
+          const key = `${r.target_id}:${r.kind}`;
+          const entry = forumReactionsMap.get(key) || { count: 0, userReacted: false };
+          entry.count++;
+          if (authSessionUser && r.user_id === authSessionUser.id) entry.userReacted = true;
+          forumReactionsMap.set(key, entry);
+        });
+      }
+    } catch (_) {}
   }
 
   function findPosterForGame(gameName) {
@@ -1309,7 +1565,7 @@
       h('div', { class: 'topic-content' },
         h('div', { class: 'topic-header' },
           h('span', { class: 'topic-game', text: `[${gameLabel.toUpperCase()}]` }),
-          h('span', { class: 'topic-stars', 'aria-label': '5 estrelas', text: '★★★★★' }),
+          t.rating ? h('span', { class: 'topic-stars topic-rating-stars', 'aria-label': `${t.rating} estrelas`, text: '★'.repeat(t.rating) + '☆'.repeat(5 - t.rating) }) : null,
           t.pinned ? h('span', { class: 'pin', text: 'Fixado' }) : null
         ),
         h('h3', { id: `th-${t.id}` }, t.title),
@@ -1322,6 +1578,7 @@
           h('time', { datetime: new Date(t.at).toISOString(), text: ago(t.at) })
         ),
         h('p', { class: 'topic-body', text: t.body }),
+        createReactionBar('topic', t.id, t.authorId),
         h('details', {},
           h('summary', { text: n ? `💬 ${n} comentário${n > 1 ? 's' : ''}` : '💬 Comentar' }),
           n ? h('ol', { class: 'replies' }, t.replies.map(r => h('li', { class: 'reply' },
@@ -1365,6 +1622,84 @@
 
   els.forumQ?.addEventListener('input', debounce(() => renderTopics(), 200));
 
+  function createReactionBar(targetType, targetId, authorId) {
+    const isOwn = Boolean(authSessionUser && authorId === authSessionUser.id);
+    const ggKey = `${targetId}:gg`;
+    const utilKey = `${targetId}:util`;
+    const ggData = forumReactionsMap.get(ggKey) || { count: 0, userReacted: false };
+    const utilData = forumReactionsMap.get(utilKey) || { count: 0, userReacted: false };
+
+    const ggBtn = h('button', {
+      type: 'button',
+      class: `react-btn ${ggData.userReacted ? 'is-reacted' : ''}`,
+      disabled: isOwn,
+      title: isOwn ? 'Você não pode reagir à própria publicação' : 'Marcar como GG',
+      onclick: () => toggleReaction(targetType, targetId, 'gg', authorId),
+    }, h('span', { text: '⚡ GG' }), h('span', { class: 'react-count', text: String(ggData.count) }));
+
+    const utilBtn = h('button', {
+      type: 'button',
+      class: `react-btn ${utilData.userReacted ? 'is-reacted' : ''}`,
+      disabled: isOwn,
+      title: isOwn ? 'Você não pode reagir à própria publicação' : 'Marcar como Útil',
+      onclick: () => toggleReaction(targetType, targetId, 'util', authorId),
+    }, h('span', { text: '💡 ÚTIL' }), h('span', { class: 'react-count', text: String(utilData.count) }));
+
+    return h('div', { class: 'forum-reaction-bar' }, ggBtn, utilBtn);
+  }
+
+  async function toggleReaction(targetType, targetId, kind, authorId) {
+    if (!requireAuth('Entre na sua conta para reagir a publicações.')) return;
+    const sb = getSb();
+    if (!sb) return;
+    const key = `${targetId}:${kind}`;
+    const current = forumReactionsMap.get(key) || { count: 0, userReacted: false };
+
+    if (current.userReacted) {
+      await sb.from('forum_reactions').delete()
+        .eq('user_id', authSessionUser.id)
+        .eq('target_id', targetId)
+        .eq('kind', kind);
+    } else {
+      const { error } = await sb.from('forum_reactions').insert({
+        user_id: authSessionUser.id,
+        target_type: targetType,
+        target_id: targetId,
+        kind,
+      });
+      if (error && /own|própria/i.test(error.message)) {
+        return;
+      }
+    }
+    if (window.LoadingSfx) LoadingSfx.play('click');
+    await loadTopicsFromServer();
+    renderTopics(targetType === 'topic' ? targetId : null);
+  }
+
+  // Star rating picker in forum form
+  const ratingPicker = $('#f-rating');
+  const ratingInput = $('#f-rating-val');
+  const ratingClear = $('#f-rating-clear');
+  if (ratingPicker && ratingInput) {
+    ratingPicker.addEventListener('click', (e) => {
+      const star = e.target.closest('.star-pick');
+      if (!star) return;
+      const val = star.dataset.val;
+      ratingInput.value = val;
+      ratingPicker.querySelectorAll('.star-pick').forEach(b => {
+        b.setAttribute('aria-pressed', String(parseInt(b.dataset.val, 10) <= parseInt(val, 10)));
+      });
+      if (ratingClear) ratingClear.hidden = false;
+    });
+    if (ratingClear) {
+      ratingClear.addEventListener('click', () => {
+        ratingInput.value = '';
+        ratingPicker.querySelectorAll('.star-pick').forEach(b => b.setAttribute('aria-pressed', 'false'));
+        ratingClear.hidden = true;
+      });
+    }
+  }
+
   els.form?.addEventListener('submit', async e => {
     e.preventDefault();
     if (!requireAuth('Entre na sua conta para publicar no fórum.')) return;
@@ -1372,6 +1707,8 @@
     const title = clean(f.title.value, 120);
     const body = clean(f.body.value, 2000);
     const game = clean(f.game.value, 80) || 'Geral';
+    const ratingRaw = f.rating ? f.rating.value : '';
+    const ratingVal = ratingRaw ? parseInt(ratingRaw, 10) : null;
     if (title.length < 4) { els.fErr.textContent = 'O título precisa de pelo menos 4 caracteres.'; f.title.setAttribute('aria-invalid', 'true'); f.title.focus(); return; }
     if (body.length < 10) { els.fErr.textContent = 'A avaliação precisa de pelo menos 10 caracteres.'; f.body.setAttribute('aria-invalid', 'true'); f.body.focus(); return; }
     f.title.removeAttribute('aria-invalid'); f.body.removeAttribute('aria-invalid');
@@ -1385,13 +1722,17 @@
     const submitBtn = $('#topic-submit');
     if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'PUBLICANDO…'; }
 
-    const { data, error } = await sb.from('forum_topics').insert({
+    const insertPayload = {
       author_id: authSessionUser.id,
       author_display: displayNameOf(authSessionUser),
       game,
       title,
       body,
-    }).select('id').single();
+    };
+    if (ratingVal && ratingVal >= 1 && ratingVal <= 5) {
+      insertPayload.rating = ratingVal;
+    }
+    const { data, error } = await sb.from('forum_topics').insert(insertPayload).select('id').single();
 
     if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'PUBLICAR NO FÓRUM →'; }
 
@@ -2273,6 +2614,100 @@
     )));
   }
 
+  let activeMemTab = 'todos';
+
+  async function renderMemoryCard(prefix, userId, isOwner) {
+    const listEl = $(`#${prefix}-log-list`);
+    if (!listEl) return;
+    const sb = getSb();
+    if (!sb || !userId || !gameLogsSupported) {
+      listEl.replaceChildren(h('li', { class: 'muted', text: 'Diário indisponível.' }));
+      return;
+    }
+
+    try {
+      const { data, error } = await sb
+        .from('game_logs')
+        .select('game_key, game_name, poster_url, status, rating, updated_at')
+        .eq('user_id', userId)
+        .order('updated_at', { ascending: false });
+
+      if (error) {
+        if (error.code === '42P01' || error.code === 'PGRST205') gameLogsSupported = false;
+        listEl.replaceChildren(h('li', { class: 'muted', text: 'Nenhum registro no diário ainda.' }));
+        return;
+      }
+
+      const rows = data || [];
+      const finished = rows.filter(r => r.status === 'zerado').length;
+      const playing = rows.filter(r => r.status === 'jogando').length;
+      const backlog = rows.filter(r => r.status === 'na_fila').length;
+      const dropped = rows.filter(r => r.status === 'abandonado').length;
+
+      const fEl = $(`#${prefix}-stat-finished`);
+      const pEl = $(`#${prefix}-stat-playing`);
+      const bEl = $(`#${prefix}-stat-backlog`);
+      const dEl = $(`#${prefix}-stat-dropped`);
+      if (fEl) fEl.textContent = String(finished);
+      if (pEl) pEl.textContent = String(playing);
+      if (bEl) bEl.textContent = String(backlog);
+      if (dEl) dEl.textContent = String(dropped);
+
+      if (prefix === 'perfil') {
+        const cAll = $('#mem-count-all');
+        const cZer = $('#mem-count-zerado');
+        const cJog = $('#mem-count-jogando');
+        const cFila = $('#mem-count-na-fila');
+        if (cAll) cAll.textContent = String(rows.length);
+        if (cZer) cZer.textContent = String(finished);
+        if (cJog) cJog.textContent = String(playing);
+        if (cFila) cFila.textContent = String(backlog);
+      }
+
+      const filtered = (prefix === 'perfil' && activeMemTab !== 'todos')
+        ? rows.filter(r => r.status === activeMemTab)
+        : rows;
+
+      if (!filtered.length) {
+        listEl.replaceChildren(h('li', { class: 'muted', text: 'Nenhum jogo nesta categoria.' }));
+        return;
+      }
+
+      const statusMap = {
+        zerado: '✓ ZERADO',
+        jogando: '▶ JOGANDO',
+        na_fila: '⏸ NA FILA',
+        abandonado: '✕ ABANDONADO',
+      };
+
+      listEl.replaceChildren(...filtered.map(row => h('li', { class: 'memory-log-item' },
+        row.poster_url
+          ? h('img', { class: 'memory-log-poster', src: rawgCrop(row.poster_url), alt: row.game_name, loading: 'lazy', decoding: 'async' })
+          : h('div', { class: 'memory-log-poster', style: 'display:flex;align-items:center;justify-content:center;background:#242424;' },
+              h('span', { class: 'monogram', text: initials(row.game_name || '?') })
+            ),
+        h('div', { class: 'memory-log-info' },
+          h('strong', { class: 'memory-log-name', text: row.game_name }),
+          h('span', { class: 'memory-log-tag', text: statusMap[row.status] || row.status }),
+          row.rating ? h('span', { class: 'memory-log-rating', text: '★'.repeat(row.rating) }) : null
+        )
+      )));
+    } catch (_) {}
+  }
+
+  // Memory card tabs in profile
+  document.querySelector('.memory-card-tabs')?.addEventListener('click', (e) => {
+    const tab = e.target.closest('.mem-tab');
+    if (!tab) return;
+    document.querySelectorAll('.memory-card-tabs .mem-tab').forEach(b => {
+      const sel = b === tab;
+      b.classList.toggle('active', sel);
+      b.setAttribute('aria-selected', String(sel));
+    });
+    activeMemTab = tab.dataset.tab || 'todos';
+    if (authSessionUser) renderMemoryCard('perfil', authSessionUser.id, true);
+  });
+
   async function loadPerfilView() {
     if (!authSessionUser) return;
     const sb = getSb();
@@ -2298,6 +2733,7 @@
     await Promise.all([
       renderFavGrid('perfil-fav-grid', u.id, { removable: true }),
       renderBadgeList('perfil-badge-list', u.id),
+      renderMemoryCard('perfil', u.id, true),
     ]);
   }
 
@@ -2324,6 +2760,7 @@
     await Promise.all([
       renderFavGrid('membro-fav-grid', id, { removable: false }),
       renderBadgeList('membro-badge-list', id),
+      renderMemoryCard('membro', id, false),
     ]);
     if (topicsList) {
       const mine = topics.filter((t) => t.authorId === id).slice(0, 8);

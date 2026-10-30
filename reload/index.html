@@ -15,6 +15,11 @@
   <meta property="og:locale" content="pt_BR">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 20'%3E%3Crect width='36' height='20' rx='5' fill='%23161616'/%3E%3Ccircle cx='12' cy='10' r='4' fill='%23F5B700'/%3E%3Ccircle cx='24' cy='10' r='4' fill='%23E04F33'/%3E%3C/svg%3E">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Loading...">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400..700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;family=Space+Grotesk:wght@600;700&amp;display=swap" rel="stylesheet">
@@ -30,11 +35,12 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <!-- Canvas preservado de forma oculta/inerte para compatibilidade com scripts/build.js -->
-  <div class="bg-grid-fx" aria-hidden="true" hidden>
-    <div class="bg-grid-plane"></div>
-    <canvas id="snake-canvas"></canvas>
-    <div class="bg-glow-orb"></div>
+  <!-- Notificação de Atualização PWA (Hardware Hot-Reload) -->
+  <div id="pwa-update" class="pwa-banner" hidden>
+    <div class="wrap pwa-banner-inner">
+      <span class="pwa-banner-text"><span class="brand-led brand-led--yellow" aria-hidden="true"></span> NOVA VERSÃO DE HARDWARE DISPONÍVEL // SYS.REV ATUALIZADA</span>
+      <button type="button" class="btn btn--primary btn--pwa" id="pwa-reload">RECARREGAR SISTEMA →</button>
+    </div>
   </div>
 
   <a class="skip" href="#conteudo">Pular para o conteúdo</a>
@@ -88,7 +94,7 @@
         </a>
         <div class="brand-telemetry">
           <span class="brand-rev // 1972—2026">SYS.REV // 1972—2026</span>
-          <span class="brand-sub">OPEN ARCHIVE · NO ADS</span>
+          <span class="brand-sub"><span data-net-status>ONLINE</span> · ZERO ADS</span>
         </div>
       </div>
 
@@ -107,6 +113,9 @@
             <kbd class="search-kbd" aria-hidden="true">CTRL+K</kbd>
           </div>
         </form>
+
+        <button class="chip chip--snake" type="button" data-snake-open aria-label="Abrir modo diagnóstico minigame snake" title="Modo Diagnóstico (Atalho: D ou Konami)">🎮 [D]</button>
+        <button class="chip chip--install" id="pwa-install" type="button" hidden aria-label="Instalar aplicativo Loading...">⬇ APP</button>
 
         <div class="auth-menu-wrap" id="auth-menu-wrap">
           <button class="chip chip--auth" id="auth-btn" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="Entrar ou criar conta"><span class="auth-btn-icon">👤</span> <span class="auth-btn-label">ENTRAR / REGISTRO</span></button>
@@ -343,6 +352,46 @@
               </div>
             </div>
 
+            <!-- Deck de Arquivo: Filtros Táteis por Plataforma, Era e Ordenação -->
+            <div class="archive-deck" role="group" aria-label="Filtros do acervo">
+              <div class="deck-row">
+                <span class="deck-row-label">PLATAFORMA:</span>
+                <div class="deck-switch" id="platforms" role="group" aria-label="Plataforma">
+                  <button type="button" data-p="" aria-pressed="true">TODAS</button>
+                  <button type="button" data-p="1" aria-pressed="false">PC</button>
+                  <button type="button" data-p="2" aria-pressed="false">PLAYSTATION</button>
+                  <button type="button" data-p="3" aria-pressed="false">XBOX</button>
+                  <button type="button" data-p="7" aria-pressed="false">NINTENDO</button>
+                  <button type="button" data-p="11" aria-pressed="false">SEGA</button>
+                  <button type="button" data-p="9" aria-pressed="false">ATARI</button>
+                  <button type="button" data-p="10" aria-pressed="false">COMMODORE</button>
+                </div>
+              </div>
+              <div class="deck-row deck-row--sub">
+                <div class="deck-row-subleft">
+                  <span class="deck-row-label">ERA:</span>
+                  <div class="deck-switch" id="eras" role="group" aria-label="Era cronológica">
+                    <button type="button" data-era="" aria-pressed="true">TODAS AS ERAS</button>
+                    <button type="button" data-era="1970-01-01,1989-12-31" aria-pressed="false">70–80 · 8-BIT</button>
+                    <button type="button" data-era="1990-01-01,1999-12-31" aria-pressed="false">90 · 16/32-BIT</button>
+                    <button type="button" data-era="2000-01-01,2010-12-31" aria-pressed="false">2000 · ERA HD</button>
+                    <button type="button" data-era="2011-01-01,2026-12-31" aria-pressed="false">2011+ · ATUAL</button>
+                  </div>
+                </div>
+                <div class="deck-order-wrap">
+                  <label class="label sr-only" for="ordering">ORDENAR ACERVO</label>
+                  <select class="input deck-select" id="ordering" aria-label="Ordenar jogos do acervo">
+                    <option value="-added">MAIS JOGADOS</option>
+                    <option value="-metacritic">NOTA METACRITIC</option>
+                    <option value="-released">LANÇAMENTO (RECENTE)</option>
+                    <option value="released">LANÇAMENTO (ANTIGO)</option>
+                    <option value="name">ORDEM A–Z</option>
+                  </select>
+                  <button type="button" class="btn-deck-reset" id="filters-reset" hidden aria-label="Limpar todos os filtros">LIMPAR ✕</button>
+                </div>
+              </div>
+            </div>
+
             <div class="catalog-subbar">
               <span class="acervo-hint">Passe o cursor sobre um cartucho para ver o gameplay · Clique para abrir a ficha técnica</span>
             </div>
@@ -411,6 +460,18 @@
               <div class="field">
                 <label class="label" for="f-title">TÍTULO DA ANÁLISE OU TÓPICO <span aria-hidden="true">*</span></label>
                 <input class="input" id="f-title" name="title" required minlength="4" maxlength="120" placeholder="Resumo sem spoilers…" aria-describedby="f-err">
+              </div>
+              <div class="field">
+                <label class="label">SUA NOTA (OPCIONAL)</label>
+                <div class="star-rating-picker" id="f-rating" role="radiogroup" aria-label="Avaliação por estrelas">
+                  <button type="button" class="star-pick" data-val="1" aria-label="1 estrela" aria-pressed="false">★</button>
+                  <button type="button" class="star-pick" data-val="2" aria-label="2 estrelas" aria-pressed="false">★</button>
+                  <button type="button" class="star-pick" data-val="3" aria-label="3 estrelas" aria-pressed="false">★</button>
+                  <button type="button" class="star-pick" data-val="4" aria-label="4 estrelas" aria-pressed="false">★</button>
+                  <button type="button" class="star-pick" data-val="5" aria-label="5 estrelas" aria-pressed="false">★</button>
+                  <input type="hidden" id="f-rating-val" name="rating" value="">
+                  <button type="button" class="star-clear-btn" id="f-rating-clear" hidden aria-label="Limpar nota">✕</button>
+                </div>
               </div>
               <div class="field">
                 <label class="label" for="f-body">SUA ANÁLISE / COMENTÁRIO <span aria-hidden="true">*</span></label>
@@ -622,6 +683,38 @@
             <ul class="profile-fav-grid" id="perfil-fav-grid" aria-label="Seus jogos favoritos"></ul>
             <p class="muted">Favorite pelo diálogo do acervo.</p>
           </div>
+
+          <div class="profile-section profile-memory-card" id="perfil-memory-card">
+            <div class="memory-card-header">
+              <span class="hw-kicker">CARTÃO DE MEMÓRIA // DIÁRIO DE JOGOS</span>
+              <h3 class="strong">Diário &amp; Estatísticas do Jogador</h3>
+            </div>
+            <div class="memory-card-stats">
+              <div class="mem-stat-box">
+                <span class="mem-stat-val" id="mem-stat-finished">0</span>
+                <span class="mem-stat-lbl">ZERADOS</span>
+              </div>
+              <div class="mem-stat-box">
+                <span class="mem-stat-val" id="mem-stat-playing">0</span>
+                <span class="mem-stat-lbl">JOGANDO</span>
+              </div>
+              <div class="mem-stat-box">
+                <span class="mem-stat-val" id="mem-stat-backlog">0</span>
+                <span class="mem-stat-lbl">NA FILA</span>
+              </div>
+              <div class="mem-stat-box">
+                <span class="mem-stat-val" id="mem-stat-dropped">0</span>
+                <span class="mem-stat-lbl">ABANDONADOS</span>
+              </div>
+            </div>
+            <div class="memory-card-tabs" role="tablist" aria-label="Filtrar diário de jogos">
+              <button type="button" class="mem-tab active" data-tab="todos" role="tab" aria-selected="true">TODOS (<span id="mem-count-all">0</span>)</button>
+              <button type="button" class="mem-tab" data-tab="zerado" role="tab" aria-selected="false">ZERADOS (<span id="mem-count-zerado">0</span>)</button>
+              <button type="button" class="mem-tab" data-tab="jogando" role="tab" aria-selected="false">JOGANDO (<span id="mem-count-jogando">0</span>)</button>
+              <button type="button" class="mem-tab" data-tab="na_fila" role="tab" aria-selected="false">NA FILA (<span id="mem-count-na-fila">0</span>)</button>
+            </div>
+            <ul class="memory-log-list" id="perfil-log-list" aria-label="Lista do diário"></ul>
+          </div>
           <div class="profile-section">
             <h3 class="strong">Suas insígnias</h3>
             <ul class="profile-badge-list" id="perfil-badge-list" aria-label="Suas insígnias"></ul>
@@ -649,6 +742,31 @@
           <div class="profile-section">
             <h3 class="strong">Estante de favoritos</h3>
             <ul class="profile-fav-grid" id="membro-fav-grid"></ul>
+          </div>
+          <div class="profile-section profile-memory-card" id="membro-memory-card">
+            <div class="memory-card-header">
+              <span class="hw-kicker">CARTÃO DE MEMÓRIA // DIÁRIO DE JOGOS</span>
+              <h3 class="strong">Diário de Jogos do Membro</h3>
+            </div>
+            <div class="memory-card-stats">
+              <div class="mem-stat-box">
+                <span class="mem-stat-val" id="membro-stat-finished">0</span>
+                <span class="mem-stat-lbl">ZERADOS</span>
+              </div>
+              <div class="mem-stat-box">
+                <span class="mem-stat-val" id="membro-stat-playing">0</span>
+                <span class="mem-stat-lbl">JOGANDO</span>
+              </div>
+              <div class="mem-stat-box">
+                <span class="mem-stat-val" id="membro-stat-backlog">0</span>
+                <span class="mem-stat-lbl">NA FILA</span>
+              </div>
+              <div class="mem-stat-box">
+                <span class="mem-stat-val" id="membro-stat-dropped">0</span>
+                <span class="mem-stat-lbl">ABANDONADOS</span>
+              </div>
+            </div>
+            <ul class="memory-log-list" id="membro-log-list" aria-label="Diário de jogos do membro"></ul>
           </div>
           <div class="profile-section">
             <h3 class="strong">Insígnias</h3>
@@ -707,6 +825,32 @@
         </div>
         <div class="desc" id="g-desc"></div>
         <div class="dlg-actions">
+          <!-- Painel do Diário de Jogos -->
+          <div class="log-panel" id="g-log">
+            <div class="log-panel-header">
+              <span class="label">MEU DIÁRIO // STATUS &amp; NOTA</span>
+              <button type="button" class="link-clear-log" id="g-log-clear" hidden>Remover do diário</button>
+            </div>
+            <div class="deck-switch log-status-switch" id="g-log-status" role="radiogroup" aria-label="Status no diário">
+              <button type="button" role="radio" data-status="jogando" aria-checked="false">▶ JOGANDO</button>
+              <button type="button" role="radio" data-status="zerado" aria-checked="false">✓ ZERADO</button>
+              <button type="button" role="radio" data-status="na_fila" aria-checked="false">⏸ NA FILA</button>
+              <button type="button" role="radio" data-status="abandonado" aria-checked="false">✕ ABANDONADO</button>
+            </div>
+            <div class="log-rating-row">
+              <span class="label">SUA NOTA:</span>
+              <div class="star-rating-picker" id="g-log-rating" role="radiogroup" aria-label="Nota do jogo">
+                <button type="button" class="star-pick" data-val="1" aria-label="1 estrela" aria-pressed="false">★</button>
+                <button type="button" class="star-pick" data-val="2" aria-label="2 estrelas" aria-pressed="false">★</button>
+                <button type="button" class="star-pick" data-val="3" aria-label="3 estrelas" aria-pressed="false">★</button>
+                <button type="button" class="star-pick" data-val="4" aria-label="4 estrelas" aria-pressed="false">★</button>
+                <button type="button" class="star-pick" data-val="5" aria-label="5 estrelas" aria-pressed="false">★</button>
+              </div>
+              <span class="log-rating-text" id="g-log-rating-text">Sem nota</span>
+            </div>
+            <p class="status log-status-msg" id="g-log-msg" role="status" aria-live="polite" hidden></p>
+          </div>
+
           <button class="btn btn--secondary" type="button" id="g-favorite" aria-pressed="false">♡ FAVORITAR</button>
           <button class="btn btn--primary" type="button" id="g-discuss">PUBLICAR ANÁLISE NA COMUNIDADE →</button>
           <p class="status dlg-fav-status" id="g-fav-status" role="status" aria-live="polite" hidden></p>
@@ -714,6 +858,66 @@
       </aside>
     </div>
   </dialog>
+
+  <!-- Modal Diagnóstico: Minigame Snake (Cartucho de Teste) -->
+  <dialog id="snake-dialog" class="snake-dialog" aria-labelledby="snake-title">
+    <div class="dlg-bar">
+      <div class="dlg-bar-brand">
+        <span class="brand-led brand-led--yellow" aria-hidden="true"></span>
+        <span class="brand-led brand-led--red" aria-hidden="true"></span>
+        <span class="label" id="snake-title">MODO DIAGNÓSTICO // CARTUCHO DE TESTE</span>
+      </div>
+      <button class="dlg-close" type="button" id="snake-close" aria-label="Fechar diagnóstico">×</button>
+    </div>
+    <div class="snake-frame">
+      <div class="snake-hud">
+        <div class="snake-hud-item">
+          <span class="label">PLACAR</span>
+          <strong id="snake-score" class="snake-hud-val">0</strong>
+        </div>
+        <div class="snake-hud-item">
+          <span class="label">RECORDE</span>
+          <strong id="snake-best" class="snake-hud-val">0</strong>
+        </div>
+        <div class="snake-hud-item snake-hud-item--status">
+          <span class="label">TELEMETRIA</span>
+          <span id="snake-status" class="snake-status-badge">PRONTO · PRESSIONE ENTER</span>
+        </div>
+      </div>
+      <div class="snake-screen">
+        <canvas id="snake-canvas" width="400" height="400"></canvas>
+        <div class="snake-scanlines" aria-hidden="true"></div>
+      </div>
+      <div class="snake-controls">
+        <div class="snake-dpad" aria-label="Controles direcionais virtuais">
+          <button type="button" class="dpad-btn dpad-up" data-dir="up" aria-label="Cima">▲</button>
+          <div class="dpad-row">
+            <button type="button" class="dpad-btn dpad-left" data-dir="left" aria-label="Esquerda">◀</button>
+            <button type="button" class="dpad-btn dpad-center" data-dir="action" aria-label="Ação">●</button>
+            <button type="button" class="dpad-btn dpad-right" data-dir="right" aria-label="Direita">▶</button>
+          </div>
+          <button type="button" class="dpad-btn dpad-down" data-dir="down" aria-label="Baixo">▼</button>
+        </div>
+        <p class="snake-instructions">
+          SETAS / WASD · ESPAÇO PAUSA · ENTER REINICIA · ATALHO [D] OU CÓDIGO KONAMI
+        </p>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Botão Fixo de Alternância de Som (FAB Mudo / Som) -->
+  <button id="sfx-btn" class="theme-fab sfx-fab" type="button" aria-label="Ativar feedback sonoro" aria-pressed="false" title="Sons táteis desativados (clique para ligar)">
+    <svg class="sfx-fab-icon sfx-fab-icon--off" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M11 5L6 9H2v6h4l5 4V5z" fill="currentColor"/>
+      <line x1="23" y1="9" x2="17" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      <line x1="17" y1="9" x2="23" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+    <svg class="sfx-fab-icon sfx-fab-icon--on" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M11 5L6 9H2v6h4l5 4V5z" fill="currentColor"/>
+      <path d="M15.54 8.46a5 5 0 0 1 0 7.07" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      <path d="M19.07 4.93a10 10 0 0 1 0 14.14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+  </button>
 
   <!-- Botão Fixo de Alternância de Tema (FAB Sol / Lua) -->
   <button id="theme-btn" class="theme-fab" type="button" aria-label="Alternar tema" aria-pressed="false">
@@ -732,6 +936,9 @@
   <script src="js/config.local.js"></script>
   <script src="js/supabaseClient.js"></script>
   <script src="js/i18n.js"></script>
+  <script src="js/snake.js"></script>
+  <script src="js/sfx.js"></script>
+  <script src="js/pwa.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
