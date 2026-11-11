@@ -213,7 +213,11 @@ const rewritten = upstream.rewriteRawgPaging('https://api.rawg.io/api/games?key=
 if (!rewritten || rewritten.includes('key=') || !rewritten.startsWith('/api/rawg/games?')) {
   fail('paginação da RAWG ainda pode devolver a chave');
 }
-ok('Proxy da RAWG recusa caminhos e tira a chave da paginação');
+const upstreamSource = fs.readFileSync(path.join(ROOT, 'lib', 'upstream.js'), 'utf8');
+if (!upstreamSource.includes('AbortSignal.timeout')) {
+  fail('proxy RAWG/tradução deve cortar fetch com AbortSignal.timeout');
+}
+ok('Proxy da RAWG recusa caminhos, tira a chave da paginação e tem timeout');
 
 const migrationHooks = [
   'create table public.profiles',
