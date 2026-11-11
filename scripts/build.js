@@ -213,7 +213,27 @@ const rewritten = upstream.rewriteRawgPaging('https://api.rawg.io/api/games?key=
 if (!rewritten || rewritten.includes('key=') || !rewritten.startsWith('/api/rawg/games?')) {
   fail('paginação da RAWG ainda pode devolver a chave');
 }
-ok('Proxy da RAWG recusa caminhos e tira a chave da paginação');
+const upstreamSource = fs.readFileSync(path.join(ROOT, 'lib', 'upstream.js'), 'utf8');
+if (!upstreamSource.includes('AbortSignal.timeout')) {
+  fail('proxy RAWG/tradução deve cortar fetch com AbortSignal.timeout');
+}
+if (!upstreamSource.includes('catalogFallback')) {
+  fail('proxy RAWG deve cair no catálogo local quando a RAWG falhar');
+}
+const catalogData = JSON.parse(fs.readFileSync(path.join(ROOT, 'lib', 'catalog-data.json'), 'utf8'));
+if (!Array.isArray(catalogData.games) || catalogData.games.length < 10) {
+  fail('catalog-data.json precisa de pelo menos 10 jogos');
+}
+const catalog = require(path.join(ROOT, 'lib', 'catalog'));
+const listed = catalog.listGames(new URLSearchParams('page_size=5&ordering=-metacritic'));
+if (listed.status !== 200 || !listed.body.results || listed.body.results.length < 1) {
+  fail('catálogo local não listou jogos');
+}
+const detail = catalog.getGame(String(listed.body.results[0].id));
+if (detail.status !== 200 || !(detail.body.description_raw || '').trim()) {
+  fail('ficha do catálogo local sem description_raw');
+}
+ok('Proxy da RAWG com timeout + fallback de catálogo local');
 
 const migrationHooks = [
   'create table public.profiles',

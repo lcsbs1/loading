@@ -1,8 +1,8 @@
 'use strict';
 
-const CACHE_NAME = 'loading-shell-v2';
-const API_CACHE_NAME = 'loading-api-v2';
-const IMG_CACHE_NAME = 'loading-img-v2';
+const CACHE_NAME = 'loading-shell-v3';
+const API_CACHE_NAME = 'loading-api-v3';
+const IMG_CACHE_NAME = 'loading-img-v3';
 
 const PRECACHE_URLS = [
   './',
@@ -80,20 +80,23 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 2. Capas e mídias de jogos (media.rawg.io): cache-first com limite de 300
-  if (url.hostname === 'media.rawg.io') {
+  // 2. Capas e mídias de jogos: cache-first (só 200)
+  const isGameMedia = url.hostname === 'media.rawg.io'
+    || url.hostname === 'shared.akamai.steamstatic.com'
+    || url.hostname.endsWith('.steamstatic.com');
+  if (isGameMedia) {
     event.respondWith(
       caches.open(IMG_CACHE_NAME).then(async (cache) => {
         const cached = await cache.match(req);
-        if (cached) return cached;
+        if (cached && cached.ok) return cached;
         try {
           const res = await fetch(req);
-          if (res.status === 200 || res.type === 'opaque') {
+          if (res.status === 200) {
             cache.put(req, res.clone());
           }
           return res;
         } catch (_) {
-          return cached;
+          return cached || Response.error();
         }
       })
     );
