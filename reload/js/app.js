@@ -764,12 +764,15 @@
       if (els.more) {
         els.more.hidden = true;
       }
+      const viaCatalog = data.source === 'catalog';
       setStatus(data.count
         ? (state.query
-            ? `${data.count.toLocaleString('pt-BR')} jogos catalogados para “${state.query}”.`
-            : (state.popularPage > 1
-                ? `Os jogos mais jogados e comentados na web · Página ${state.popularPage}.`
-                : 'Os jogos mais jogados e comentados na web.'))
+            ? `${data.count.toLocaleString('pt-BR')} jogos catalogados para “${state.query}”${viaCatalog ? ' (modo reserva)' : ''}.`
+            : (viaCatalog
+                ? `Catálogo reserva ativo (RAWG offline) · ${data.count} títulos.`
+                : (state.popularPage > 1
+                    ? `Os jogos mais jogados e comentados na web · Página ${state.popularPage}.`
+                    : 'Os jogos mais jogados e comentados na web.')))
         : 'Nenhum jogo encontrado.');
       if (!state.query && !state.platform) $('#fact-count').textContent = data.count.toLocaleString('pt-BR');
     } catch (e) {
@@ -1106,6 +1109,8 @@
           const description = (d.description_raw || '').split(/\n\s*(Español|Русский|Deutsch|Français)\s*\n/)[0].trim();
           Object.assign(g, {
             description,
+            descriptionLang: d.description_lang || (d.source === 'catalog' ? 'pt-BR' : 'en'),
+            catalogSource: d.source || null,
             developers: (d.developers || []).map(x => x && x.name).filter(Boolean),
             publishers: (d.publishers || []).map(x => x && x.name).filter(Boolean),
             genres: (d.genres && d.genres.length) ? d.genres.map(x => (typeof I18N !== 'undefined' ? I18N.genre(x.name) : x.name)) : g.genres,
@@ -1115,7 +1120,12 @@
           if (state.current === g) fillSpecs(g);
         }
 
-        if (g.description && !g.translatedDesc && typeof I18N !== 'undefined') {
+        // Catálogo local já vem em PT-BR (ou misto). Não manda de novo para o tradutor.
+        const skipTranslate = g.descriptionLang === 'pt-BR' || g.catalogSource === 'catalog';
+        if (skipTranslate && g.description) {
+          g.translatedDesc = g.description;
+          g.showOriginal = false;
+        } else if (g.description && !g.translatedDesc && typeof I18N !== 'undefined') {
           try {
             const tr = await I18N.text(g.id, g.description);
             if (tr && tr !== g.description) {

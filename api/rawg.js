@@ -18,6 +18,9 @@ module.exports = async function rawgHandler(req, res) {
   url.searchParams.delete('segments');
 
   const result = await proxyRawg(segments, url.searchParams);
-  res.setHeader('Cache-Control', result.headers['Cache-Control']);
+  res.setHeader('Cache-Control', result.headers['Cache-Control'] || 'no-store');
+  if (result.headers['X-Catalog-Fallback']) {
+    res.setHeader('X-Catalog-Fallback', result.headers['X-Catalog-Fallback']);
+  }
   res.status(result.status).json(result.body);
 };
