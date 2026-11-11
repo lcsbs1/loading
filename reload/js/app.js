@@ -987,7 +987,11 @@
     /* Swipe / arrastar no stage */
     if (many) {
       let x0 = null;
-      stage.addEventListener('pointerdown', e => { if (!e.target.closest('button')) x0 = e.clientX; });
+      stage.addEventListener('pointerdown', e => {
+        if (e.target.closest('button')) return;
+        x0 = e.clientX;
+        try { stage.setPointerCapture(e.pointerId); } catch (_) { /* ignore */ }
+      });
       stage.addEventListener('pointerup', e => {
         if (x0 == null) return;
         const dx = e.clientX - x0; x0 = null;
@@ -1998,9 +2002,15 @@
   const lerp = (a, b, t) => a + (b - a) * t;
   const smoothstep = t => t * t * (3 - 2 * t);
 
+  function syncHeaderOffset() {
+    const h = Math.ceil(siteHeader?.getBoundingClientRect().height || 0);
+    if (h > 0) document.documentElement.style.setProperty('--header-offset', `${h + 8}px`);
+  }
+
   function updateScrollEffects() {
     scrollTicking = false;
-    // Nav escondido (< 68rem) ou sem seções: nada a fazer
+    syncHeaderOffset();
+    // Nav oculto ou sem seções: nada a fazer
     if (!siteNav || !navPill || !navSpy.length || getComputedStyle(siteNav).display === 'none') return;
 
     const vh = window.innerHeight;
@@ -2066,10 +2076,12 @@
   window.addEventListener('scroll', requestScrollEffects, { passive: true });
   window.addEventListener('resize', requestScrollEffects);
   document.fonts?.ready.then(requestScrollEffects);
+  syncHeaderOffset();
   // Conteúdo assíncrono (destaques/acervo) altera a altura das seções
   if ('ResizeObserver' in window) {
     const mainEl = document.getElementById('conteudo');
     if (mainEl) new ResizeObserver(requestScrollEffects).observe(mainEl);
+    if (siteHeader) new ResizeObserver(syncHeaderOffset).observe(siteHeader);
   }
 
   /* ── Revelação suave ── */

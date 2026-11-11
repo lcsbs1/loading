@@ -94,7 +94,11 @@
 
 /* ───────── Base ───────── */
 *, *::before, *::after { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-top: 5.5rem; }
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  scroll-padding-top: var(--header-offset, 5.5rem);
+}
 body {
   margin: 0;
   background-color: var(--bg);
@@ -102,6 +106,7 @@ body {
   font: 400 var(--t-body)/1.55 var(--sans);
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
 }
 
 /* Canvas preservado para compatibilidade com scripts/build.js */
@@ -397,6 +402,7 @@ textarea.input { min-height: 6.5rem; resize: vertical; line-height: 1.5; }
   z-index: 30;
   background: var(--bg-elevated);
   border-bottom: 2px solid var(--line-strong);
+  padding-top: env(safe-area-inset-top, 0px);
 }
 
 .header-inner {
@@ -460,13 +466,16 @@ textarea.input { min-height: 6.5rem; resize: vertical; line-height: 1.5; }
 .site-nav {
   position: relative; /* âncora da pílula deslizante */
   isolation: isolate;
-  display: none;
+  display: flex;
   align-items: center;
   gap: .35rem;
   padding: 4px;
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 8px;
+}
+.site-nav .nav-idx {
+  margin-right: .15rem;
 }
 /* Pílula amarela que acompanha o scroll (posição/largura definidas pelo JS) */
 .site-nav-pill {
@@ -516,19 +525,20 @@ textarea.input { min-height: 6.5rem; resize: vertical; line-height: 1.5; }
   align-items: center;
   gap: .5rem;
   margin-left: auto;
+  min-width: 0;
 }
 /* Auth no canto superior direito, após o TEMA, com respiro entre os dois */
 .header-controls .chip--auth {
   margin-inline-start: .75rem;
 }
 @media (min-width: 68rem) {
-  .site-nav { display: flex; }
   .header-controls { margin-left: 0; }
 }
 
 .header-search {
   flex: 1 1 13rem;
   max-width: 16rem;
+  min-width: 0;
 }
 .search-slot {
   position: relative;
@@ -553,6 +563,85 @@ textarea.input { min-height: 6.5rem; resize: vertical; line-height: 1.5; }
   font: 700 0.625rem/1.2 var(--mono);
   color: var(--fg);
   pointer-events: none;
+}
+
+/* Header compacto em tablets/telefones: nav em faixa própria */
+@media (max-width: 67.9875rem) {
+  .header-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "brand controls"
+      "nav nav";
+    align-items: center;
+    gap: .55rem .65rem;
+    min-height: 0;
+    padding-block: .55rem;
+  }
+  .brand-group { grid-area: brand; min-width: 0; }
+  .site-nav {
+    grid-area: nav;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+  }
+  .site-nav::-webkit-scrollbar { display: none; }
+  .site-nav a {
+    flex: 1 1 auto;
+    text-align: center;
+    padding: .45rem .7rem;
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .site-nav .nav-idx { display: none; }
+  .header-controls {
+    grid-area: controls;
+    margin-left: 0;
+    flex-wrap: nowrap;
+    gap: .35rem;
+  }
+  .header-controls .chip--auth {
+    margin-inline-start: .35rem;
+  }
+  .header-search {
+    flex: 1 1 7.5rem;
+    max-width: 11rem;
+  }
+  .search-kbd { display: none; }
+  .input--search {
+    min-height: 40px;
+    padding: .4rem .75rem;
+  }
+  .chip--snake .chip-snake-kbd { display: none; }
+  .chip--auth .auth-btn-label {
+    max-width: 7.5rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+@media (max-width: 30rem) {
+  .brand { padding: .45rem .6rem; font-size: 1rem; }
+  .header-search { max-width: 8.5rem; flex-basis: 6.5rem; }
+  .chip--auth .auth-btn-label { display: none; }
+  .chip--auth {
+    min-width: 40px;
+    min-height: 40px;
+    padding: .45rem;
+    justify-content: center;
+  }
+  .chip--snake,
+  .chip--install {
+    min-height: 40px;
+    min-width: 40px;
+    padding: .45rem .55rem;
+  }
 }
 
 /* ───────── Botão Fixo de Tema (FAB Sol/Lua) ───────── */
@@ -614,6 +703,11 @@ textarea.input { min-height: 6.5rem; resize: vertical; line-height: 1.5; }
     right: max(1rem, env(safe-area-inset-right));
     bottom: max(1rem, env(safe-area-inset-bottom));
   }
+}
+html:has(dialog[open]) .theme-fab {
+  visibility: hidden;
+  pointer-events: none;
+  opacity: 0;
 }
 
 /* ───────── 01 · Tactile Bento Hero ───────── */
@@ -882,6 +976,9 @@ textarea.input { min-height: 6.5rem; resize: vertical; line-height: 1.5; }
   gap: .875rem;
   width: 100%;
 }
+@media (max-width: 22rem) {
+  .poster-strip { gap: .65rem; }
+}
 @media (min-width: 38rem) {
   .poster-strip { grid-template-columns: repeat(3, 1fr); }
 }
@@ -1043,6 +1140,11 @@ section { padding-block: var(--section); position: relative; }
   font: 500 0.72rem/1.4 var(--mono);
   color: var(--muted);
 }
+.acervo-hint--coarse { display: none; }
+@media (hover: none) {
+  .acervo-hint--fine { display: none; }
+  .acervo-hint--coarse { display: inline; }
+}
 .status {
   font: 500 0.75rem/1.4 var(--mono);
   color: var(--muted);
@@ -1150,13 +1252,15 @@ section { padding-block: var(--section); position: relative; }
   transform: scale(1.04);
   pointer-events: none;
 }
-.card-hit:hover .cover-img--main {
-  transform: scale(1.04);
-  opacity: 0;
-}
-.card-hit:hover .cover-img--hover {
-  opacity: 1;
-  transform: scale(1);
+@media (hover: hover) and (pointer: fine) {
+  .card-hit:hover .cover-img--main {
+    transform: scale(1.04);
+    opacity: 0;
+  }
+  .card-hit:hover .cover-img--hover {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 .cover .monogram {
   font: 700 1.65rem/1 var(--display);
@@ -1344,6 +1448,14 @@ section { padding-block: var(--section); position: relative; }
   padding-top: .85rem;
   margin-top: .35rem;
   border-top: 1px solid #333333;
+}
+@media (max-width: 26rem) {
+  .manifesto-stats {
+    gap: .45rem;
+  }
+  .manifesto-stats dd {
+    font-size: 0.95rem;
+  }
 }
 .manifesto-stats dt { color: #A3A3A3; }
 .manifesto-stats dd {
@@ -1786,6 +1898,8 @@ section { padding-block: var(--section); position: relative; }
 /* ───────── Dialog Modal (Ficha Técnica) ───────── */
 html:has(#game-dialog[open]),
 body:has(#game-dialog[open]),
+html:has(#snake-dialog[open]),
+body:has(#snake-dialog[open]),
 html.is-modal-open,
 body.is-modal-open {
   overflow: hidden !important;
@@ -1797,7 +1911,8 @@ body.is-modal-open {
 
 dialog {
   width: min(48rem, calc(100% - 1.5rem));
-  max-height: calc(100dvh - 1.5rem);
+  max-height: calc(100dvh - 1.5rem - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+  margin: max(0.75rem, env(safe-area-inset-top, 0px)) auto max(0.75rem, env(safe-area-inset-bottom, 0px));
   padding: 0;
   border: 2px solid #161616;
   border-radius: var(--radius-lg);
@@ -1806,6 +1921,15 @@ dialog {
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
   overflow: hidden;
   transition: width .45s var(--ease), max-width .45s var(--ease);
+}
+@media (max-width: 40rem) {
+  dialog {
+    width: calc(100% - 1rem);
+    max-width: none;
+    max-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+    margin: env(safe-area-inset-top, 0px) auto 0;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  }
 }
 @media (min-width: 58rem) {
   dialog {
@@ -2058,7 +2182,7 @@ dialog[data-desc-state="loading"] .dlg-aside {
   border: 2px solid var(--line-strong);
   border-radius: var(--radius);
   background: #161616;
-  touch-action: pan-y;
+  touch-action: pan-x;
   user-select: none;
 }
 .gallery-track { display: flex; height: 100%; transition: transform .55s var(--ease); }
@@ -2796,6 +2920,14 @@ body[data-view="membro"] #view-auth {
   border-radius: var(--radius-lg);
   font-family: var(--mono);
 }
+@media (max-width: 40rem) {
+  .archive-deck { padding: 0.75rem; gap: 0.65rem; }
+  .deck-row-label { min-width: 0; flex: 0 0 100%; }
+  .deck-row--sub { align-items: flex-start; }
+  .deck-row-subleft { width: 100%; }
+  .deck-order-wrap { width: 100%; flex-wrap: wrap; }
+  .deck-select { width: 100%; min-height: 40px; }
+}
 .deck-row {
   display: flex;
   align-items: center;
@@ -2835,6 +2967,26 @@ body[data-view="membro"] #view-auth {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.15s var(--ease);
+}
+@media (pointer: coarse) {
+  .deck-switch button {
+    min-height: 40px;
+    padding: 0.45rem 0.75rem;
+  }
+  .chip {
+    min-height: 40px;
+  }
+  .star-pick {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0.35rem;
+    display: inline-grid;
+    place-items: center;
+  }
+  .react-btn {
+    min-height: 44px;
+    padding: 0.55rem 0.85rem;
+  }
 }
 .deck-switch button:hover {
   background: var(--surface-hover);
@@ -3129,8 +3281,14 @@ body[data-view="membro"] #view-auth {
   color: #F5F5F5;
   padding: 0;
   max-width: 480px;
-  width: 95vw;
+  width: min(95vw, 480px);
+  max-height: calc(100dvh - 1rem - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+  overflow: hidden;
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.65);
+}
+.snake-dialog[open] {
+  display: flex;
+  flex-direction: column;
 }
 .snake-dialog::backdrop {
   background: rgba(0, 0, 0, 0.75);
@@ -3141,6 +3299,10 @@ body[data-view="membro"] #view-auth {
   display: flex;
   flex-direction: column;
   gap: 0.85rem;
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 .snake-hud {
   display: flex;
@@ -3156,6 +3318,11 @@ body[data-view="membro"] #view-auth {
 .snake-hud-item {
   display: flex;
   flex-direction: column;
+  min-width: 0;
+}
+.snake-hud-item--status {
+  flex: 1 1 auto;
+  text-align: right;
 }
 .snake-hud-val {
   font-size: 1.15rem;
@@ -3164,7 +3331,8 @@ body[data-view="membro"] #view-auth {
 .snake-status-badge {
   font-size: 0.7rem;
   color: var(--hw-yellow);
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 .snake-screen {
   position: relative;
@@ -3173,12 +3341,16 @@ body[data-view="membro"] #view-auth {
   overflow: hidden;
   background: #0D0D0D;
   aspect-ratio: 1 / 1;
+  width: min(100%, 400px);
+  max-height: min(56vh, calc(100dvh - 17rem));
+  margin-inline: auto;
 }
 #snake-canvas {
   display: block;
   width: 100%;
   height: 100%;
   image-rendering: pixelated;
+  touch-action: none;
 }
 .snake-scanlines {
   position: absolute;
@@ -3239,6 +3411,20 @@ body[data-view="membro"] #view-auth {
   color: #888888;
   text-align: center;
   margin: 0;
+}
+.snake-instructions--coarse { display: none; }
+@media (pointer: coarse) {
+  .snake-instructions--fine { display: none; }
+  .snake-instructions--coarse { display: block; }
+}
+@media (max-width: 40rem) {
+  .snake-dialog {
+    width: calc(100% - 1rem);
+    max-width: none;
+  }
+  .snake-frame { padding: 0.75rem; gap: 0.65rem; }
+  .snake-hud { padding: 0.45rem 0.6rem; gap: 0.35rem; }
+  .snake-hud-val { font-size: 1rem; }
 }
 .is-shake {
   animation: snake-shake 0.25s ease-in-out;

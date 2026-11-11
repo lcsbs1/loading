@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Loading... — Acervo Tátil &amp; Fórum Comunitário de Jogos (1972—2026)</title>
   <meta name="description" content="Loading...: enciclopédia aberta e fórum comunitário de jogos de videogame e computador. Acompanhe o que você jogou, inspecione fichas técnicas e converse sem anúncios.">
   <meta name="color-scheme" content="light dark">
@@ -100,9 +100,9 @@
 
       <nav class="site-nav" aria-label="Seções principais">
         <span class="site-nav-pill" aria-hidden="true"></span>
-        <a class="active" href="#inicio">[01] DESTAQUES</a>
-        <a href="#acervo">[02] ACERVO</a>
-        <a href="#forum">[03] COMUNIDADE</a>
+        <a class="active" href="#inicio"><span class="nav-idx" aria-hidden="true">[01]</span> DESTAQUES</a>
+        <a href="#acervo"><span class="nav-idx" aria-hidden="true">[02]</span> ACERVO</a>
+        <a href="#forum"><span class="nav-idx" aria-hidden="true">[03]</span> COMUNIDADE</a>
       </nav>
 
       <div class="header-controls">
@@ -114,7 +114,7 @@
           </div>
         </form>
 
-        <button class="chip chip--snake" type="button" data-snake-open aria-label="Abrir modo diagnóstico minigame snake" title="Modo Diagnóstico (Atalho: D ou Konami)">🎮 [D]</button>
+        <button class="chip chip--snake" type="button" data-snake-open aria-label="Abrir modo diagnóstico minigame snake" title="Modo Diagnóstico (Atalho: D ou Konami)">🎮 <span class="chip-snake-kbd">[D]</span></button>
         <button class="chip chip--install" id="pwa-install" type="button" hidden aria-label="Instalar aplicativo Loading...">⬇ APP</button>
 
         <div class="auth-menu-wrap" id="auth-menu-wrap">
@@ -393,7 +393,8 @@
             </div>
 
             <div class="catalog-subbar">
-              <span class="acervo-hint">Passe o cursor sobre um cartucho para ver o gameplay · Clique para abrir a ficha técnica</span>
+              <span class="acervo-hint acervo-hint--fine">Passe o cursor sobre um cartucho para ver o gameplay · Clique para abrir a ficha técnica</span>
+              <span class="acervo-hint acervo-hint--coarse">Toque em um cartucho para abrir a ficha técnica</span>
             </div>
 
             <ul class="grid" id="games" aria-label="Jogos do acervo"></ul>
@@ -898,8 +899,11 @@
           </div>
           <button type="button" class="dpad-btn dpad-down" data-dir="down" aria-label="Baixo">▼</button>
         </div>
-        <p class="snake-instructions">
+        <p class="snake-instructions snake-instructions--fine">
           SETAS / WASD · ESPAÇO PAUSA · ENTER REINICIA · ATALHO [D] OU CÓDIGO KONAMI
+        </p>
+        <p class="snake-instructions snake-instructions--coarse">
+          DESLIZE NO ÉCRAN OU USE O D-PAD · ● PAUSA / INICIA
         </p>
       </div>
     </div>

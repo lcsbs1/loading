@@ -144,6 +144,13 @@
       over: 'FIM DE JOGO · ENTER PARA REINICIAR',
       won: 'DIAGNÓSTICO COMPLETO · ENTER PARA REINICIAR'
     };
+    var STATUS_TOUCH = {
+      ready: 'PRONTO · TOQUE OU ●',
+      running: 'EM TESTE · DESLIZE / D-PAD',
+      paused: 'PAUSADO · TOQUE PARA SEGUIR',
+      over: 'FIM DE JOGO · TOQUE PARA REINICIAR',
+      won: 'DIAGNÓSTICO COMPLETO · TOQUE PARA REINICIAR'
+    };
     var KONAMI = ['arrowup', 'arrowup', 'arrowdown', 'arrowdown', 'arrowleft',
       'arrowright', 'arrowleft', 'arrowright', 'b', 'a'];
     var KEY_DIRS = {
@@ -220,15 +227,22 @@
       Array.prototype.forEach.call(dialog.querySelectorAll('[data-dir]'), function (btn) {
         btn.addEventListener('pointerdown', function (e) {
           e.preventDefault();
-          press(btn.getAttribute('data-dir'));
+          var dir = btn.getAttribute('data-dir');
+          if (dir === 'action') primary();
+          else press(dir);
         });
         btn.addEventListener('click', function (e) {
-          if (e.detail === 0) press(btn.getAttribute('data-dir')); // ativação por teclado
+          if (e.detail !== 0) return; // ativação por teclado
+          var dir = btn.getAttribute('data-dir');
+          if (dir === 'action') primary();
+          else press(dir);
         });
       });
 
       canvas.addEventListener('pointerdown', function (e) {
+        if (e.cancelable) e.preventDefault();
         pointerStart = { x: e.clientX, y: e.clientY };
+        try { canvas.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
       });
       canvas.addEventListener('pointerup', function (e) {
         if (!pointerStart) return;
@@ -243,19 +257,34 @@
       });
       canvas.addEventListener('pointercancel', function () { pointerStart = null; });
 
+      dialog.addEventListener('close', unlockPageScroll);
       window.addEventListener('resize', function () { if (dialog.open) { resize(); draw(); } });
       return true;
+    }
+
+    function lockPageScroll() {
+      var sbw = Math.max(0, window.innerWidth - document.documentElement.clientWidth);
+      document.body.style.setProperty('--scrollbar-comp', sbw + 'px');
+      document.documentElement.classList.add('is-modal-open');
+      document.body.classList.add('is-modal-open');
+    }
+
+    function unlockPageScroll() {
+      document.documentElement.classList.remove('is-modal-open');
+      document.body.classList.remove('is-modal-open');
+      document.body.style.removeProperty('--scrollbar-comp');
     }
 
     function closeDialog() {
       if (!dialog) return;
       if (typeof dialog.close === 'function') dialog.close();
-      else { dialog.removeAttribute('open'); pause(); stopLoop(); }
+      else { dialog.removeAttribute('open'); pause(); stopLoop(); unlockPageScroll(); }
     }
 
     function open() {
       if (!bind()) return;
       if (!dialog.open) {
+        lockPageScroll();
         if (typeof dialog.showModal === 'function') dialog.showModal();
         else dialog.setAttribute('open', '');
       }
@@ -342,11 +371,20 @@
       }
     }
 
+    function isCoarsePointer() {
+      try {
+        return window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+      } catch (e) {
+        return false;
+      }
+    }
+
     function hud() {
       var s = game.state();
+      var labels = isCoarsePointer() ? STATUS_TOUCH : STATUS;
       if (scoreEl) scoreEl.textContent = String(s.score).padStart(3, '0');
       if (bestEl) bestEl.textContent = String(Math.max(best, s.score)).padStart(3, '0');
-      if (statusEl) statusEl.textContent = STATUS[mode];
+      if (statusEl) statusEl.textContent = labels[mode] || STATUS[mode];
       if (dialog) dialog.setAttribute('data-mode', mode);
     }
 
