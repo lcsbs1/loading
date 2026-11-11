@@ -1,8 +1,8 @@
 'use strict';
 
-const CACHE_NAME = 'loading-shell-v2';
-const API_CACHE_NAME = 'loading-api-v2';
-const IMG_CACHE_NAME = 'loading-img-v2';
+const CACHE_NAME = 'loading-shell-v3';
+const API_CACHE_NAME = 'loading-api-v3';
+const IMG_CACHE_NAME = 'loading-img-v3';
 
 const PRECACHE_URLS = [
   './',

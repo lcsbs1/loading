@@ -207,6 +207,9 @@ button, input, textarea, select { font: inherit; color: inherit; }
   letter-spacing: .02em;
   white-space: nowrap;
 }
+@media (max-width: 40rem) {
+  .hw-telemetry-dot { white-space: normal; }
+}
 
 /* ───────── Cabeçalhos de Seção e Módulos Bento ───────── */
 .bento-module {
@@ -565,22 +568,47 @@ textarea.input { min-height: 6.5rem; resize: vertical; line-height: 1.5; }
   pointer-events: none;
 }
 
-/* Header compacto em tablets/telefones: nav em faixa própria */
+/* Header compacto em tablets/telefones: marca protegida + nav em faixa própria */
 @media (max-width: 67.9875rem) {
   .header-inner {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    grid-template-areas:
-      "brand controls"
-      "nav nav";
+    display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: .55rem .65rem;
+    gap: .5rem .4rem;
     min-height: 0;
     padding-block: .55rem;
   }
-  .brand-group { grid-area: brand; min-width: 0; }
+  .header-controls {
+    display: contents;
+    margin-left: 0;
+  }
+  .brand-group {
+    flex: 0 0 auto;
+    order: 1;
+    min-width: auto;
+  }
+  .chip--snake,
+  .chip--install {
+    flex: 0 0 auto;
+    order: 2;
+  }
+  .auth-menu-wrap {
+    flex: 0 0 auto;
+    order: 3;
+    margin-left: auto;
+  }
+  .header-controls .chip--auth {
+    margin-inline-start: 0;
+  }
+  .header-search {
+    flex: 1 1 100%;
+    order: 4;
+    max-width: none;
+    width: 100%;
+  }
   .site-nav {
-    grid-area: nav;
+    flex: 1 1 100%;
+    order: 5;
     width: 100%;
     max-width: 100%;
     overflow-x: auto;
@@ -600,19 +628,6 @@ textarea.input { min-height: 6.5rem; resize: vertical; line-height: 1.5; }
     justify-content: center;
   }
   .site-nav .nav-idx { display: none; }
-  .header-controls {
-    grid-area: controls;
-    margin-left: 0;
-    flex-wrap: nowrap;
-    gap: .35rem;
-  }
-  .header-controls .chip--auth {
-    margin-inline-start: .35rem;
-  }
-  .header-search {
-    flex: 1 1 7.5rem;
-    max-width: 11rem;
-  }
   .search-kbd { display: none; }
   .input--search {
     min-height: 40px;
@@ -628,7 +643,6 @@ textarea.input { min-height: 6.5rem; resize: vertical; line-height: 1.5; }
 
 @media (max-width: 30rem) {
   .brand { padding: .45rem .6rem; font-size: 1rem; }
-  .header-search { max-width: 8.5rem; flex-basis: 6.5rem; }
   .chip--auth .auth-btn-label { display: none; }
   .chip--auth {
     min-width: 40px;
@@ -718,12 +732,12 @@ html:has(dialog[open]) .theme-fab {
 
 .bento-hero-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: 1.25rem;
 }
 @media (min-width: 62rem) {
   .bento-hero-grid {
-    grid-template-columns: 1.65fr 1fr;
+    grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr);
     align-items: stretch;
   }
 }
@@ -734,6 +748,8 @@ html:has(dialog[open]) .theme-fab {
   flex-direction: column;
   justify-content: space-between;
   gap: 1.75rem;
+  min-width: 0;
+  max-width: 100%;
   padding: clamp(1.5rem, 3vw, 2.5rem);
   background: var(--bg-elevated);
   border: 2px solid var(--line-strong);
@@ -760,6 +776,7 @@ html:has(dialog[open]) .theme-fab {
   display: flex;
   flex-direction: column;
   gap: .85rem;
+  min-width: 0;
 }
 
 .hero-headline {
@@ -769,12 +786,47 @@ html:has(dialog[open]) .theme-fab {
   display: flex;
   flex-direction: column;
   gap: .25rem;
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 .hero-headline-row {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: .75rem;
+  min-width: 0;
+}
+@media (max-width: 40rem) {
+  :root {
+    --t-display: clamp(1.7rem, 7vw + 0.4rem, 2.15rem);
+  }
+  body {
+    padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
+  }
+  .bento-console,
+  .bento-deck {
+    padding: 1.15rem;
+  }
+  .hero-actions {
+    width: 100%;
+  }
+  .hero-actions .btn {
+    flex: 1 1 auto;
+    justify-content: center;
+    text-align: center;
+  }
+  .console-persist {
+    align-items: flex-start;
+    width: 100%;
+  }
+  .persist-title,
+  .persist-sub {
+    overflow-wrap: anywhere;
+  }
+  .hw-telemetry-dot {
+    overflow-wrap: anywhere;
+  }
 }
 .hero-inline-counter {
   display: inline-flex;
@@ -839,6 +891,8 @@ html:has(dialog[open]) .theme-fab {
   flex-direction: column;
   justify-content: space-between;
   gap: 1rem;
+  min-width: 0;
+  max-width: 100%;
   padding: 1.75rem;
   background: #161616;
   border: 2px solid #161616;
@@ -963,27 +1017,36 @@ html:has(dialog[open]) .theme-fab {
 /* Fileira de 6 Cartuchos em Destaque */
 .featured-block {
   width: 100%;
+  min-width: 0;
   margin-top: 1.5rem;
   padding: 1.5rem;
   background: var(--bg-elevated);
   border: 2px solid var(--line-strong);
   border-radius: var(--radius-lg);
 }
+@media (max-width: 40rem) {
+  .featured-block { padding: 1rem; }
+}
 
 .poster-strip {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: .875rem;
   width: 100%;
+  min-width: 0;
 }
+.poster-strip > * { min-width: 0; max-width: 100%; }
 @media (max-width: 22rem) {
-  .poster-strip { gap: .65rem; }
+  .poster-strip {
+    grid-template-columns: minmax(0, 1fr);
+    gap: .65rem;
+  }
 }
 @media (min-width: 38rem) {
-  .poster-strip { grid-template-columns: repeat(3, 1fr); }
+  .poster-strip { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 @media (min-width: 62rem) {
-  .poster-strip { grid-template-columns: repeat(6, 1fr); }
+  .poster-strip { grid-template-columns: repeat(6, minmax(0, 1fr)); }
 }
 
 /* ───────── 02 · Bento Catalog (largura total) ───────── */
@@ -1161,8 +1224,9 @@ section { padding-block: var(--section); position: relative; }
 #acervo .grid {
   display: grid;
   gap: 1rem;
-  grid-template-columns: repeat(1, 1fr);
+  grid-template-columns: minmax(0, 1fr);
   width: 100%;
+  min-width: 0;
   transition: opacity .2s var(--ease);
 }
 #acervo .grid[aria-busy="true"] {
@@ -1170,20 +1234,20 @@ section { padding-block: var(--section); position: relative; }
   pointer-events: none;
 }
 @media (min-width: 34rem) {
-  #acervo .grid { grid-template-columns: repeat(2, 1fr); }
+  #acervo .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (min-width: 50rem) {
-  #acervo .grid { grid-template-columns: repeat(3, 1fr); }
+  #acervo .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 @media (min-width: 64rem) {
-  #acervo .grid { grid-template-columns: repeat(4, 1fr); }
+  #acervo .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
 @media (min-width: 80rem) {
-  #acervo .grid { grid-template-columns: repeat(5, 1fr); }
+  #acervo .grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 }
 
 /* Card de Cartucho Tátil (Estilo Paper Opção 2) */
-.card { height: 100%; }
+.card { height: 100%; min-width: 0; max-width: 100%; }
 .card.card--reveal {
   opacity: 0;
   transform: translateY(18px);
