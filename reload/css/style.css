@@ -3134,6 +3134,56 @@ body[data-view="membro"] #view-auth {
   background: var(--hw-vermilion);
   color: #FFFFFF;
 }
+.deck-row--actions {
+  border-top: 1px dashed var(--line);
+  padding-top: 0.75rem;
+}
+.btn-deck-random {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 36px;
+  padding: 0.4rem 0.85rem;
+  font: 700 0.72rem/1.3 var(--mono);
+  letter-spacing: 0.04em;
+  color: var(--text);
+  background: var(--bg-elevated);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background 0.15s var(--ease), border-color 0.15s var(--ease), box-shadow 0.15s var(--ease), color 0.15s var(--ease);
+}
+.btn-deck-random:hover {
+  border-color: var(--hw-yellow);
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+.btn-deck-random:active,
+.btn-deck-random.is-busy {
+  background: var(--chassis);
+  color: #F5F5F5;
+  border-color: var(--hw-yellow);
+}
+:root[data-theme="dark"] .btn-deck-random:active,
+:root[data-theme="dark"] .btn-deck-random.is-busy {
+  background: var(--hw-yellow);
+  color: #161616;
+}
+.btn-deck-random:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+@media (pointer: coarse) {
+  .btn-deck-random {
+    min-height: 44px;
+    width: 100%;
+  }
+}
+@media (max-width: 40rem) {
+  .btn-deck-random {
+    width: 100%;
+  }
+}
 
 /* ───────── Diário de Jogos no Dialog ───────── */
 .log-panel {

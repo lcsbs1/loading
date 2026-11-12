@@ -241,6 +241,9 @@
     current: null,
     backdropGame: SEED[0], // Zelda: Breath of the Wild por padrão no Slot Ativo
     popularPage: 1,
+    loadedGames: [],
+    resultCount: 0,
+    offlineMode: false,
   };
   const knownGames = new Set([...SEED, ...TRENDING_POOL].map(g => g.name));
   const gameImageMap = new Map([...SEED, ...TRENDING_POOL].map(g => [g.name.toLowerCase(), g.image]));
@@ -260,6 +263,7 @@
     eras: $('#eras'),
     ordering: $('#ordering'),
     filtersReset: $('#filters-reset'),
+    randomCart: $('#random-cart'),
     dlg: $('#game-dialog'),
     topics: $('#topics'),
     form: $('#topic-form'),
@@ -597,6 +601,7 @@
       if (g.image) gameImageMap.set(g.name.toLowerCase(), g.image);
     });
     append ? els.games.append(frag) : els.games.replaceChildren(frag);
+    state.loadedGames = append ? state.loadedGames.concat(list) : list.slice();
     if (!append && !state.query && !state.platform && list.length && !state.backdropGame) {
       updateHeroBackdrop(list);
     }
@@ -605,21 +610,7 @@
   };
 
   /* ── Carregamento ── */
-  function loadSeed(isRotate = false) {
-    if (isRotate) {
-      state.popularPage = (state.popularPage % 3) + 1;
-      const combined = [...SEED, ...TRENDING_POOL];
-      const start = ((state.popularPage - 1) * PAGE_SIZE) % combined.length;
-      let slice = combined.slice(start, start + PAGE_SIZE);
-      if (slice.length < PAGE_SIZE) {
-        slice = slice.concat(combined.slice(0, PAGE_SIZE - slice.length));
-      }
-      render(slice.map(g => ({ ...g, source: 'seed' })));
-      if (els.more) els.more.hidden = true;
-      if (els.infiniteLoader) els.infiniteLoader.hidden = true;
-      setStatus(`Modo offline. Jogos em alta · Página ${state.popularPage}.`);
-      return;
-    }
+  function filterSeedPool() {
     const q = state.query.toLowerCase();
     let list = [...SEED, ...TRENDING_POOL].filter(g => {
       if (q && !g.name.toLowerCase().includes(q)) return false;
@@ -644,13 +635,55 @@
     else if (state.ordering === '-released') list.sort((a, b) => String(b.released || '').localeCompare(String(a.released || '')));
     else if (state.ordering === 'released') list.sort((a, b) => String(a.released || '').localeCompare(String(b.released || '')));
     else if (state.ordering === 'name') list.sort((a, b) => a.name.localeCompare(b.name));
-    render(list.map(g => ({ ...g, source: 'seed' })));
+    return list;
+  }
+
+  function loadSeed(isRotate = false) {
+    state.offlineMode = true;
+    if (isRotate) {
+      state.popularPage = (state.popularPage % 3) + 1;
+      const combined = [...SEED, ...TRENDING_POOL];
+      const start = ((state.popularPage - 1) * PAGE_SIZE) % combined.length;
+      let slice = combined.slice(start, start + PAGE_SIZE);
+      if (slice.length < PAGE_SIZE) {
+        slice = slice.concat(combined.slice(0, PAGE_SIZE - slice.length));
+      }
+      const mapped = slice.map(g => ({ ...g, source: 'seed' }));
+      state.resultCount = mapped.length;
+      render(mapped);
+      if (els.more) els.more.hidden = true;
+      if (els.infiniteLoader) els.infiniteLoader.hidden = true;
+      setStatus(`Modo offline. Jogos em alta · Página ${state.popularPage}.`);
+      return;
+    }
+    const list = filterSeedPool();
+    const mapped = list.map(g => ({ ...g, source: 'seed' }));
+    state.resultCount = mapped.length;
+    render(mapped);
     if (els.more) els.more.hidden = true;
     if (els.infiniteLoader) els.infiniteLoader.hidden = true;
     $('#fact-count').textContent = '500 mil+';
     setStatus(list.length
-      ? (q ? `${list.length} jogo${list.length > 1 ? 's' : ''} encontrado${list.length > 1 ? 's' : ''}.` : 'Os jogos mais jogados e comentados na web (curadoria local).')
+      ? (state.query ? `${list.length} jogo${list.length > 1 ? 's' : ''} encontrado${list.length > 1 ? 's' : ''}.` : 'Os jogos mais jogados e comentados na web (curadoria local).')
       : 'Nenhum jogo na curadoria local.');
+  }
+
+  function buildCatalogParams(extra = {}) {
+    const p = new URLSearchParams({ page_size: String(PAGE_SIZE) });
+    if (state.query) {
+      p.set('search', state.query);
+      p.set('search_precise', 'true');
+      if (state.ordering && state.ordering !== '-added') p.set('ordering', state.ordering);
+    } else {
+      p.set('ordering', state.ordering || '-added');
+    }
+    if (state.platform) p.set('parent_platforms', state.platform);
+    if (state.era) p.set('dates', state.era);
+    Object.entries(extra).forEach(([k, v]) => {
+      if (v == null || v === '') p.delete(k);
+      else p.set(k, String(v));
+    });
+    return p;
   }
 
   /* ── Cache de requisições RAWG (memória + sessionStorage) ── */
@@ -695,18 +728,8 @@
     let url;
     if (append && state.next) url = state.next;
     else {
-      const p = new URLSearchParams({ page_size: String(PAGE_SIZE) });
-      if (state.query) {
-        p.set('search', state.query);
-        p.set('search_precise', 'true');
-        if (state.ordering && state.ordering !== '-added') p.set('ordering', state.ordering);
-      } else {
-        p.set('ordering', state.ordering || '-added');
-        if (state.popularPage > 1) p.set('page', String(state.popularPage));
-      }
-      if (state.platform) p.set('parent_platforms', state.platform);
-      if (state.era) p.set('dates', state.era);
-      url = `${API}/games?${p}`;
+      const extra = (!state.query && state.popularPage > 1) ? { page: state.popularPage } : {};
+      url = `${API}/games?${buildCatalogParams(extra)}`;
     }
 
     try {
@@ -719,6 +742,8 @@
         setCache(url, data);
       }
       state.next = data.next;
+      state.offlineMode = false;
+      state.resultCount = Number(data.count) || (data.results || []).length;
       render(data.results.map(fromRawg), append);
       if (els.more) {
         els.more.hidden = true;
@@ -766,7 +791,101 @@
     document.body.style.removeProperty('--scrollbar-comp');
   }
 
-  els.dlg.addEventListener('close', unlockPageScroll);
+  let syncingGameHash = false;
+  let lastNonGameHash = '#acervo';
+
+  function parseGameHash(hash = window.location.hash) {
+    const m = String(hash || '').match(/^#jogo\/([^/?#]+)$/i);
+    return m ? decodeURIComponent(m[1]) : null;
+  }
+
+  function setGameDeepLink(id) {
+    if (id == null || id === '') return;
+    const next = `#jogo/${encodeURIComponent(String(id))}`;
+    if (window.location.hash === next) return;
+    const current = window.location.hash || '';
+    if (current && !parseGameHash(current)) lastNonGameHash = current;
+    syncingGameHash = true;
+    history.replaceState(null, '', `${window.location.pathname}${window.location.search}${next}`);
+    syncingGameHash = false;
+  }
+
+  function clearGameDeepLink() {
+    if (!parseGameHash()) return;
+    const fallback = ['#inicio', '#acervo', '#forum'].includes(lastNonGameHash) ? lastNonGameHash : '#acervo';
+    syncingGameHash = true;
+    history.replaceState(null, '', `${window.location.pathname}${window.location.search}${fallback}`);
+    syncingGameHash = false;
+  }
+
+  function fromRawgDetail(d) {
+    const description = (d.description_raw || '').split(/\n\s*(Español|Русский|Deutsch|Français)\s*\n/)[0].trim();
+    return {
+      id: d.id,
+      source: 'rawg',
+      name: d.name,
+      released: d.released,
+      metacritic: d.metacritic,
+      rating: d.rating,
+      image: d.background_image,
+      imageHover: null,
+      screenshots: [],
+      platforms: (d.parent_platforms || []).map(p => p.platform && p.platform.name).filter(Boolean),
+      genres: (d.genres || []).map(x => (typeof I18N !== 'undefined' ? I18N.genre(x.name) : x.name)),
+      developers: (d.developers || []).map(x => x && x.name).filter(Boolean),
+      publishers: (d.publishers || []).map(x => x && x.name).filter(Boolean),
+      website: d.website || null,
+      description,
+      translatedDesc: null,
+      translationAttempted: false,
+    };
+  }
+
+  async function openGameById(id) {
+    if (id == null || id === '') return false;
+    const key = String(id);
+    if (state.current && String(state.current.id) === key && els.dlg.open) {
+      setGameDeepLink(key);
+      return true;
+    }
+    const local = [...SEED, ...TRENDING_POOL].find(g => String(g.id) === key);
+    if (local) {
+      await openGame({ ...local, source: 'seed' });
+      return true;
+    }
+    const cached = (state.loadedGames || []).find(g => String(g.id) === key);
+    if (cached) {
+      await openGame(cached);
+      return true;
+    }
+    try {
+      const res = await fetch(`${API}/games/${encodeURIComponent(key)}`);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const d = await res.json();
+      await openGame(fromRawgDetail(d));
+      return true;
+    } catch (err) {
+      console.warn('[deep-link] Falha ao abrir jogo', key, err);
+      setStatus('Cartucho não encontrado neste acervo.');
+      clearGameDeepLink();
+      return false;
+    }
+  }
+
+  function syncGameDeepLinkFromHash() {
+    if (syncingGameHash || isAuthCallbackUrl()) return;
+    const gameId = parseGameHash();
+    if (gameId) {
+      openGameById(gameId);
+      return;
+    }
+    if (els.dlg.open) els.dlg.close();
+  }
+
+  els.dlg.addEventListener('close', () => {
+    unlockPageScroll();
+    if (!syncingGameHash) clearGameDeepLink();
+  });
 
   const spec = (k, v) => {
     if (!v || (Array.isArray(v) && !v.length)) return null;
@@ -1045,6 +1164,7 @@
     if (dlgBody) dlgBody.scrollTop = 0;
     if (dlgMain) dlgMain.scrollTop = 0;
     loadScreenshots(g);
+    setGameDeepLink(g.id);
 
     const needsFetch = g.source === 'rawg' && g.description == null;
     const needsTranslate = g.source === 'rawg' && !g.translatedDesc && !g.translationAttempted && typeof I18N !== 'undefined';
@@ -1106,6 +1226,71 @@
     }
   }
 
+  async function insertRandomCartridge() {
+    const btn = els.randomCart || $('#random-cart');
+    if (btn?.disabled) return;
+    if (btn) {
+      btn.disabled = true;
+      btn.classList.add('is-busy');
+      btn.textContent = 'SORTEANDO CARTUCHO…';
+    }
+    try {
+      let pool = (state.loadedGames && state.loadedGames.length)
+        ? state.loadedGames.slice()
+        : filterSeedPool().map(g => ({ ...g, source: 'seed' }));
+
+      // Tenta uma página aleatória do resultado filtrado (timeout curto; fallback local).
+      if (!state.offlineMode && state.resultCount > PAGE_SIZE) {
+        const maxPage = Math.max(1, Math.min(Math.ceil(state.resultCount / PAGE_SIZE), 40));
+        const page = 1 + Math.floor(Math.random() * maxPage);
+        const url = `${API}/games?${buildCatalogParams({ page })}`;
+        try {
+          let data = getCache(url);
+          if (!data) {
+            const ctrl = new AbortController();
+            const timer = setTimeout(() => ctrl.abort(), 2500);
+            try {
+              const res = await fetch(url, { signal: ctrl.signal });
+              if (!res.ok) throw new Error('HTTP ' + res.status);
+              data = await res.json();
+              setCache(url, data);
+            } finally {
+              clearTimeout(timer);
+            }
+          }
+          if (data?.results?.length) pool = data.results.map(fromRawg);
+        } catch (err) {
+          console.warn('[random-cart] usando lista local filtrada', err);
+        }
+      }
+
+      if (!pool.length) {
+        pool = filterSeedPool().map(g => ({ ...g, source: 'seed' }));
+      }
+
+      if (pool.length > 1 && state.current) {
+        const currentId = String(state.current.id);
+        const filtered = pool.filter(g => String(g.id) !== currentId);
+        if (filtered.length) pool = filtered;
+      }
+
+      if (!pool.length) {
+        setStatus('Nenhum cartucho no filtro atual para sortear.');
+        return;
+      }
+
+      const pick = pool[Math.floor(Math.random() * pool.length)];
+      setStatus(`Cartucho sorteado: ${pick.name}`);
+      await openGame(pick);
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.classList.remove('is-busy');
+        btn.textContent = 'INSERIR CARTUCHO ALEATÓRIO';
+      }
+    }
+  }
+
   $('#dlg-close').addEventListener('click', () => els.dlg.close());
   els.dlg.addEventListener('click', e => { if (e.target === els.dlg) els.dlg.close(); });
   $('#g-discuss').addEventListener('click', () => {
@@ -1114,6 +1299,12 @@
     window.location.hash = '#forum';
     $('#forum').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
     $('#f-title').focus({ preventScroll: true });
+  });
+  document.querySelector('.archive-deck')?.addEventListener('click', (e) => {
+    const btn = e.target.closest('#random-cart, .btn-deck-random');
+    if (!btn) return;
+    e.preventDefault();
+    insertRandomCartridge();
   });
 
   function gameKeyOf(g) {
@@ -2339,6 +2530,9 @@
     if (['#inicio', '#acervo', '#forum'].includes(hash)) {
       lastCatalogHash = hash;
     }
+    if (['#inicio', '#acervo', '#forum'].includes(window.location.hash)) {
+      lastNonGameHash = window.location.hash;
+    }
     const wasPartition = ['auth', 'perfil', 'membro'].includes(document.body.dataset.view);
     delete document.body.dataset.view;
     hidePartitionViews();
@@ -2946,6 +3140,13 @@
   }
 
   initSpaAuth();
+  window.addEventListener('hashchange', () => {
+    if (!syncingGameHash) syncGameDeepLinkFromHash();
+  });
+  if (parseGameHash()) {
+    lastNonGameHash = '#acervo';
+    syncGameDeepLinkFromHash();
+  }
   loadGames();
   updateScrollEffects();
 })();
