@@ -255,6 +255,7 @@
     infiniteLoader: $('#infinite-loader'),
     refreshBtn: $('#acervo-refresh-btn'),
     q: $('#q'),
+    archiveQ: $('#archive-q'),
     platforms: $('#platforms'),
     eras: $('#eras'),
     ordering: $('#ordering'),
@@ -1336,14 +1337,49 @@
 
 
   /* ── Busca & filtros ── */
-  const onSearch = debounce(() => { state.query = els.q.value.trim(); state.next = null; loadGames(); }, 350);
-  els.q.addEventListener('input', onSearch);
-  $('#search-form').addEventListener('submit', e => {
-    e.preventDefault(); onSearch();
-    $('#acervo').scrollIntoView({ behavior: 'smooth' });
+  function syncSearchInputs(value) {
+    const next = value == null ? '' : String(value);
+    if (els.q && els.q.value !== next) els.q.value = next;
+    if (els.archiveQ && els.archiveQ.value !== next) els.archiveQ.value = next;
+  }
+  function applySearchQuery(raw, { scroll = false } = {}) {
+    const next = String(raw || '').trim();
+    state.query = next;
+    state.next = null;
+    syncSearchInputs(next);
+    updateFilterResetUI();
+    loadGames();
+    if (scroll) $('#acervo')?.scrollIntoView({ behavior: 'smooth' });
+  }
+  const onSearch = debounce((source) => {
+    const raw = source === 'archive'
+      ? (els.archiveQ?.value || '')
+      : (els.q?.value || '');
+    applySearchQuery(raw);
+  }, 350);
+  els.q?.addEventListener('input', () => {
+    if (els.archiveQ) els.archiveQ.value = els.q.value;
+    onSearch('header');
+  });
+  els.archiveQ?.addEventListener('input', () => {
+    if (els.q) els.q.value = els.archiveQ.value;
+    onSearch('archive');
+  });
+  $('#search-form')?.addEventListener('submit', e => {
+    e.preventDefault();
+    applySearchQuery(els.q?.value || '', { scroll: true });
+  });
+  $('#archive-search-form')?.addEventListener('submit', e => {
+    e.preventDefault();
+    applySearchQuery(els.archiveQ?.value || '');
   });
   function updateFilterResetUI() {
-    const hasFilter = Boolean(state.platform || state.era || (state.ordering && state.ordering !== '-added'));
+    const hasFilter = Boolean(
+      state.query ||
+      state.platform ||
+      state.era ||
+      (state.ordering && state.ordering !== '-added')
+    );
     if (els.filtersReset) els.filtersReset.hidden = !hasFilter;
   }
 
@@ -1382,10 +1418,12 @@
 
   if (els.filtersReset) {
     els.filtersReset.addEventListener('click', () => {
+      state.query = '';
       state.platform = '';
       state.era = '';
       state.ordering = '-added';
       state.next = null;
+      syncSearchInputs('');
       if (els.platforms) {
         els.platforms.querySelectorAll('button').forEach((x, i) => x.setAttribute('aria-pressed', String(i === 0)));
       }
@@ -1407,9 +1445,10 @@
 
       // Avança a página de mais jogados (1 a 10) e limpa busca de texto para ver populares
       state.popularPage = (state.popularPage % 10) + 1;
-      if (els.q) els.q.value = '';
       state.query = '';
       state.next = null;
+      syncSearchInputs('');
+      updateFilterResetUI();
 
       try {
         await loadGames(false, true);
