@@ -293,6 +293,19 @@ if (swContent.includes('cache.put(req, res)') && !swContent.includes('supabase.c
 }
 ok('sw.js não intercepta chamadas de autenticação e dados do Supabase');
 
+// Capas em CDN externa NÃO podem passar por event.respondWith no SW:
+// no Chrome isso gera net::ERR_FAILED nas <img> mesmo com HTTP 200.
+if (!swContent.includes("url.hostname === 'media.rawg.io'")) {
+  fail('sw.js deve reconhecer media.rawg.io para bypass');
+}
+if (swContent.includes('loading-img-') || /isGameMedia[\s\S]{0,200}event\.respondWith/.test(swContent)) {
+  fail('sw.js não deve interceptar CDN de capas (loading-img / respondWith em mídia)');
+}
+if (!swContent.includes('loading-shell-v4') || !swContent.includes('skipWaiting()')) {
+  fail('sw.js precisa de cache v4 + skipWaiting para substituir o SW que quebrava capas');
+}
+ok('sw.js não intercepta CDN de capas (RAWG/Steam)');
+
 const manifestContent = JSON.parse(fs.readFileSync(path.join(ROOT, 'reload/manifest.webmanifest'), 'utf8'));
 if (!manifestContent.name || !manifestContent.icons || manifestContent.icons.length < 3) {
   fail('manifest.webmanifest incompleto');
