@@ -158,10 +158,13 @@ ok('Config Supabase presente');
 if (/RAWG_KEY\s*:\s*['"][a-f0-9]{32}['"]/i.test(configContent) || /icloud\.com/i.test(configContent)) {
   fail('config.js ainda publica chave RAWG ou e-mail');
 }
-if (!configContent.includes("API_BASE_URL: '/api/rawg'")) {
-  fail('config.js deve apontar o catálogo para /api/rawg');
+if (!configContent.includes("API_BASE_URL: '/api/catalog'")) {
+  fail('config.js deve apontar o catálogo para /api/catalog');
 }
-ok('Config pública sem chave RAWG e sem e-mail');
+if (/TWITCH_CLIENT_SECRET|RAWG_KEY\s*:/.test(configContent)) {
+  fail('config.js não pode embutir segredos de catálogo');
+}
+ok('Config pública sem chave RAWG/IGDB e sem e-mail');
 
 const localConfig = fs.readFileSync(path.join(ROOT, 'reload/js/config.local.js'), 'utf8');
 if (/[a-f0-9]{32}/i.test(localConfig) || /@/.test(localConfig)) {
@@ -169,13 +172,13 @@ if (/[a-f0-9]{32}/i.test(localConfig) || /@/.test(localConfig)) {
 }
 ok('config.local.js sem segredo');
 
-if (appContent.includes('api.rawg.io') || appContent.includes('key=${') || appContent.includes('state.key')) {
-  fail('app.js ainda chama a RAWG direto ou envia key');
+if (appContent.includes('api.rawg.io') || appContent.includes('api.igdb.com') || appContent.includes('key=${') || appContent.includes('state.key')) {
+  fail('app.js ainda chama RAWG/IGDB direto ou envia key');
 }
-if (!appContent.includes('/api/rawg')) {
-  fail('app.js deve usar o proxy /api/rawg');
+if (!appContent.includes('/api/catalog')) {
+  fail('app.js deve usar o proxy /api/catalog');
 }
-ok('app.js usa o proxy da RAWG');
+ok('app.js usa o proxy de catálogo');
 
 const i18nContent = fs.readFileSync(path.join(ROOT, 'reload/js/i18n.js'), 'utf8');
 if (i18nContent.includes('api.mymemory.translated.net') || i18nContent.includes('innerHTML')) {
@@ -187,15 +190,22 @@ if (!i18nContent.includes('/api/translate')) {
 ok('i18n.js usa o proxy de tradução');
 
 const vercelConfig = JSON.parse(fs.readFileSync(path.join(ROOT, 'vercel.json'), 'utf8'));
-const rawgRoutes = JSON.stringify(vercelConfig.rewrites || []);
-if (!rawgRoutes.includes('/api/rawg/games/:id') || !rawgRoutes.includes('screenshots')) {
-  fail('vercel.json deve reescrever a ficha e os screenshots para /api/rawg');
+const catalogRoutes = JSON.stringify(vercelConfig.rewrites || []);
+if (!catalogRoutes.includes('/api/catalog/games/:id') || !catalogRoutes.includes('/api/rawg/games/:id')) {
+  fail('vercel.json deve reescrever /api/catalog e alias /api/rawg');
+}
+if (!catalogRoutes.includes('screenshots')) {
+  fail('vercel.json deve reescrever screenshots do catálogo');
 }
 if (vercelConfig.outputDirectory !== 'reload') {
   fail('vercel.json deve publicar só a pasta reload');
 }
-if (!String(vercelConfig.headers?.[0]?.headers?.map(h => h.key)).includes('Content-Security-Policy')) {
+const cspHeader = (vercelConfig.headers || []).flatMap(h => h.headers || []).find(h => h.key === 'Content-Security-Policy');
+if (!cspHeader || !String(cspHeader.value).includes("default-src 'self'")) {
   fail('vercel.json sem Content-Security-Policy');
+}
+if (!String(cspHeader.value).includes('https://images.igdb.com')) {
+  fail('CSP deve permitir imagens do IGDB');
 }
 ok('Deploy estático restrito a reload/');
 
@@ -214,6 +224,41 @@ if (!rewritten || rewritten.includes('key=') || !rewritten.startsWith('/api/rawg
   fail('paginação da RAWG ainda pode devolver a chave');
 }
 ok('Proxy da RAWG recusa caminhos e tira a chave da paginação');
+
+const catalog = require(path.join(ROOT, 'lib', 'catalog'));
+const igdb = require(path.join(ROOT, 'lib', 'igdb'));
+if (!catalog.catalogSegmentsAllowed(['games', 'igdb:1942'])) {
+  fail('catalog deve aceitar id igdb:…');
+}
+if (!catalog.catalogSegmentsAllowed(['games', 'rawg:3498', 'screenshots'])) {
+  fail('catalog deve aceitar screenshots rawg:…');
+}
+if (catalog.catalogSegmentsAllowed(['games', 'steam:1'])) {
+  fail('catalog aceitou provedor inválido');
+}
+if (catalog.parseCatalogId('igdb:1942')?.provider !== 'igdb') {
+  fail('parseCatalogId falhou para igdb');
+}
+if (catalog.parseCatalogId('3498')?.provider !== 'rawg') {
+  fail('id numérico legado deve mapear para rawg');
+}
+if (igdb.parseGameId('igdb:1942') !== '1942') {
+  fail('parseGameId IGDB falhou');
+}
+if (!String(igdb.igdbImage('abc')).includes('images.igdb.com')) {
+  fail('igdbImage deve apontar para images.igdb.com');
+}
+if (igdb.mapOrdering('-released') !== 'first_release_date desc') {
+  fail('mapOrdering IGDB incorreto');
+}
+ok('Camada catalog/IGDB valida ids e normalização básica');
+
+const envPath = path.join(ROOT, '.env.example');
+const envExample = fs.readFileSync(envPath, 'utf8');
+if (!envExample.includes('TWITCH_CLIENT_ID=') || !envExample.includes('TWITCH_CLIENT_SECRET=')) {
+  fail('.env.example deve documentar TWITCH_CLIENT_ID/SECRET');
+}
+ok('.env.example documenta credenciais IGDB');
 
 const migrationHooks = [
   'create table public.profiles',

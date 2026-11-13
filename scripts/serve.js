@@ -6,7 +6,8 @@ const path = require('path');
 
 const ROOT = path.resolve(path.join(__dirname, '..'));
 const PUBLIC_ROOT = path.join(ROOT, 'reload');
-const { proxyRawg, proxyTranslate, segmentsFromPath } = require(path.join(ROOT, 'lib', 'upstream'));
+const { proxyTranslate, segmentsFromPath } = require(path.join(ROOT, 'lib', 'upstream'));
+const { proxyCatalog, PROVIDER_HEADER } = require(path.join(ROOT, 'lib', 'catalog'));
 
 function loadEnvFile() {
   const envPath = path.join(ROOT, '.env');
@@ -121,14 +122,25 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  if (pathname === '/api/rawg' || pathname.startsWith('/api/rawg/')) {
+  const isCatalog = pathname === '/api/catalog' || pathname.startsWith('/api/catalog/');
+  const isRawgAlias = pathname === '/api/rawg' || pathname.startsWith('/api/rawg/');
+  if (isCatalog || isRawgAlias) {
     if (req.method !== 'GET') {
       sendJson(res, 405, { error: 'Method not allowed' });
       return;
     }
     const url = new URL(req.url || '/', 'http://localhost');
-    proxyRawg(segmentsFromPath(url.pathname, '/api/rawg/'), url.searchParams)
-      .then(result => sendJson(res, result.status, result.body, result.headers))
+    const prefix = isCatalog ? '/api/catalog/' : '/api/rawg/';
+    const basePath = isCatalog ? '/api/catalog' : '/api/rawg';
+    const segments = segmentsFromPath(url.pathname, prefix).map((s) => {
+      try { return decodeURIComponent(s); } catch { return s; }
+    });
+    proxyCatalog(segments, url.searchParams, { basePath })
+      .then((result) => {
+        const headers = { ...(result.headers || {}) };
+        if (result.provider) headers[PROVIDER_HEADER] = result.provider;
+        sendJson(res, result.status, result.body, headers);
+      })
       .catch(() => sendJson(res, 502, { error: 'Catálogo indisponível.' }));
     return;
   }

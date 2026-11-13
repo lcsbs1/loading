@@ -2,8 +2,8 @@
   'use strict';
   document.documentElement.classList.add('js');
 
-  /* Catálogo passa pelo proxy /api/rawg. A chave da RAWG não fica no browser. */
-  const API = (typeof CONFIG !== 'undefined' && CONFIG.API_BASE_URL) ? CONFIG.API_BASE_URL : '/api/rawg';
+  /* Catálogo unificado (RAWG + IGDB) via proxy. Chaves ficam só no servidor. */
+  const API = (typeof CONFIG !== 'undefined' && CONFIG.API_BASE_URL) ? CONFIG.API_BASE_URL : '/api/catalog';
   const LS = (typeof CONFIG !== 'undefined' && CONFIG.STORAGE_KEYS) ? CONFIG.STORAGE_KEYS : {
     key: 'loading.rawgKey',
     theme: 'loading.theme',
@@ -342,11 +342,24 @@
     els.status.replaceChildren(msg);
   };
 
-  /* ── Normalização ── */
-  const fromRawg = g => {
+  /* ── Normalização do catálogo (RAWG / IGDB via proxy) ── */
+  function catalogSourceOf(g) {
+    if (g && g.source) return g.source;
+    const id = String(g && g.id != null ? g.id : '');
+    if (id.startsWith('igdb:')) return 'igdb';
+    if (id.startsWith('rawg:')) return 'rawg';
+    return 'rawg';
+  }
+
+  const fromCatalog = g => {
     const hoverShot = (g.short_screenshots || []).find(s => s && s.image && s.image !== g.background_image);
     return {
-      id: g.id, source: 'rawg', name: g.name, released: g.released, metacritic: g.metacritic, rating: g.rating,
+      id: g.id,
+      source: catalogSourceOf(g),
+      name: g.name,
+      released: g.released,
+      metacritic: g.metacritic,
+      rating: g.rating,
       image: g.background_image,
       imageHover: hoverShot ? hoverShot.image : null,
       screenshots: (g.short_screenshots || []).map(s => s && s.image).filter(Boolean),
@@ -354,6 +367,7 @@
       genres: (g.genres || []).map(x => (typeof I18N !== 'undefined' ? I18N.genre(x.name) : x.name)),
     };
   };
+  const fromRawg = fromCatalog;
 
   /* ── Otimização de imagens RAWG ── */
   const rawgCrop = url => (url && url.startsWith('https://media.rawg.io/media/'))
@@ -818,18 +832,18 @@
     syncingGameHash = false;
   }
 
-  function fromRawgDetail(d) {
+  function fromCatalogDetail(d) {
     const description = (d.description_raw || '').split(/\n\s*(Español|Русский|Deutsch|Français)\s*\n/)[0].trim();
     return {
       id: d.id,
-      source: 'rawg',
+      source: catalogSourceOf(d),
       name: d.name,
       released: d.released,
       metacritic: d.metacritic,
       rating: d.rating,
       image: d.background_image,
       imageHover: null,
-      screenshots: [],
+      screenshots: (d.short_screenshots || []).map(s => s && s.image).filter(Boolean),
       platforms: (d.parent_platforms || []).map(p => p.platform && p.platform.name).filter(Boolean),
       genres: (d.genres || []).map(x => (typeof I18N !== 'undefined' ? I18N.genre(x.name) : x.name)),
       developers: (d.developers || []).map(x => x && x.name).filter(Boolean),
@@ -840,6 +854,7 @@
       translationAttempted: false,
     };
   }
+  const fromRawgDetail = fromCatalogDetail;
 
   async function openGameById(id) {
     if (id == null || id === '') return false;
@@ -862,7 +877,7 @@
       const res = await fetch(`${API}/games/${encodeURIComponent(key)}`);
       if (!res.ok) throw new Error('HTTP ' + res.status);
       const d = await res.json();
-      await openGame(fromRawgDetail(d));
+      await openGame(fromCatalogDetail(d));
       return true;
     } catch (err) {
       console.warn('[deep-link] Falha ao abrir jogo', key, err);
@@ -999,7 +1014,7 @@
       spec('Desenvolvedor', g.developers),
       spec('Publicadora', g.publishers),
       spec('Metacritic', g.metacritic ? h('span', { class: 'spec-badge', text: String(g.metacritic) }) : null),
-      spec('Nota RAWG', g.rating ? h('span', { class: 'spec-badge', text: `★ ${g.rating.toFixed(2)} / 5` }) : null),
+      spec(g.source === 'igdb' ? 'Nota IGDB' : 'Nota RAWG', g.rating ? h('span', { class: 'spec-badge', text: `★ ${Number(g.rating).toFixed(2)} / 5` }) : null),
       websiteLink(g.website),
     ].filter(Boolean));
   }
@@ -1126,7 +1141,7 @@
 
   /* Busca o conjunto completo de screenshots do jogo (além das ~6 da listagem) */
   async function loadScreenshots(g) {
-    if (g.source !== 'rawg' || g.shotsFetched) return;
+    if ((g.source !== 'rawg' && g.source !== 'igdb') || g.shotsFetched) return;
     g.shotsFetched = true;
     try {
       const res = await fetch(`${API}/games/${encodeURIComponent(g.id)}/screenshots?page_size=20`);
@@ -1166,8 +1181,9 @@
     loadScreenshots(g);
     setGameDeepLink(g.id);
 
-    const needsFetch = g.source === 'rawg' && g.description == null;
-    const needsTranslate = g.source === 'rawg' && !g.translatedDesc && !g.translationAttempted && typeof I18N !== 'undefined';
+    const isRemoteCatalog = g.source === 'rawg' || g.source === 'igdb';
+    const needsFetch = isRemoteCatalog && g.description == null;
+    const needsTranslate = isRemoteCatalog && !g.translatedDesc && !g.translationAttempted && typeof I18N !== 'undefined';
 
     if (needsFetch || needsTranslate) {
       g.isLoadingDesc = true;

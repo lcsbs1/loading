@@ -1,8 +1,8 @@
 'use strict';
 
-const CACHE_NAME = 'loading-shell-v5';
-const API_CACHE_NAME = 'loading-api-v5';
-const IMG_CACHE_NAME = 'loading-img-v5';
+const CACHE_NAME = 'loading-shell-v6';
+const API_CACHE_NAME = 'loading-api-v6';
+const IMG_CACHE_NAME = 'loading-img-v6';
 
 const PRECACHE_URLS = [
   './',
@@ -80,8 +80,8 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 2. Capas e mídias de jogos (media.rawg.io): cache-first com limite de 300
-  if (url.hostname === 'media.rawg.io') {
+  // 2. Capas e mídias de jogos (RAWG / IGDB): cache-first
+  if (url.hostname === 'media.rawg.io' || url.hostname === 'images.igdb.com') {
     event.respondWith(
       caches.open(IMG_CACHE_NAME).then(async (cache) => {
         const cached = await cache.match(req);
@@ -100,8 +100,8 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 3. Catálogo RAWG (/api/rawg/games): stale-while-revalidate com limite
-  if (url.pathname.startsWith('/api/rawg')) {
+  // 3. Catálogo unificado (/api/catalog e alias /api/rawg): stale-while-revalidate
+  if (url.pathname.startsWith('/api/catalog') || url.pathname.startsWith('/api/rawg')) {
     event.respondWith(
       caches.open(API_CACHE_NAME).then(async (cache) => {
         const cached = await cache.match(req);

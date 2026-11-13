@@ -2,12 +2,12 @@
  * ====================================================================
  * LOADING... — Configurações e Integração de APIs
  * ====================================================================
- * Base de dados global integrada (RAWG Video Games Database).
+ * Catálogo unificado (RAWG + IGDB com failover) via proxy do próprio site.
  */
 
 const CONFIG = {
-  // Catálogo RAWG via proxy do próprio site. A chave fica só no servidor.
-  API_BASE_URL: '/api/rawg',
+  // Catálogo via /api/catalog (failover RAWG → IGDB). Chaves só no servidor.
+  API_BASE_URL: '/api/catalog',
 
   // Supabase (Auth + fórum/feedback permanentes). Anon/publishable key é segura no browser.
   SUPABASE_URL: 'https://kljsbctjldyanqakqevo.supabase.co',
