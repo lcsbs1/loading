@@ -4,6 +4,7 @@ Thumbs.db
 *.log
 .agents/
 .gemini/
+.obsidian/
 skills-lock.json
 .mcp.json
 andrej-karpathy-skills-main/
