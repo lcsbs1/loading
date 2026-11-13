@@ -1,0 +1,1485 @@
+{
+  "version": 1,
+  "source": "steam+curated",
+  "games": [
+    {
+      "id": 271590,
+      "steam_app_id": 271590,
+      "slug": "grand-theft-auto-v-legacy",
+      "name": "Grand Theft Auto V Legacy",
+      "released": "2013-09-17",
+      "metacritic": 96,
+      "rating": 4.8,
+      "background_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/271590/header.jpg?t=1765387725",
+      "short_screenshots": [
+        {
+          "id": -1,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/271590/header.jpg?t=1765387725"
+        },
+        {
+          "id": 0,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/271590/ss_32aa18ab3175e3002217862dd5917646d298ab6b.1920x1080.jpg?t=1765387725"
+        },
+        {
+          "id": 1,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/271590/ss_2744f112fa060320d191a50e8b3a92441a648a56.1920x1080.jpg?t=1765387725"
+        },
+        {
+          "id": 2,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/271590/ss_da39c16db175f6973770bae6b91d411251763152.1920x1080.jpg?t=1765387725"
+        },
+        {
+          "id": 3,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/271590/ss_bd5db78286be0a7c6b2c62519099a9e27e6b06f3.1920x1080.jpg?t=1765387725"
+        },
+        {
+          "id": 4,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/271590/ss_b1a1cb7959d6a0e6fcb2d06ebf97a66c9055cef3.1920x1080.jpg?t=1765387725"
+        },
+        {
+          "id": 5,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/271590/ss_bc5fc79d3366c837372327717249a4887aa46d63.1920x1080.jpg?t=1765387725"
+        }
+      ],
+      "parent_platforms": [
+        {
+          "platform": {
+            "id": 1,
+            "name": "PC"
+          }
+        },
+        {
+          "platform": {
+            "id": 2,
+            "name": "PlayStation"
+          }
+        },
+        {
+          "platform": {
+            "id": 3,
+            "name": "Xbox"
+          }
+        }
+      ],
+      "genres": [
+        {
+          "id": 1,
+          "name": "Action"
+        }
+      ],
+      "developers": [
+        {
+          "id": 1,
+          "name": "Rockstar North"
+        }
+      ],
+      "publishers": [
+        {
+          "id": 1,
+          "name": "Rockstar Games"
+        }
+      ],
+      "website": "https://www.rockstargames.com/V/",
+      "description_raw": "Quando um malandro de rua, um ladrão de bancos aposentado e um psicopata aterrorizante se envolvem com alguns dos criminosos mais assustadores e loucos do submundo, o governo dos EUA e a indústria do entretenimento, eles devem realizar golpes ousados para sobreviver nessa cidade implacável onde não podem confiar em ninguém, nem mesmo um no outro.\n\r\n\n\r\nGrand Theft Auto V para PC oferece aos jogadores a opção de explorar o gigantesco e premiado mundo de Los Santos e Blaine County em resoluções de até 4K e além, assim como a chance de experimentar o jogo rodando a 60 FPS (quadros por segundo).\n\r\n\n\r\nO jogo oferece uma ampla seleção de opções de personalização específicas para o PC, com mais de 25 configurações separadas para qualidade de textura, sombreamentos, suavização de bordas e muito mais. Além disso, ele contém diversas opções de personalização dos controles de mouse e teclado. Entre as opções adicionais estão a densidade da população, o controle do tráfego de carros e pedestres, suporte para dois ou três monitores, compatibilidade com telas 3D e suporte para controle plug-and-play.\n\r\n\n\r\nGrand Theft Auto V para PC inclui o Grand Theft Auto Online, com suporte para até 30 jogadores e dois espectadores. Grand Theft Auto Online para PC inclui todas as atualizações de jogo e conteúdos criados pela Rockstar lançados desde que Grand Theft Auto Online foi ao ar, incluindo os recém-lançados Golpes e Modos Adversários.\n\r\n\n\r\nA versão para PC do Grand Theft Auto V e Grand Theft Auto Online apresenta o Modo em Primeira Pessoa, que dá aos jogadores a chance de explorar o mundo incrivelmente detalhado de Los Santos e Blaine County de uma maneira completamente nova.\n\r\n\n\r\nGrand Theft Auto V para PC também traz a estreia do Editor Rockstar, um poderoso conjunto de ferramentas criativas para capturar, editar e compartilhar, de maneira rápida e fácil, vídeos gravados dentro do Grand Theft Auto V e Grand Theft Auto Online. O Modo Diretor do Editor Rockstar permite que jogadores atuem em suas próprias cenas utilizando personagens proeminentes do Modo História, pedestres ou até animais para realizar a sua visão. Junto com opções de câmera e efeitos de edição avançados, que incluem efeitos de câmera lenta e acelerada e diversos filtros, os jogadores poderão adicionar suas próprias músicas, utilizando as faixas das estações de rádio do GTAV, ou controlar dinamicamente a intensidade da trilha sonora do jogo. Vídeos finalizados poderão ser enviados diretamente do Editor Rockstar para o YouTube ou para o Social Club da Rockstar Games, para facilitar o compartilhamento.\n\r\n\n\r\nOs músicos The Alchemist e Oh No, que fizeram a trilha sonora do jogo, retornam como os apresentadores de uma nova estação de rádio, a Lab FM. A estação apresenta músicas novas e exclusivas da dupla de produtores que foram inspiradas pela trilha sonora original do jogo. Entre os artistas colaboradores convidados estão Earl Sweatshirt, Freddie Gibbs, Little Dragon, Killer Mike, Sam Herring do Future Islands, e muito mais. Jogadores poderão descobrir Los Santos e Blaine County enquanto ouvem suas próprias músicas pelo Self Radio, uma nova estação de rádio que irá apresentar músicas criadas pelos jogadores.",
+      "description": "Quando um malandro de rua, um ladrão de bancos aposentado e um psicopata aterrorizante se envolvem com alguns dos criminosos mais assustadores e loucos do submundo, o governo dos EUA e a indústria do entretenimento, eles devem realizar golpes ousados para sobreviver nessa cidade implacável onde não podem confiar em ninguém, nem mesmo um no outro.\n\r\n\n\r\nGrand Theft Auto V para PC oferece aos jogadores a opção de explorar o gigantesco e premiado mundo de Los Santos e Blaine County em resoluções de até 4K e além, assim como a chance de experimentar o jogo rodando a 60 FPS (quadros por segundo).\n\r\n\n\r\nO jogo oferece uma ampla seleção de opções de personalização específicas para o PC, com mais de 25 configurações separadas para qualidade de textura, sombreamentos, suavização de bordas e muito mais. Além disso, ele contém diversas opções de personalização dos controles de mouse e teclado. Entre as opções adicionais estão a densidade da população, o controle do tráfego de carros e pedestres, suporte para dois ou três monitores, compatibilidade com telas 3D e suporte para controle plug-and-play.\n\r\n\n\r\nGrand Theft Auto V para PC inclui o Grand Theft Auto Online, com suporte para até 30 jogadores e dois espectadores. Grand Theft Auto Online para PC inclui todas as atualizações de jogo e conteúdos criados pela Rockstar lançados desde que Grand Theft Auto Online foi ao ar, incluindo os recém-lançados Golpes e Modos Adversários.\n\r\n\n\r\nA versão para PC do Grand Theft Auto V e Grand Theft Auto Online apresenta o Modo em Primeira Pessoa, que dá aos jogadores a chance de explorar o mundo incrivelmente detalhado de Los Santos e Blaine County de uma maneira completamente nova.\n\r\n\n\r\nGrand Theft Auto V para PC também traz a estreia do Editor Rockstar, um poderoso conjunto de ferramentas criativas para capturar, editar e compartilhar, de maneira rápida e fácil, vídeos gravados dentro do Grand Theft Auto V e Grand Theft Auto Online. O Modo Diretor do Editor Rockstar permite que jogadores atuem em suas próprias cenas utilizando personagens proeminentes do Modo História, pedestres ou até animais para realizar a sua visão. Junto com opções de câmera e efeitos de edição avançados, que incluem efeitos de câmera lenta e acelerada e diversos filtros, os jogadores poderão adicionar suas próprias músicas, utilizando as faixas das estações de rádio do GTAV, ou controlar dinamicamente a intensidade da trilha sonora do jogo. Vídeos finalizados poderão ser enviados diretamente do Editor Rockstar para o YouTube ou para o Social Club da Rockstar Games, para facilitar o compartilhamento.\n\r\n\n\r\nOs músicos The Alchemist e Oh No, que fizeram a trilha sonora do jogo, retornam como os apresentadores de uma nova estação de rádio, a Lab FM. A estação apresenta músicas novas e exclusivas da dupla de produtores que foram inspiradas pela trilha sonora original do jogo. Entre os artistas colaboradores convidados estão Earl Sweatshirt, Freddie Gibbs, Little Dragon, Killer Mike, Sam Herring do Future Islands, e muito mais. Jogadores poderão descobrir Los Santos e Blaine County enquanto ouvem suas próprias músicas pelo Self Radio, uma nova estação de rádio que irá apresentar músicas criadas pelos jogadores."
+    },
+    {
+      "id": 292030,
+      "steam_app_id": 292030,
+      "slug": "the-witcher-3-wild-hunt-remastered",
+      "name": "The Witcher 3: Wild Hunt — Remastered",
+      "released": "2015-05-19",
+      "metacritic": 93,
+      "rating": 4.65,
+      "background_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/4b5b1ba5061b8a992cc69ac58b4245434edb4296/header.jpg?t=1793900434",
+      "short_screenshots": [
+        {
+          "id": -1,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/4b5b1ba5061b8a992cc69ac58b4245434edb4296/header.jpg?t=1793900434"
+        },
+        {
+          "id": 0,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/f7f564ecedd09b3e503b071a637aeefdedbeedd8/ss_f7f564ecedd09b3e503b071a637aeefdedbeedd8.1920x1080.jpg?t=1793900434"
+        },
+        {
+          "id": 1,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/0a38e4d0d57f15934772dbe09b322d08132d5518/ss_0a38e4d0d57f15934772dbe09b322d08132d5518.1920x1080.jpg?t=1793900434"
+        },
+        {
+          "id": 2,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/19c03c2b997d3a393fc629fd42f55ddb4a3d8dd0/ss_19c03c2b997d3a393fc629fd42f55ddb4a3d8dd0.1920x1080.jpg?t=1793900434"
+        },
+        {
+          "id": 3,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/3a3f430982cc3bccac1633d3ea60a30bf3d1ae9e/ss_3a3f430982cc3bccac1633d3ea60a30bf3d1ae9e.1920x1080.jpg?t=1793900434"
+        },
+        {
+          "id": 4,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/78ecbfb8bc64b8e9d4a372f4a8ffa5069e9325d0/ss_78ecbfb8bc64b8e9d4a372f4a8ffa5069e9325d0.1920x1080.jpg?t=1793900434"
+        },
+        {
+          "id": 5,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/203487f667e4ac00baf482b1c93c87a2b830a6fc/ss_203487f667e4ac00baf482b1c93c87a2b830a6fc.1920x1080.jpg?t=1793900434"
+        }
+      ],
+      "parent_platforms": [
+        {
+          "platform": {
+            "id": 1,
+            "name": "PC"
+          }
+        },
+        {
+          "platform": {
+            "id": 2,
+            "name": "PlayStation"
+          }
+        },
+        {
+          "platform": {
+            "id": 3,
+            "name": "Xbox"
+          }
+        },
+        {
+          "platform": {
+            "id": 4,
+            "name": "Nintendo"
+          }
+        }
+      ],
+      "genres": [
+        {
+          "id": 1,
+          "name": "RPG"
+        }
+      ],
+      "developers": [
+        {
+          "id": 1,
+          "name": "CD PROJEKT RED"
+        }
+      ],
+      "publishers": [
+        {
+          "id": 1,
+          "name": "CD PROJEKT RED"
+        }
+      ],
+      "website": "https://www.thewitcher.com/witcher3",
+      "description_raw": "Geralt de Rívia, o bruxo, procura Ciri — sua filha adotiva — perseguida pela Caçada Selvagem através de um continente em guerra.\n\nThe Witcher 3 combina combate com espadas e sinais mágicos, escolhas morais densas e um mundo aberto com missões secundárias de escrita excepcional. Cada decisão altera alianças, destinos e o tom das regiões que você atravessa.\n\nAs expansões Hearts of Stone e Blood and Wine ampliam o mapa, introduzem arcos próprios e fecham a jornada do protagonista. A edição Remastered atualiza o visual, a iluminação e a técnica para hardware atual, mantendo o ritmo de exploração, contratos e combates táticos.",
+      "description": "Geralt de Rívia, o bruxo, procura Ciri — sua filha adotiva — perseguida pela Caçada Selvagem através de um continente em guerra.\n\nThe Witcher 3 combina combate com espadas e sinais mágicos, escolhas morais densas e um mundo aberto com missões secundárias de escrita excepcional. Cada decisão altera alianças, destinos e o tom das regiões que você atravessa.\n\nAs expansões Hearts of Stone e Blood and Wine ampliam o mapa, introduzem arcos próprios e fecham a jornada do protagonista. A edição Remastered atualiza o visual, a iluminação e a técnica para hardware atual, mantendo o ritmo de exploração, contratos e combates táticos.",
+      "description_lang": "pt-BR"
+    },
+    {
+      "id": 620,
+      "steam_app_id": 620,
+      "slug": "portal-2",
+      "name": "Portal 2",
+      "released": "2011-04-19",
+      "metacritic": 95,
+      "rating": 4.75,
+      "background_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/620/faffc0f560786e2f05104a8d2fac837c6969bf13/header.jpg?t=1790187113",
+      "short_screenshots": [
+        {
+          "id": -1,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/620/faffc0f560786e2f05104a8d2fac837c6969bf13/header.jpg?t=1790187113"
+        },
+        {
+          "id": 0,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/620/ss_f3f6787d74739d3b2ec8a484b5c994b3d31ef325.1920x1080.jpg?t=1790187113"
+        },
+        {
+          "id": 1,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/620/ss_6a4f5afdaa98402de9cf0b59fed27bab3256a6f4.1920x1080.jpg?t=1790187113"
+        },
+        {
+          "id": 2,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/620/ss_0cdd90fafc160b52d08b303d205f9fd4e83cf164.1920x1080.jpg?t=1790187113"
+        },
+        {
+          "id": 3,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/620/ss_ec35a739b4b33270eb170d9e561c5b016cba50a6.1920x1080.jpg?t=1790187113"
+        },
+        {
+          "id": 4,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/620/ss_3d13161104a04603a0524536770c5f74626db4c0.1920x1080.jpg?t=1790187113"
+        },
+        {
+          "id": 5,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/620/ss_8a772608d29ffd56ac013d2ac7c4388b96e87a21.1920x1080.jpg?t=1790187113"
+        }
+      ],
+      "parent_platforms": [
+        {
+          "platform": {
+            "id": 1,
+            "name": "PC"
+          }
+        },
+        {
+          "platform": {
+            "id": 2,
+            "name": "PlayStation"
+          }
+        },
+        {
+          "platform": {
+            "id": 3,
+            "name": "Xbox"
+          }
+        }
+      ],
+      "genres": [
+        {
+          "id": 1,
+          "name": "Puzzle"
+        }
+      ],
+      "developers": [
+        {
+          "id": 1,
+          "name": "Valve"
+        }
+      ],
+      "publishers": [
+        {
+          "id": 1,
+          "name": "Valve"
+        }
+      ],
+      "website": "http://www.thinkwithportals.com/",
+      "description_raw": "Portal 2 baseia-se na premiada fórmula de jogabilidade, história e música inovadoras que rendeu ao Portal original mais de 70 prêmios da indústria e uma legião de fãs.\n\n\t\t\t\t\t\t\t\t\t\tA parte para um jogador de Portal 2 introduz uma gama de novos personagens dinâmicos, vários novos elementos de quebra-cabeças e uma quantidade maior de desafiadoras câmaras de teste. Os jogadores explorarão áreas nunca antes vistas dos Laboratórios da Aperture Science e reencontrarão GLaDOS, a companheira robótica com certa tendência assassina que os guiou no primeiro jogo.\n\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\tO modo cooperativo para dois jogadores oferece uma campanha distinta com história e câmaras de teste únicas, além de dois novos personagens jogáveis. Este novo modo força os jogadores a reconsiderar tudo que achavam que sabiam sobre portais. O sucesso exigirá que não apenas ajam, mas que também pensem cooperativamente.\n\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\tRecursos do produto\n\t\t\t\t\t\t\t\t\t\tExtenso modo de um jogador: oferece jogabilidade de próxima geração e uma história altamente envolvente.\n\t\t\t\t\t\t\t\t\t\tModo cooperativo completo para duas pessoas: o modo multijogador apresenta história, personagens e jogabilidade exclusivos.\n\t\t\t\t\t\t\t\t\t\tFísica avançada: permite a criação de uma nova gama de desafios interessantes, produzindo um jogo muito maior, mas não mais difícil.\n\t\t\t\t\t\t\t\t\t\tTrilha sonora original.\n\t\t\t\t\t\t\t\t\t\tGrandiosa sequência: o primeiro Portal foi premiado como Jogo do Ano de 2007 por mais de 30 publicações ao redor do mundo.\n\t\t\t\t\t\t\t\t\t\tFerramentas de edição: as ferramentas de edição de Portal 2 serão inclusas.",
+      "description": "Portal 2 baseia-se na premiada fórmula de jogabilidade, história e música inovadoras que rendeu ao Portal original mais de 70 prêmios da indústria e uma legião de fãs.\n\n\t\t\t\t\t\t\t\t\t\tA parte para um jogador de Portal 2 introduz uma gama de novos personagens dinâmicos, vários novos elementos de quebra-cabeças e uma quantidade maior de desafiadoras câmaras de teste. Os jogadores explorarão áreas nunca antes vistas dos Laboratórios da Aperture Science e reencontrarão GLaDOS, a companheira robótica com certa tendência assassina que os guiou no primeiro jogo.\n\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\tO modo cooperativo para dois jogadores oferece uma campanha distinta com história e câmaras de teste únicas, além de dois novos personagens jogáveis. Este novo modo força os jogadores a reconsiderar tudo que achavam que sabiam sobre portais. O sucesso exigirá que não apenas ajam, mas que também pensem cooperativamente.\n\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\tRecursos do produto\n\t\t\t\t\t\t\t\t\t\tExtenso modo de um jogador: oferece jogabilidade de próxima geração e uma história altamente envolvente.\n\t\t\t\t\t\t\t\t\t\tModo cooperativo completo para duas pessoas: o modo multijogador apresenta história, personagens e jogabilidade exclusivos.\n\t\t\t\t\t\t\t\t\t\tFísica avançada: permite a criação de uma nova gama de desafios interessantes, produzindo um jogo muito maior, mas não mais difícil.\n\t\t\t\t\t\t\t\t\t\tTrilha sonora original.\n\t\t\t\t\t\t\t\t\t\tGrandiosa sequência: o primeiro Portal foi premiado como Jogo do Ano de 2007 por mais de 30 publicações ao redor do mundo.\n\t\t\t\t\t\t\t\t\t\tFerramentas de edição: as ferramentas de edição de Portal 2 serão inclusas."
+    },
+    {
+      "id": 1174180,
+      "steam_app_id": 1174180,
+      "slug": "red-dead-redemption-2",
+      "name": "Red Dead Redemption 2",
+      "released": "2018-10-26",
+      "metacritic": 93,
+      "rating": 4.65,
+      "background_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1174180/header.jpg?t=1759502961",
+      "short_screenshots": [
+        {
+          "id": -1,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1174180/header.jpg?t=1759502961"
+        },
+        {
+          "id": 0,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1174180/ss_66b553f4c209476d3e4ce25fa4714002cc914c4f.1920x1080.jpg?t=1759502961"
+        },
+        {
+          "id": 1,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1174180/ss_bac60bacbf5da8945103648c08d27d5e202444ca.1920x1080.jpg?t=1759502961"
+        },
+        {
+          "id": 2,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1174180/ss_668dafe477743f8b50b818d5bbfcec669e9ba93e.1920x1080.jpg?t=1759502961"
+        },
+        {
+          "id": 3,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1174180/ss_4ce07ae360b166f0f650e9a895a3b4b7bf15e34f.1920x1080.jpg?t=1759502961"
+        },
+        {
+          "id": 4,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1174180/ss_d1a8f5a69155c3186c65d1da90491fcfd43663d9.1920x1080.jpg?t=1759502961"
+        }
+      ],
+      "parent_platforms": [
+        {
+          "platform": {
+            "id": 1,
+            "name": "PC"
+          }
+        },
+        {
+          "platform": {
+            "id": 2,
+            "name": "PlayStation"
+          }
+        },
+        {
+          "platform": {
+            "id": 3,
+            "name": "Xbox"
+          }
+        }
+      ],
+      "genres": [
+        {
+          "id": 1,
+          "name": "Action"
+        },
+        {
+          "id": 2,
+          "name": "Adventure"
+        }
+      ],
+      "developers": [
+        {
+          "id": 1,
+          "name": "Rockstar Games"
+        }
+      ],
+      "publishers": [
+        {
+          "id": 1,
+          "name": "Rockstar Games"
+        }
+      ],
+      "website": "https://www.rockstargames.com/reddeadredemption2/",
+      "description_raw": "Ultimate Edition\nRed Dead Redemption 2: Edição Definitiva oferece todos os conteúdos do Modo História da Edição Especial, além de recursos extras para o Modo Online, incluindo trajes adicionais para o seu personagem online, bônus de ranking, o Puro-Sangue Inglês Alazão Preto e acesso gratuito ao tema de acampamento de sobrevivente.\n\nAlém disso, ganhe acesso gratuito a armas adicionais no Modo Online.\n\nSobre o jogoEstados Unidos, 1899. Arthur Morgan e a gangue Van der Linde são bandidos em fuga. Com agentes federais e os melhores caçadores de recompensa no seu encalço, a gangue precisa roubar, assaltar e lutar para sobreviver no impiedoso coração dos Estados Unidos. Conforme divisões internas profundas ameaçam despedaçar a gangue, Arthur deve fazer uma escolha entre os seus próprios ideais e a lealdade à gangue que o criou. \n\nVencedor de mais de 175 prêmios de Jogo do Ano e avaliado com mais de 250 notas máximas, Red Dead Redemption 2 é uma história épica de honra e lealdade no alvorecer dos tempos modernos. \n\nRed Dead Redemption 2 inclui também Red Dead Online, a experiência multijogador ambientada no mundo vivo de Red Dead Redemption 2: cavalgue só ou forme um Bando; produza moonshine; lute contra autoridades, gangues de fora da lei, animais silvestres ferozes e muito mais à medida que traça seu próprio caminho na fronteira dos EUA.",
+      "description": "Ultimate Edition\nRed Dead Redemption 2: Edição Definitiva oferece todos os conteúdos do Modo História da Edição Especial, além de recursos extras para o Modo Online, incluindo trajes adicionais para o seu personagem online, bônus de ranking, o Puro-Sangue Inglês Alazão Preto e acesso gratuito ao tema de acampamento de sobrevivente.\n\nAlém disso, ganhe acesso gratuito a armas adicionais no Modo Online.\n\nSobre o jogoEstados Unidos, 1899. Arthur Morgan e a gangue Van der Linde são bandidos em fuga. Com agentes federais e os melhores caçadores de recompensa no seu encalço, a gangue precisa roubar, assaltar e lutar para sobreviver no impiedoso coração dos Estados Unidos. Conforme divisões internas profundas ameaçam despedaçar a gangue, Arthur deve fazer uma escolha entre os seus próprios ideais e a lealdade à gangue que o criou. \n\nVencedor de mais de 175 prêmios de Jogo do Ano e avaliado com mais de 250 notas máximas, Red Dead Redemption 2 é uma história épica de honra e lealdade no alvorecer dos tempos modernos. \n\nRed Dead Redemption 2 inclui também Red Dead Online, a experiência multijogador ambientada no mundo vivo de Red Dead Redemption 2: cavalgue só ou forme um Bando; produza moonshine; lute contra autoridades, gangues de fora da lei, animais silvestres ferozes e muito mais à medida que traça seu próprio caminho na fronteira dos EUA."
+    },
+    {
+      "id": 1245620,
+      "steam_app_id": 1245620,
+      "slug": "elden-ring",
+      "name": "ELDEN RING",
+      "released": "2022-02-25",
+      "metacritic": 94,
+      "rating": 4.7,
+      "background_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1245620/header.jpg?t=1790290043",
+      "short_screenshots": [
+        {
+          "id": -1,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1245620/header.jpg?t=1790290043"
+        },
+        {
+          "id": 0,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1245620/ss_943bf6fe62352757d9070c1d33e50b92fe8539f1.1920x1080.jpg?t=1790290043"
+        },
+        {
+          "id": 1,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1245620/ss_dcdac9e4b26ac0ee5248bfd2967d764fd00cdb42.1920x1080.jpg?t=1790290043"
+        },
+        {
+          "id": 2,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1245620/ss_3c41384a24d86dddd58a8f61db77f9dc0bfda8b5.1920x1080.jpg?t=1790290043"
+        },
+        {
+          "id": 3,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1245620/ss_e0316c76f8197405c1312d072b84331dd735d60b.1920x1080.jpg?t=1790290043"
+        },
+        {
+          "id": 4,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1245620/ss_ef61b771ee6b269b1f0cb484233e07a0bfb5f81b.1920x1080.jpg?t=1790290043"
+        },
+        {
+          "id": 5,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1245620/ss_b1b91299d7e4b94201ac840aa64de54d9f5cb7f3.1920x1080.jpg?t=1790290043"
+        }
+      ],
+      "parent_platforms": [
+        {
+          "platform": {
+            "id": 1,
+            "name": "PC"
+          }
+        },
+        {
+          "platform": {
+            "id": 2,
+            "name": "PlayStation"
+          }
+        },
+        {
+          "platform": {
+            "id": 3,
+            "name": "Xbox"
+          }
+        }
+      ],
+      "genres": [
+        {
+          "id": 1,
+          "name": "Action"
+        },
+        {
+          "id": 2,
+          "name": "RPG"
+        }
+      ],
+      "developers": [
+        {
+          "id": 1,
+          "name": "FromSoftware, Inc."
+        }
+      ],
+      "publishers": [
+        {
+          "id": 1,
+          "name": "FromSoftware, Inc."
+        },
+        {
+          "id": 2,
+          "name": "Bandai Namco Entertainment"
+        }
+      ],
+      "website": null,
+      "description_raw": "ELDEN RING Shadow of the Erdtree Edition\nELDEN RING Shadow of the Erdtree Edition inclui:\n• ELDEN RING\n• ELDEN RING Expansão Shadow of the Erdtree\n\nELDEN RING Shadow of the Erdtree Deluxe Edition\nELDEN RING Shadow of the Erdtree Deluxe Edition inclui:\n• ELDEN RING\n• ELDEN RING Expansão Shadow of the Erdtree\n• ELDEN RING Livro de Arte Digital e Trilha Sonora Original\n• ELDEN RING Shadow of the Erdtree Livro de Arte e Trilha Sonora\n\nSobre o jogo\nO NOVO RPG DE AÇÃO E FANTASIA.\nLevante-se, Maculado, e seja guiado pela graça para portar o poder do Anel Prístino e se tornar um Lorde Prístino nas Terras Intermédias.\n\n• Um mundo vasto e emocionante\nUm mundo vasto onde campos abertos e uma variedade de situações e masmorras imensas, com complexos designs tridimensionais se conectam com fluidez. Conforme explora, sinta a alegria de descobrir poderosas e desconhecidas ameaças que aguardam por você, levando a um grande senso de conquista.\n\n• Crie seu próprio personagem\nAlém de personalizar a aparência do seu personagem, você pode combinar livremente armas, armaduras e magias que equipar. Você pode desenvolver seu personagem de acordo com seu estilo de jogo, como aumentar a força muscular para se tornar um poderoso guerreiro, ou dominar a magia.\n\n• Um drama épico nascido de um mito\nUma história cheia de camadas, contada em fragmentos. Um drama épico onde os vários pensamentos dos personagens se interligam nas Terras Intermédias.\n\n• Jogo on-line único que conecta você livremente aos outros\nAlém do multijogador, onde você pode se conectar diretamente com outros jogadores e viajarem juntos, o jogo suporta um elemento on-line assíncrono único que permite que você sinta a presença dos outros.",
+      "description": "ELDEN RING Shadow of the Erdtree Edition\nELDEN RING Shadow of the Erdtree Edition inclui:\n• ELDEN RING\n• ELDEN RING Expansão Shadow of the Erdtree\n\nELDEN RING Shadow of the Erdtree Deluxe Edition\nELDEN RING Shadow of the Erdtree Deluxe Edition inclui:\n• ELDEN RING\n• ELDEN RING Expansão Shadow of the Erdtree\n• ELDEN RING Livro de Arte Digital e Trilha Sonora Original\n• ELDEN RING Shadow of the Erdtree Livro de Arte e Trilha Sonora\n\nSobre o jogo\nO NOVO RPG DE AÇÃO E FANTASIA.\nLevante-se, Maculado, e seja guiado pela graça para portar o poder do Anel Prístino e se tornar um Lorde Prístino nas Terras Intermédias.\n\n• Um mundo vasto e emocionante\nUm mundo vasto onde campos abertos e uma variedade de situações e masmorras imensas, com complexos designs tridimensionais se conectam com fluidez. Conforme explora, sinta a alegria de descobrir poderosas e desconhecidas ameaças que aguardam por você, levando a um grande senso de conquista.\n\n• Crie seu próprio personagem\nAlém de personalizar a aparência do seu personagem, você pode combinar livremente armas, armaduras e magias que equipar. Você pode desenvolver seu personagem de acordo com seu estilo de jogo, como aumentar a força muscular para se tornar um poderoso guerreiro, ou dominar a magia.\n\n• Um drama épico nascido de um mito\nUma história cheia de camadas, contada em fragmentos. Um drama épico onde os vários pensamentos dos personagens se interligam nas Terras Intermédias.\n\n• Jogo on-line único que conecta você livremente aos outros\nAlém do multijogador, onde você pode se conectar diretamente com outros jogadores e viajarem juntos, o jogo suporta um elemento on-line assíncrono único que permite que você sinta a presença dos outros."
+    },
+    {
+      "id": 220,
+      "steam_app_id": 220,
+      "slug": "half-life-2",
+      "name": "Half-Life 2",
+      "released": "2004-11-16",
+      "metacritic": 96,
+      "rating": 4.8,
+      "background_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/220/header.jpg?t=1745368545",
+      "short_screenshots": [
+        {
+          "id": -1,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/220/header.jpg?t=1745368545"
+        },
+        {
+          "id": 0,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/220/ss_47b4105b396de408cb8b6b4f358c69e5e2a62dae.1920x1080.jpg?t=1745368545"
+        },
+        {
+          "id": 1,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/220/ss_0e499071a60a20b24149ad65a8edb769250f2921.1920x1080.jpg?t=1745368545"
+        },
+        {
+          "id": 2,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/220/ss_ffb00abd45012680e4f209355ec81f961b6dd1fb.1920x1080.jpg?t=1745368545"
+        },
+        {
+          "id": 3,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/220/ss_b822a29b3804e05ab9517cac99a5d978d109a32b.1920x1080.jpg?t=1745368545"
+        },
+        {
+          "id": 4,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/220/ss_c400361f185800786ea984e795f2a0dd4afee990.1920x1080.jpg?t=1745368545"
+        },
+        {
+          "id": 5,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/220/ss_a2aeefb3ad34c46af5c381ff03ac0973892f5530.1920x1080.jpg?t=1745368545"
+        }
+      ],
+      "parent_platforms": [
+        {
+          "platform": {
+            "id": 1,
+            "name": "PC"
+          }
+        },
+        {
+          "platform": {
+            "id": 2,
+            "name": "Xbox"
+          }
+        }
+      ],
+      "genres": [
+        {
+          "id": 1,
+          "name": "Shooter"
+        }
+      ],
+      "developers": [
+        {
+          "id": 1,
+          "name": "Valve"
+        }
+      ],
+      "publishers": [
+        {
+          "id": 1,
+          "name": "Valve"
+        }
+      ],
+      "website": "http://www.half-life.com/halflife2",
+      "description_raw": "A Guerra das Sete Horas foi perdida. A Terra se rendeu. O incidente em Black Mesa já é um passado distante. O jogador novamente pega o pé de cabra do pesquisador Gordon Freeman, que se encontra em uma Terra invadida por alienígenas, os seus recursos esgotados e a sua população diminuindo. Freeman assume o nada invejável papel de resgatar o mundo dos males que ele libertou em Black Mesa. E muitas pessoas queridas estão contando com ele.\n\nHalf-Life 2 é o jogo de tiro em primeira pessoa que serviu como ponto de referência e \"foi o arcabouço para a próxima geração de jogos\" (PC Gamer). Experimente uma campanha empolgante recheada de níveis sem precedentes de exposição imersiva ao mundo, uma física que desafia os limites e combates alucinantes.\n\n \n\nInclui as expansões Episode One e Episode TwoA história do Half-Life 2 continua em Episode One e Episode Two, duas aventuras completas de Half-Life ambientadas após o jogo base. Você pode acessá-las pelo menu principal, e ao completar cada história, você avançará automaticamente para a próxima.\n\n Half-Life 2: DeathmatchUm jogo multijogador frenético situado no universo do Half-Life 2! A física do HL2 adiciona uma nova dimensão às partidas mata-mata. Jogue um mata-mata tradicional ou forme uma equipe da Combine contra uma da Resistência. Jogue uma privada no seu amigo hoje mesmo! Acessível na sua Biblioteca Steam com a compra do Half-Life 2.\n\nOficina SteamJogue campanhas inteiras ou substitua armas, inimigos, elementos da interface e mais por conteúdos criados pela comunidade.",
+      "description": "A Guerra das Sete Horas foi perdida. A Terra se rendeu. O incidente em Black Mesa já é um passado distante. O jogador novamente pega o pé de cabra do pesquisador Gordon Freeman, que se encontra em uma Terra invadida por alienígenas, os seus recursos esgotados e a sua população diminuindo. Freeman assume o nada invejável papel de resgatar o mundo dos males que ele libertou em Black Mesa. E muitas pessoas queridas estão contando com ele.\n\nHalf-Life 2 é o jogo de tiro em primeira pessoa que serviu como ponto de referência e \"foi o arcabouço para a próxima geração de jogos\" (PC Gamer). Experimente uma campanha empolgante recheada de níveis sem precedentes de exposição imersiva ao mundo, uma física que desafia os limites e combates alucinantes.\n\n \n\nInclui as expansões Episode One e Episode TwoA história do Half-Life 2 continua em Episode One e Episode Two, duas aventuras completas de Half-Life ambientadas após o jogo base. Você pode acessá-las pelo menu principal, e ao completar cada história, você avançará automaticamente para a próxima.\n\n Half-Life 2: DeathmatchUm jogo multijogador frenético situado no universo do Half-Life 2! A física do HL2 adiciona uma nova dimensão às partidas mata-mata. Jogue um mata-mata tradicional ou forme uma equipe da Combine contra uma da Resistência. Jogue uma privada no seu amigo hoje mesmo! Acessível na sua Biblioteca Steam com a compra do Half-Life 2.\n\nOficina SteamJogue campanhas inteiras ou substitua armas, inimigos, elementos da interface e mais por conteúdos criados pela comunidade."
+    },
+    {
+      "id": 1593500,
+      "steam_app_id": 1593500,
+      "slug": "god-of-war",
+      "name": "God of War",
+      "released": "2018-04-20",
+      "metacritic": 93,
+      "rating": 4.65,
+      "background_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1593500/header.jpg?t=1763059412",
+      "short_screenshots": [
+        {
+          "id": -1,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1593500/header.jpg?t=1763059412"
+        },
+        {
+          "id": 0,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1593500/ss_6eccc970b5de2943546d93d319be1b5c0618f21b.1920x1080.jpg?t=1763059412"
+        },
+        {
+          "id": 1,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1593500/ss_f1bff24d3967a21d303d95e11ed892e3d9113057.1920x1080.jpg?t=1763059412"
+        },
+        {
+          "id": 2,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1593500/ss_3670ba72c7e3e9c3c3225547ef2c1053504e62b8.1920x1080.jpg?t=1763059412"
+        },
+        {
+          "id": 3,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1593500/ss_93a3ca63aa2cd8c675bbb6430324ee3f2d44b845.1920x1080.jpg?t=1763059412"
+        },
+        {
+          "id": 4,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1593500/ss_1bd99270dcbd4ff9fe9c94b0d9c8ffc50ebb42c7.1920x1080.jpg?t=1763059412"
+        },
+        {
+          "id": 5,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1593500/ss_0858b868ea51d53f73bd805ba7382f027dd33dca.1920x1080.jpg?t=1763059412"
+        }
+      ],
+      "parent_platforms": [
+        {
+          "platform": {
+            "id": 1,
+            "name": "PlayStation"
+          }
+        },
+        {
+          "platform": {
+            "id": 2,
+            "name": "PC"
+          }
+        }
+      ],
+      "genres": [
+        {
+          "id": 1,
+          "name": "Action"
+        }
+      ],
+      "developers": [
+        {
+          "id": 1,
+          "name": "Santa Monica Studio"
+        },
+        {
+          "id": 2,
+          "name": "Jetpack Interactive"
+        }
+      ],
+      "publishers": [
+        {
+          "id": 1,
+          "name": "PlayStation Publishing LLC"
+        }
+      ],
+      "website": "https://www.playstation.com/god-of-war/",
+      "description_raw": "Adentre o reino nórdico\nCom a vingança contra os deuses do Olimpo em um passado distante, Kratos agora vive como um mortal no reino dos deuses e monstros nórdicos. É nesse mundo duro e implacável que ele deve lutar para sobreviver... e ensinar seu filho a fazer o mesmo. \n\nTenha uma segunda chance \nKratos é pai novamente. Como mentor e protetor de Atreus, um filho determinado a ganhar seu respeito, ele é forçado a encarar e controlar a fúria que há muito tempo o define enquanto viaja por um mundo ameaçador ao lado do filho. \n\nViaje até um mundo sombrio e primitivo habitado por criaturas terríveis\nDo mármore e das colunas ornadas do Olimpo para as montanhas, cavernas e florestas sombrias do folclore nórdico pré-era viking, este é um reino claramente novo, com um panteão próprio de criaturas, monstros e deuses. \n\nTrave um combate físico e visceral \nCom uma câmera sobre o ombro do personagem que deixa o jogador mais próximo do que nunca da ação, as lutas em God of War™ refletem o panteão de criaturas nórdicas que Kratos vai enfrentar: são grandiosas, realistas e cruéis. A nova arma principal e as novas habilidades mantêm o espírito de God of War, mas também introduzem novos conceitos ao gênero, com uma nova perspectiva para os combates.RECURSOS PARA PC\nGráficos de alta fidelidade\nUm visual impressionante aprimorado no PC. Desfrute da resolução em 4K nos dispositivos suportados, [MU1] com taxas de quadros desbloqueadas para melhor desempenho. Ajuste as configurações com uma ampla variedade de predefinições e opções gráficas, incluindo sombras com maior resolução, reflexos do espaço da tela melhorados, a adição de GTAO e SSDO e muito mais.\n\nSuporte a NVIDIA® DLSS e Reflex\nQualidade e desempenho lado a lado. Aproveite o poder da inteligência artificial do NVIDIA Deep Learning Super Sampling (DLSS) para melhorar as taxas de quadros e gerar imagens belas e nítidas em GPUs Nvidia selecionadas. Utilize a tecnologia de baixa latência do NVIDIA Reflex, que permite que você reaja mais rápido e aplique combos mais intensos com a jogabilidade responsiva que você procura em GPUs GeForce.\n\nPersonalização de controles\nJogue do seu jeito. Com suporte aos controles sem fio DUALSHOCK®4 e DUALSENSE®, a vários outros controles e a atalhos totalmente personalizáveis para mouse e teclado, você tem o poder de ajustar qualquer ação para adequá-la ao seu estilo de jogo.\n\nSuporte à tecnologia ultrawide\nViva a experiência mais imersiva que você já teve. Viaje pelos reinos nórdicos e aprecie as paisagens de tirar o fôlego em widescreen panorâmico. Com suporte a ultrawidescreen de 21:9, God of War™ oferece uma experiência de cinema que amplia ainda mais a visão teatral e fluida original.",
+      "description": "Adentre o reino nórdico\nCom a vingança contra os deuses do Olimpo em um passado distante, Kratos agora vive como um mortal no reino dos deuses e monstros nórdicos. É nesse mundo duro e implacável que ele deve lutar para sobreviver... e ensinar seu filho a fazer o mesmo. \n\nTenha uma segunda chance \nKratos é pai novamente. Como mentor e protetor de Atreus, um filho determinado a ganhar seu respeito, ele é forçado a encarar e controlar a fúria que há muito tempo o define enquanto viaja por um mundo ameaçador ao lado do filho. \n\nViaje até um mundo sombrio e primitivo habitado por criaturas terríveis\nDo mármore e das colunas ornadas do Olimpo para as montanhas, cavernas e florestas sombrias do folclore nórdico pré-era viking, este é um reino claramente novo, com um panteão próprio de criaturas, monstros e deuses. \n\nTrave um combate físico e visceral \nCom uma câmera sobre o ombro do personagem que deixa o jogador mais próximo do que nunca da ação, as lutas em God of War™ refletem o panteão de criaturas nórdicas que Kratos vai enfrentar: são grandiosas, realistas e cruéis. A nova arma principal e as novas habilidades mantêm o espírito de God of War, mas também introduzem novos conceitos ao gênero, com uma nova perspectiva para os combates.RECURSOS PARA PC\nGráficos de alta fidelidade\nUm visual impressionante aprimorado no PC. Desfrute da resolução em 4K nos dispositivos suportados, [MU1] com taxas de quadros desbloqueadas para melhor desempenho. Ajuste as configurações com uma ampla variedade de predefinições e opções gráficas, incluindo sombras com maior resolução, reflexos do espaço da tela melhorados, a adição de GTAO e SSDO e muito mais.\n\nSuporte a NVIDIA® DLSS e Reflex\nQualidade e desempenho lado a lado. Aproveite o poder da inteligência artificial do NVIDIA Deep Learning Super Sampling (DLSS) para melhorar as taxas de quadros e gerar imagens belas e nítidas em GPUs Nvidia selecionadas. Utilize a tecnologia de baixa latência do NVIDIA Reflex, que permite que você reaja mais rápido e aplique combos mais intensos com a jogabilidade responsiva que você procura em GPUs GeForce.\n\nPersonalização de controles\nJogue do seu jeito. Com suporte aos controles sem fio DUALSHOCK®4 e DUALSENSE®, a vários outros controles e a atalhos totalmente personalizáveis para mouse e teclado, você tem o poder de ajustar qualquer ação para adequá-la ao seu estilo de jogo.\n\nSuporte à tecnologia ultrawide\nViva a experiência mais imersiva que você já teve. Viaje pelos reinos nórdicos e aprecie as paisagens de tirar o fôlego em widescreen panorâmico. Com suporte a ultrawidescreen de 21:9, God of War™ oferece uma experiência de cinema que amplia ainda mais a visão teatral e fluida original."
+    },
+    {
+      "id": 730,
+      "steam_app_id": 730,
+      "slug": "counter-strike-2",
+      "name": "Counter-Strike 2",
+      "released": "2023-09-27",
+      "metacritic": 82,
+      "rating": 4.1,
+      "background_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/730/162664aa5da85f418105350c5d67ca565f6c3713/header.jpg?t=1793054556",
+      "short_screenshots": [
+        {
+          "id": -1,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/730/162664aa5da85f418105350c5d67ca565f6c3713/header.jpg?t=1793054556"
+        },
+        {
+          "id": 0,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/730/9c8b8fd6ebb2c84a1c38541369e6c05db7f1fbe0/ss_9c8b8fd6ebb2c84a1c38541369e6c05db7f1fbe0.1920x1080.jpg?t=1793054556"
+        },
+        {
+          "id": 1,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/730/4ef95eed5fcd98c576bf13e024bc6c845b622132/ss_4ef95eed5fcd98c576bf13e024bc6c845b622132.1920x1080.jpg?t=1793054556"
+        },
+        {
+          "id": 2,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/730/ss_13bb35638c0267759276f511ee97064773b37a51.1920x1080.jpg?t=1793054556"
+        },
+        {
+          "id": 3,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/730/ss_0f8cf82d019c614760fd20801f2bb4001da7ea77.1920x1080.jpg?t=1793054556"
+        },
+        {
+          "id": 4,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/730/ss_ef82850f036dac5772cb07dbc2d1116ea13eb163.1920x1080.jpg?t=1793054556"
+        },
+        {
+          "id": 5,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/730/ss_76f6730dbb911650ba1f41c8e5b4bac638b5beea.1920x1080.jpg?t=1793054556"
+        }
+      ],
+      "parent_platforms": [
+        {
+          "platform": {
+            "id": 1,
+            "name": "PC"
+          }
+        }
+      ],
+      "genres": [
+        {
+          "id": 1,
+          "name": "Shooter"
+        }
+      ],
+      "developers": [
+        {
+          "id": 1,
+          "name": "Valve"
+        }
+      ],
+      "publishers": [
+        {
+          "id": 1,
+          "name": "Valve"
+        }
+      ],
+      "website": "http://counter-strike.net/",
+      "description_raw": "Há mais de duas décadas, o Counter-Strike oferece uma experiência competitiva de elite moldada por milhões de jogadores mundialmente. Agora, o próximo capítulo da história do CS vai começar. Isso é Counter-Strike 2.\n\nUma atualização gratuita para o CS:GO, o Counter-Strike 2 é o maior salto tecnológico na história da série. Feito na engine Source 2, o Counter-Strike 2 foi modernizado com renderização realística baseada na física, mecanismos de conexão de ponta e ferramentas da Oficina aprimoradas.\n\nAlém da clássica jogabilidade focada em objetivos, marca registrada da série Counter-Strike desde 1999, o Counter-Strike 2 inclui:\n\nInédita CSficação no modo Especial atualizado.\nTabelas de classificação mundiais e regionais.\nMapas aprimorados e reformulados.\nGranadas de fumaça dinâmicas inovadoras.\nJogabilidade independente da taxa de atualização (ticks) do servidor.\nEfeitos visuais e sonoros refeitos.\nTodos os itens do CS:GO.",
+      "description": "Há mais de duas décadas, o Counter-Strike oferece uma experiência competitiva de elite moldada por milhões de jogadores mundialmente. Agora, o próximo capítulo da história do CS vai começar. Isso é Counter-Strike 2.\n\nUma atualização gratuita para o CS:GO, o Counter-Strike 2 é o maior salto tecnológico na história da série. Feito na engine Source 2, o Counter-Strike 2 foi modernizado com renderização realística baseada na física, mecanismos de conexão de ponta e ferramentas da Oficina aprimoradas.\n\nAlém da clássica jogabilidade focada em objetivos, marca registrada da série Counter-Strike desde 1999, o Counter-Strike 2 inclui:\n\nInédita CSficação no modo Especial atualizado.\nTabelas de classificação mundiais e regionais.\nMapas aprimorados e reformulados.\nGranadas de fumaça dinâmicas inovadoras.\nJogabilidade independente da taxa de atualização (ticks) do servidor.\nEfeitos visuais e sonoros refeitos.\nTodos os itens do CS:GO."
+    },
+    {
+      "id": 1091500,
+      "steam_app_id": 1091500,
+      "slug": "cyberpunk-2077",
+      "name": "Cyberpunk 2077",
+      "released": "2020-12-10",
+      "metacritic": 86,
+      "rating": 4.3,
+      "background_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1091500/48a93d6445a67520ea49833c93dae8f2e68fc540/header_alt_assets_9.jpg?t=1792682505",
+      "short_screenshots": [
+        {
+          "id": -1,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1091500/48a93d6445a67520ea49833c93dae8f2e68fc540/header_alt_assets_9.jpg?t=1792682505"
+        },
+        {
+          "id": 0,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1091500/ss_2f649b68d579bf87011487d29bc4ccbfdd97d34f.1920x1080.jpg?t=1792682505"
+        },
+        {
+          "id": 1,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1091500/900f9bda156599fcd235f08ffb64667f9baa1afe/ss_900f9bda156599fcd235f08ffb64667f9baa1afe.1920x1080.jpg?t=1792682505"
+        },
+        {
+          "id": 2,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1091500/f678ed77c2fe7060ac9c64e32e1472e3ec3ab7dc/ss_f678ed77c2fe7060ac9c64e32e1472e3ec3ab7dc.1920x1080.jpg?t=1792682505"
+        },
+        {
+          "id": 3,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1091500/0ed9487e305983d60646ba163a3d8970efb6b347/ss_0ed9487e305983d60646ba163a3d8970efb6b347.1920x1080.jpg?t=1792682505"
+        },
+        {
+          "id": 4,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1091500/ss_0e64170751e1ae20ff8fdb7001a8892fd48260e7.1920x1080.jpg?t=1792682505"
+        },
+        {
+          "id": 5,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1091500/f39ac45fd0d29c687b0c822b704f93a0764ce3e0/ss_f39ac45fd0d29c687b0c822b704f93a0764ce3e0.1920x1080.jpg?t=1792682505"
+        }
+      ],
+      "parent_platforms": [
+        {
+          "platform": {
+            "id": 1,
+            "name": "PC"
+          }
+        },
+        {
+          "platform": {
+            "id": 2,
+            "name": "PlayStation"
+          }
+        },
+        {
+          "platform": {
+            "id": 3,
+            "name": "Xbox"
+          }
+        }
+      ],
+      "genres": [
+        {
+          "id": 1,
+          "name": "RPG"
+        },
+        {
+          "id": 2,
+          "name": "Action"
+        }
+      ],
+      "developers": [
+        {
+          "id": 1,
+          "name": "CD PROJEKT RED"
+        }
+      ],
+      "publishers": [
+        {
+          "id": 1,
+          "name": "CD PROJEKT RED"
+        }
+      ],
+      "website": "https://www.cyberpunk.net",
+      "description_raw": "Em Night City, você é V — mercenário em busca de um implante que promete a vida eterna, ao custo da própria mente e da identidade que ainda resta.\n\nCyberpunk 2077 é um RPG de ação em mundo aberto com builds de corpo, rede e armas de fogo. Missões principais e secundárias exploram corporações, gangues e a vida nas ruas de uma metrópole saturada de neon, propaganda e vigilância.\n\nApós a atualização 2.0 e a expansão Phantom Liberty, o combate, o tráfego, a progressão e várias missões foram profundamente revisados. O resultado é uma experiência bem diferente do lançamento original, com mais liberdade de abordagem e um arco narrativo reforçado em Dogtown.",
+      "description": "Em Night City, você é V — mercenário em busca de um implante que promete a vida eterna, ao custo da própria mente e da identidade que ainda resta.\n\nCyberpunk 2077 é um RPG de ação em mundo aberto com builds de corpo, rede e armas de fogo. Missões principais e secundárias exploram corporações, gangues e a vida nas ruas de uma metrópole saturada de neon, propaganda e vigilância.\n\nApós a atualização 2.0 e a expansão Phantom Liberty, o combate, o tráfego, a progressão e várias missões foram profundamente revisados. O resultado é uma experiência bem diferente do lançamento original, com mais liberdade de abordagem e um arco narrativo reforçado em Dogtown.",
+      "description_lang": "pt-BR"
+    },
+    {
+      "id": 1086940,
+      "steam_app_id": 1086940,
+      "slug": "baldur-s-gate-3",
+      "name": "Baldur's Gate 3",
+      "released": "2023-08-03",
+      "metacritic": 96,
+      "rating": 4.8,
+      "background_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/48a2fcbda8565bb45025e98fd8ebde8a7203f6a0/header.jpg?t=1777363040",
+      "short_screenshots": [
+        {
+          "id": -1,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/48a2fcbda8565bb45025e98fd8ebde8a7203f6a0/header.jpg?t=1777363040"
+        },
+        {
+          "id": 0,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/ss_c73bc54415178c07fef85f54ee26621728c77504.1920x1080.jpg?t=1777363040"
+        },
+        {
+          "id": 1,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/ss_73d93bea842b93914d966622104dcb8c0f42972b.1920x1080.jpg?t=1777363040"
+        },
+        {
+          "id": 2,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/ss_cf936d31061b58e98e0c646aee00e6030c410cda.1920x1080.jpg?t=1777363040"
+        },
+        {
+          "id": 3,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/ss_b6a6ee6e046426d08ceea7a4506a1b5f44181543.1920x1080.jpg?t=1777363040"
+        },
+        {
+          "id": 4,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/ss_6b8faba0f6831a406ce015648958da9612d14dbb.1920x1080.jpg?t=1777363040"
+        },
+        {
+          "id": 5,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/ss_8fc5eba770b4a1639b31666908bdd2bbc1aa2ae4.1920x1080.jpg?t=1777363040"
+        }
+      ],
+      "parent_platforms": [
+        {
+          "platform": {
+            "id": 1,
+            "name": "PC"
+          }
+        },
+        {
+          "platform": {
+            "id": 2,
+            "name": "PlayStation"
+          }
+        },
+        {
+          "platform": {
+            "id": 3,
+            "name": "Xbox"
+          }
+        }
+      ],
+      "genres": [
+        {
+          "id": 1,
+          "name": "RPG"
+        },
+        {
+          "id": 2,
+          "name": "Strategy"
+        }
+      ],
+      "developers": [
+        {
+          "id": 1,
+          "name": "Larian Studios"
+        }
+      ],
+      "publishers": [
+        {
+          "id": 1,
+          "name": "Larian Studios"
+        }
+      ],
+      "website": "https://baldursgate3.game",
+      "description_raw": "Reúna seu grupo e volte aos Reinos Esquecidos em uma história de amizade e traição, sacrifício e sobrevivência, e tentação pelo poder absoluto.\n\nHabilidades misteriosas despertam em você, semeadas por um parasita devorador de mentes no seu cérebro. Resista e faça a escuridão ruir a si mesma, ou aceite a corrupção e torne-se o mal supremo.\n\nDos criadores de Divinity: Original Sin 2, este é um RPG da nova geração situado no mundo de Dungeons and Dragons.\n\nEscolha dentre diversas raças e classes de D&D ou assuma o papel de um personagem original com um histórico detalhado. Aventure-se, saqueie, lute e envolva-se em romances ao longo da sua jornada pelos Reinos Esquecidos e além. Jogue solo e escolha seus companheiros com cuidado, ou jogue em grupo com até quatro amigos no multijogador.\n\nVítima de um rapto e sem rumo, você está se transformando em um monstro devido a uma infecção. No entanto, quanto mais a corrupção se desenvolve, mais forte você fica. Este poder tem seus benefícios, mas também um preço a pagar. E, mais do que qualquer habilidade, os laços de confiança que nutrir com seus companheiros podem ser sua maior força. Em meio a um conflito entre demônios, divindades e forças sobrenaturais sinistras, o destino dos Reinos Esquecidos está em suas mãos.\n\nForjado a partir da nova engine Divinity 4.0, Baldur's Gate 3 oferece liberdade de forma inédita para explorar, experimentar e interagir com um mundo que reage às suas escolhas. A narrativa grandiosa e cinematográfica tornam seus personagens mais envolventes do que nunca ao longo da sua aventura pelo maior dos nossos mundos.\n\nOs Reinos Esquecidos são um mundo vasto, rico e diverso, com segredos por toda a parte, prezando a verticalidade na exploração. Esgueire-se, impregne, empurre, escale e salte desde as profundezas de Umbreterna aos reluzentes telhados da Cidade Alta. A sua tática de sobrevivência, assim como a marca que deixa no mundo, depende das suas decisões.Defina seu legado, cultive relacionamentos, crie inimigos e resolva problemas do seu jeito. Nenhuma jogada será a mesma.\n\nMultijogador Online de até quatro jogadores\nPermite unir forças em batalha e dividir seu grupo para realizar missões e objetivos de seu interesse. Elabore o plano perfeito em equipe... ou adicione uma pitada de caos quando seus amigos menos esperarem. Relacionamentos são complicados. Especialmente quando você tem um parasita em seu cérebro.\n\nPersonagens Originais\n7 heróis únicos originais oferecem uma experiência artesanal, cada um com suas próprias características, planos e visão do mundo. Suas histórias se cruzam com a narrativa, e suas escolhas determinarão se essas histórias terminarão em redenção, salvação, dominação ou um dos muitos outros resultados. Jogue como um Original e curta suas histórias ou recrute-os para lutar ao seu lado.\n\nCombate por turnos evoluído\nBaseado nas regras da quinta edição de D&D. Iniciativa, vantagem e desvantagem calculadas segundo a equipe, assim como modificadores de rolagem, unem-se às câmeras de combate, à maior interação com o ambiente e à fluidez do sistema de combate que recompensa estratégia e perspicácia. Três configurações de dificuldade permitem que você personalize o desafio do combate. Ative os dados viciados para ajudar a influenciar a batalha ou jogue no modo Estrategista para obter uma experiência arrasadora.\n\nUma profundidade sem precedentes\nPossui 31 sub-raças além das 11 raças (humano, githyanki, meio-orc, anão, elfo, drow, tiefling, halfling, meio-elfo, gnomo, draconato), com 46 subclasses derivadas das 12 classes. As mais de 600 magias e ações oferecem liberdade quase ilimitada em termos de interatividade; tudo ambientado em um mundo artesanal onde a exploração é recompensada e o jogador define a jornada. Nosso criador de personagens exclusivo possui profundidade sem precedentes, com reações que garantem que, seja você quem for, você deixará um legado em seu rastro até atingir o nível 12. Mais de 174 horas de cenas cinematográficas garantem…",
+      "description": "Reúna seu grupo e volte aos Reinos Esquecidos em uma história de amizade e traição, sacrifício e sobrevivência, e tentação pelo poder absoluto.\n\nHabilidades misteriosas despertam em você, semeadas por um parasita devorador de mentes no seu cérebro. Resista e faça a escuridão ruir a si mesma, ou aceite a corrupção e torne-se o mal supremo.\n\nDos criadores de Divinity: Original Sin 2, este é um RPG da nova geração situado no mundo de Dungeons and Dragons.\n\nEscolha dentre diversas raças e classes de D&D ou assuma o papel de um personagem original com um histórico detalhado. Aventure-se, saqueie, lute e envolva-se em romances ao longo da sua jornada pelos Reinos Esquecidos e além. Jogue solo e escolha seus companheiros com cuidado, ou jogue em grupo com até quatro amigos no multijogador.\n\nVítima de um rapto e sem rumo, você está se transformando em um monstro devido a uma infecção. No entanto, quanto mais a corrupção se desenvolve, mais forte você fica. Este poder tem seus benefícios, mas também um preço a pagar. E, mais do que qualquer habilidade, os laços de confiança que nutrir com seus companheiros podem ser sua maior força. Em meio a um conflito entre demônios, divindades e forças sobrenaturais sinistras, o destino dos Reinos Esquecidos está em suas mãos.\n\nForjado a partir da nova engine Divinity 4.0, Baldur's Gate 3 oferece liberdade de forma inédita para explorar, experimentar e interagir com um mundo que reage às suas escolhas. A narrativa grandiosa e cinematográfica tornam seus personagens mais envolventes do que nunca ao longo da sua aventura pelo maior dos nossos mundos.\n\nOs Reinos Esquecidos são um mundo vasto, rico e diverso, com segredos por toda a parte, prezando a verticalidade na exploração. Esgueire-se, impregne, empurre, escale e salte desde as profundezas de Umbreterna aos reluzentes telhados da Cidade Alta. A sua tática de sobrevivência, assim como a marca que deixa no mundo, depende das suas decisões.Defina seu legado, cultive relacionamentos, crie inimigos e resolva problemas do seu jeito. Nenhuma jogada será a mesma.\n\nMultijogador Online de até quatro jogadores\nPermite unir forças em batalha e dividir seu grupo para realizar missões e objetivos de seu interesse. Elabore o plano perfeito em equipe... ou adicione uma pitada de caos quando seus amigos menos esperarem. Relacionamentos são complicados. Especialmente quando você tem um parasita em seu cérebro.\n\nPersonagens Originais\n7 heróis únicos originais oferecem uma experiência artesanal, cada um com suas próprias características, planos e visão do mundo. Suas histórias se cruzam com a narrativa, e suas escolhas determinarão se essas histórias terminarão em redenção, salvação, dominação ou um dos muitos outros resultados. Jogue como um Original e curta suas histórias ou recrute-os para lutar ao seu lado.\n\nCombate por turnos evoluído\nBaseado nas regras da quinta edição de D&D. Iniciativa, vantagem e desvantagem calculadas segundo a equipe, assim como modificadores de rolagem, unem-se às câmeras de combate, à maior interação com o ambiente e à fluidez do sistema de combate que recompensa estratégia e perspicácia. Três configurações de dificuldade permitem que você personalize o desafio do combate. Ative os dados viciados para ajudar a influenciar a batalha ou jogue no modo Estrategista para obter uma experiência arrasadora.\n\nUma profundidade sem precedentes\nPossui 31 sub-raças além das 11 raças (humano, githyanki, meio-orc, anão, elfo, drow, tiefling, halfling, meio-elfo, gnomo, draconato), com 46 subclasses derivadas das 12 classes. As mais de 600 magias e ações oferecem liberdade quase ilimitada em termos de interatividade; tudo ambientado em um mundo artesanal onde a exploração é recompensada e o jogador define a jornada. Nosso criador de personagens exclusivo possui profundidade sem precedentes, com reações que garantem que, seja você quem for, você deixará um legado em seu rastro até atingir o nível 12. Mais de 174 horas de cenas cinematográficas garantem…"
+    },
+    {
+      "id": 553850,
+      "steam_app_id": 553850,
+      "slug": "helldivers-2",
+      "name": "HELLDIVERS™ 2",
+      "released": "2024-02-08",
+      "metacritic": 82,
+      "rating": 4.1,
+      "background_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/553850/de5955080cc5e2fa13d0e7b35668ac4e048f7a7e/header_brazilian.jpg?t=1793395133",
+      "short_screenshots": [
+        {
+          "id": -1,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/553850/de5955080cc5e2fa13d0e7b35668ac4e048f7a7e/header_brazilian.jpg?t=1793395133"
+        },
+        {
+          "id": 0,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/553850/aed08979e15f54798f287dd8820fb5838476b5fa/ss_aed08979e15f54798f287dd8820fb5838476b5fa.1920x1080.jpg?t=1793395133"
+        },
+        {
+          "id": 1,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/553850/71ef7c65fcf63ff974ce42150190c0420c66c72b/ss_71ef7c65fcf63ff974ce42150190c0420c66c72b.1920x1080.jpg?t=1793395133"
+        },
+        {
+          "id": 2,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/553850/6c8b61a7c63479b6f526d285af6687a362d5d7ae/ss_6c8b61a7c63479b6f526d285af6687a362d5d7ae.1920x1080.jpg?t=1793395133"
+        },
+        {
+          "id": 3,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/553850/ss_0c79f56fc7be1bd0102f2ca1c92c8f0900daf4fb.1920x1080.jpg?t=1793395133"
+        },
+        {
+          "id": 4,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/553850/ss_33e684e9cb2517af1599f0ca2b57d65ee82c2e51.1920x1080.jpg?t=1793395133"
+        },
+        {
+          "id": 5,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/553850/ss_8949ed7dd24a02d5ea13b08fc5c04fab400dc4bd.1920x1080.jpg?t=1793395133"
+        }
+      ],
+      "parent_platforms": [
+        {
+          "platform": {
+            "id": 1,
+            "name": "PC"
+          }
+        },
+        {
+          "platform": {
+            "id": 2,
+            "name": "PlayStation"
+          }
+        }
+      ],
+      "genres": [
+        {
+          "id": 1,
+          "name": "Shooter"
+        },
+        {
+          "id": 2,
+          "name": "Action"
+        }
+      ],
+      "developers": [
+        {
+          "id": 1,
+          "name": "Arrowhead Game Studios"
+        }
+      ],
+      "publishers": [
+        {
+          "id": 1,
+          "name": "PlayStation Publishing LLC"
+        }
+      ],
+      "website": "https://www.playstation.com/games/helldivers-2/pc/",
+      "description_raw": "Edição digital de luxo\n\nA edição inclui: \n\nConjunto de armadura \"DP-53 Salvadora da Liberdade\".\n\nCapa \"Vontade do Povo\".\n\nArma \"SMG MP-98 'Cavaleiro'\".\n\nStatus de Supercidadão.\n\nJogo da nave Herói das Estratégias.\n\nToken Bônus de guerra premium.\n\nSobre o jogo\nA última linha ofensiva da Galáxia.\n\nAliste-se aos Helldivers e lute pela Liberdade numa galáxia hostil neste feroz, frenético e veloz jogo de tiro em terceira pessoa.\n\nTRANSMISSÃO URGENTE – FORÇAS ARMADAS DA SUPERTERRALiberdade. Paz. Democracia. \nSeus direitos por ter nascido na Superterra. Os principais pilares da nossa civilização. \nDa nossa existência. \nMas guerra continua. E, mais uma vez, tudo está em risco.\nJunte-se à maior força militar que a Galáxia já viu e garanta a segurança e a paz do lugar.\n\nTORNE-SE UMA LENDAVocê entrará em um esquadrão de até quatro Helldivers e receberá missões estratégicas.\nCuide de seus aliados — o fogo amigo é um triste fato da guerra, mas é impossível vencer sem trabalhar em equipe.\n\nAPARATOSProvoque uma chuva de Liberdade, infiltre-se em território inimigo ou reúna toda a sua coragem e avance com tudo no campo de batalha.\nCabe a você decidir como espalhar a Liberdade. Para isso, você terá acesso a uma vasta gama de armamentos explosivos, armaduras protetoras e estratégias capazes de mudar os rumos da batalha... O orgulho do arsenal Helldiver.\n\nREQUISIÇÕESA Superterra reconhece seus esforços através das valiosas Requisições. Use-as para ter acesso a diversas recompensas benéficas a você, sua equipe, seu destróier e ao esforço de guerra como um todo.\n\nAMEAÇASTodos os planetas são verdadeiras armadilhas mortais. É com esse tipo de ameaça que temos que lidar.\nCada inimigo tem características, táticas e comportamentos próprios e imprevisíveis, mas todos lutam impetuosamente, sem medo nem moralidade.\n\nA GUERRA GALÁCTICACapture planetas inimigos, defenda contra invasões e complete missões para contribuir com os esforços.\nO resultado da guerra depende das ações de todos os envolvidos.\nOu todos nos unimos, ou não sobrará ninguém.",
+      "description": "Edição digital de luxo\n\nA edição inclui: \n\nConjunto de armadura \"DP-53 Salvadora da Liberdade\".\n\nCapa \"Vontade do Povo\".\n\nArma \"SMG MP-98 'Cavaleiro'\".\n\nStatus de Supercidadão.\n\nJogo da nave Herói das Estratégias.\n\nToken Bônus de guerra premium.\n\nSobre o jogo\nA última linha ofensiva da Galáxia.\n\nAliste-se aos Helldivers e lute pela Liberdade numa galáxia hostil neste feroz, frenético e veloz jogo de tiro em terceira pessoa.\n\nTRANSMISSÃO URGENTE – FORÇAS ARMADAS DA SUPERTERRALiberdade. Paz. Democracia. \nSeus direitos por ter nascido na Superterra. Os principais pilares da nossa civilização. \nDa nossa existência. \nMas guerra continua. E, mais uma vez, tudo está em risco.\nJunte-se à maior força militar que a Galáxia já viu e garanta a segurança e a paz do lugar.\n\nTORNE-SE UMA LENDAVocê entrará em um esquadrão de até quatro Helldivers e receberá missões estratégicas.\nCuide de seus aliados — o fogo amigo é um triste fato da guerra, mas é impossível vencer sem trabalhar em equipe.\n\nAPARATOSProvoque uma chuva de Liberdade, infiltre-se em território inimigo ou reúna toda a sua coragem e avance com tudo no campo de batalha.\nCabe a você decidir como espalhar a Liberdade. Para isso, você terá acesso a uma vasta gama de armamentos explosivos, armaduras protetoras e estratégias capazes de mudar os rumos da batalha... O orgulho do arsenal Helldiver.\n\nREQUISIÇÕESA Superterra reconhece seus esforços através das valiosas Requisições. Use-as para ter acesso a diversas recompensas benéficas a você, sua equipe, seu destróier e ao esforço de guerra como um todo.\n\nAMEAÇASTodos os planetas são verdadeiras armadilhas mortais. É com esse tipo de ameaça que temos que lidar.\nCada inimigo tem características, táticas e comportamentos próprios e imprevisíveis, mas todos lutam impetuosamente, sem medo nem moralidade.\n\nA GUERRA GALÁCTICACapture planetas inimigos, defenda contra invasões e complete missões para contribuir com os esforços.\nO resultado da guerra depende das ações de todos os envolvidos.\nOu todos nos unimos, ou não sobrará ninguém."
+    },
+    {
+      "id": 570,
+      "steam_app_id": 570,
+      "slug": "dota-2",
+      "name": "Dota 2",
+      "released": "2013-07-09",
+      "metacritic": 90,
+      "rating": 4.5,
+      "background_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/570/header.jpg?t=1791407503",
+      "short_screenshots": [
+        {
+          "id": -1,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/570/header.jpg?t=1791407503"
+        },
+        {
+          "id": 0,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/570/ss_ad8eee787704745ccdecdfde3a5cd2733704898d.1920x1080.jpg?t=1791407503"
+        },
+        {
+          "id": 1,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/570/ss_7ab506679d42bfc0c0e40639887176494e0466d9.1920x1080.jpg?t=1791407503"
+        },
+        {
+          "id": 2,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/570/ss_c9118375a2400278590f29a3537769c986ef6e39.1920x1080.jpg?t=1791407503"
+        },
+        {
+          "id": 3,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/570/ss_f9ebafedaf2d5cfb80ef1f74baa18eb08cad6494.1920x1080.jpg?t=1791407503"
+        },
+        {
+          "id": 4,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/570/ss_27b6345f22243bd6b885cc64c5cda74e4bd9c3e8.1920x1080.jpg?t=1791407503"
+        },
+        {
+          "id": 5,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/570/ss_b33a65678dc71cc98df4890e22a89601ee56a918.1920x1080.jpg?t=1791407503"
+        }
+      ],
+      "parent_platforms": [
+        {
+          "platform": {
+            "id": 1,
+            "name": "PC"
+          }
+        }
+      ],
+      "genres": [
+        {
+          "id": 1,
+          "name": "Strategy"
+        },
+        {
+          "id": 2,
+          "name": "Action"
+        }
+      ],
+      "developers": [
+        {
+          "id": 1,
+          "name": "Valve"
+        }
+      ],
+      "publishers": [
+        {
+          "id": 1,
+          "name": "Valve"
+        }
+      ],
+      "website": "http://www.dota2.com/",
+      "description_raw": "O jogo mais jogado no Steam.\nDiariamente, milhões de jogadores mundo afora batalham como um dentre os mais de cem heróis do Dota. Estejam jogando há 10 ou 1.000 horas, há sempre algo novo para descobrir. Com atualizações constantes das mecânicas, recursos e heróis, o Dota 2 se tornou mais que um simples jogo.\n\nUm campo de batalha. Infinitas possibilidades.\nQuando o assunto é diversidade de heróis, habilidades e itens poderosos, o Dota reina — não há duas partidas iguais. Qualquer herói pode se encaixar em várias funções, e há inúmeros itens para ajudar a atender às necessidades de cada partida. O Dota não limita como você deve jogar, permitindo que se expresse no seu estilo.\n\nTodos os heróis são gratuitos.\nO equilíbrio competitivo é a peça mais importante do Dota, e para garantir que todos estão em pé de igualdade, o conteúdo base do jogo — como o vasto elenco de heróis — está disponível a todos os jogadores. Fãs podem colecionar itens cosméticos para heróis e o mundo em que habitam, mas tudo o que precisa para jogar está liberado antes mesmo de entrar na primeira partida.\n\nChame os amigos e joguem juntos.\nO Dota é um jogo complexo e em constante evolução, mas nunca é tarde demais para começar. \nAprenda o básico jogando cooperativamente contra bots. Aprimore as suas habilidades no modo de teste de heróis. Entre de cabeça no sistema de criação de partidas, que usa o seu comportamento e nível de habilidade para garantir que você jogará com os jogadores certos a cada partida.",
+      "description": "O jogo mais jogado no Steam.\nDiariamente, milhões de jogadores mundo afora batalham como um dentre os mais de cem heróis do Dota. Estejam jogando há 10 ou 1.000 horas, há sempre algo novo para descobrir. Com atualizações constantes das mecânicas, recursos e heróis, o Dota 2 se tornou mais que um simples jogo.\n\nUm campo de batalha. Infinitas possibilidades.\nQuando o assunto é diversidade de heróis, habilidades e itens poderosos, o Dota reina — não há duas partidas iguais. Qualquer herói pode se encaixar em várias funções, e há inúmeros itens para ajudar a atender às necessidades de cada partida. O Dota não limita como você deve jogar, permitindo que se expresse no seu estilo.\n\nTodos os heróis são gratuitos.\nO equilíbrio competitivo é a peça mais importante do Dota, e para garantir que todos estão em pé de igualdade, o conteúdo base do jogo — como o vasto elenco de heróis — está disponível a todos os jogadores. Fãs podem colecionar itens cosméticos para heróis e o mundo em que habitam, mas tudo o que precisa para jogar está liberado antes mesmo de entrar na primeira partida.\n\nChame os amigos e joguem juntos.\nO Dota é um jogo complexo e em constante evolução, mas nunca é tarde demais para começar. \nAprenda o básico jogando cooperativamente contra bots. Aprimore as suas habilidades no modo de teste de heróis. Entre de cabeça no sistema de criação de partidas, que usa o seu comportamento e nível de habilidade para garantir que você jogará com os jogadores certos a cada partida."
+    },
+    {
+      "id": 440,
+      "steam_app_id": 440,
+      "slug": "team-fortress-2",
+      "name": "Team Fortress 2",
+      "released": "2007-10-10",
+      "metacritic": 92,
+      "rating": 4.6,
+      "background_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/440/header.jpg?t=1757348372",
+      "short_screenshots": [
+        {
+          "id": -1,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/440/header.jpg?t=1757348372"
+        },
+        {
+          "id": 0,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/440/ss_ea21f7bbf4f79bada4554df5108d04b6889d3453.1920x1080.jpg?t=1757348372"
+        },
+        {
+          "id": 1,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/440/ss_e3aedb2ab36bba8cfe611b1e0eaa807e4bb2d742.1920x1080.jpg?t=1757348372"
+        },
+        {
+          "id": 2,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/440/ss_ee24a769dc1d81dcbd7b250d16530394adee4264.1920x1080.jpg?t=1757348372"
+        },
+        {
+          "id": 3,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/440/ss_9faaa506d91bf19dbb398e0c06a684b337f85f91.1920x1080.jpg?t=1757348372"
+        },
+        {
+          "id": 4,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/440/ss_7de978f22a7059151c31d0488dc57c5c7703c48b.1920x1080.jpg?t=1757348372"
+        },
+        {
+          "id": 5,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/440/ss_e79f2490af3247b4b0f8d412d437b72c321cfe3b.1920x1080.jpg?t=1757348372"
+        }
+      ],
+      "parent_platforms": [
+        {
+          "platform": {
+            "id": 1,
+            "name": "PC"
+          }
+        }
+      ],
+      "genres": [
+        {
+          "id": 1,
+          "name": "Shooter"
+        }
+      ],
+      "developers": [
+        {
+          "id": 1,
+          "name": "Valve"
+        }
+      ],
+      "publishers": [
+        {
+          "id": 1,
+          "name": "Valve"
+        }
+      ],
+      "website": "http://www.teamfortress.com/",
+      "description_raw": "\"A maior diversão que você pode ter on-line\" — PC Gamer\n\n\t\t\t\t\t\t\t\t\t Agora é GRATUITA!\n\n\t\t\t\t\t\t\t\t\t Não tem pegadinha! Jogue o quanto e por quanto tempo quiser!\n\n\t\t\t\t\t\t\t\t\t O jogo gratuito mais bem-avaliado de todos os tempos!\n\n\t\t\t\t\t\t\t\t\t Um dos jogos de ação on-line mais populares de todos os tempos, Team Fortress 2 fornece atualizações gratuitas constantemente — novos modos de jogo, mapas, equipamentos e, o mais importante, chapéus. Nove classes distintas fornecem uma ampla gama de habilidades táticas e personalidades, e se encaixam nas habilidades de qualquer jogador.\n\n\t\t\t\t\t\t\t\t\t Nunca jogou TF antes? Não esquenta!\n\n\t\t\t\t\t\t\t\t\t Independentemente do seu estilo e experiência, nós temos um personagem para você. Modos detalhados de treinamento e prática off-line o ajudarão a melhorar as suas habilidades antes de começar a jogar em um dos vários modos de jogos do TF2, incluindo Capture a Bandeira, Pontos de Controle, Carga Explosiva, Arena, Rei do Pedaço e mais.\n\n\t\t\t\t\t\t\t\t\t Deixe os personagens com o seu estilo!\n\n\t\t\t\t\t\t\t\t\t Há centenas de armas, chapéus e mais para colecionar, fabricar, comprar e trocar. Ajuste a sua classe favorita para se encaixar no seu estilo de jogo e gosto pessoal. Você não precisa pagar para vencer — virtualmente todos os itens da Loja Mann Co. também podem ser encontrados jogando.",
+      "description": "\"A maior diversão que você pode ter on-line\" — PC Gamer\n\n\t\t\t\t\t\t\t\t\t Agora é GRATUITA!\n\n\t\t\t\t\t\t\t\t\t Não tem pegadinha! Jogue o quanto e por quanto tempo quiser!\n\n\t\t\t\t\t\t\t\t\t O jogo gratuito mais bem-avaliado de todos os tempos!\n\n\t\t\t\t\t\t\t\t\t Um dos jogos de ação on-line mais populares de todos os tempos, Team Fortress 2 fornece atualizações gratuitas constantemente — novos modos de jogo, mapas, equipamentos e, o mais importante, chapéus. Nove classes distintas fornecem uma ampla gama de habilidades táticas e personalidades, e se encaixam nas habilidades de qualquer jogador.\n\n\t\t\t\t\t\t\t\t\t Nunca jogou TF antes? Não esquenta!\n\n\t\t\t\t\t\t\t\t\t Independentemente do seu estilo e experiência, nós temos um personagem para você. Modos detalhados de treinamento e prática off-line o ajudarão a melhorar as suas habilidades antes de começar a jogar em um dos vários modos de jogos do TF2, incluindo Capture a Bandeira, Pontos de Controle, Carga Explosiva, Arena, Rei do Pedaço e mais.\n\n\t\t\t\t\t\t\t\t\t Deixe os personagens com o seu estilo!\n\n\t\t\t\t\t\t\t\t\t Há centenas de armas, chapéus e mais para colecionar, fabricar, comprar e trocar. Ajuste a sua classe favorita para se encaixar no seu estilo de jogo e gosto pessoal. Você não precisa pagar para vencer — virtualmente todos os itens da Loja Mann Co. também podem ser encontrados jogando."
+    },
+    {
+      "id": 578080,
+      "steam_app_id": 578080,
+      "slug": "pubg-battlegrounds",
+      "name": "PUBG: BATTLEGROUNDS",
+      "released": "2017-12-20",
+      "metacritic": 86,
+      "rating": 4.3,
+      "background_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/578080/841ea38bc58cabb70aef65365cf50bc2d79329d9/header.jpg?t=1792718193",
+      "short_screenshots": [
+        {
+          "id": -1,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/578080/841ea38bc58cabb70aef65365cf50bc2d79329d9/header.jpg?t=1792718193"
+        },
+        {
+          "id": 0,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/578080/c16e2f2d122cae77a1cbaca19263df0f2d2214fa/ss_c16e2f2d122cae77a1cbaca19263df0f2d2214fa.1920x1080.jpg?t=1792718193"
+        },
+        {
+          "id": 1,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/578080/aa1c51a9b45c88e770b443d8d3cd28f3024b0760/ss_aa1c51a9b45c88e770b443d8d3cd28f3024b0760.1920x1080.jpg?t=1792718193"
+        },
+        {
+          "id": 2,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/578080/bf9b3de5896d4ec7ef9531938b26946cded81fdf/ss_bf9b3de5896d4ec7ef9531938b26946cded81fdf.1920x1080.jpg?t=1792718193"
+        },
+        {
+          "id": 3,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/578080/faa4f9f6caa9613f07fd1193a143f66e0fac489c/ss_faa4f9f6caa9613f07fd1193a143f66e0fac489c.1920x1080.jpg?t=1792718193"
+        },
+        {
+          "id": 4,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/578080/3ae78fac4c07e9a2e2955286014355d6b7f3c8c7/ss_3ae78fac4c07e9a2e2955286014355d6b7f3c8c7.1920x1080.jpg?t=1792718193"
+        },
+        {
+          "id": 5,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/578080/eb19c1ce924ff4689105242257b6d377ffe2e264/ss_eb19c1ce924ff4689105242257b6d377ffe2e264.1920x1080.jpg?t=1792718193"
+        }
+      ],
+      "parent_platforms": [
+        {
+          "platform": {
+            "id": 1,
+            "name": "PC"
+          }
+        }
+      ],
+      "genres": [
+        {
+          "id": 1,
+          "name": "Shooter"
+        },
+        {
+          "id": 2,
+          "name": "Action"
+        }
+      ],
+      "developers": [
+        {
+          "id": 1,
+          "name": "PUBG Corporation"
+        }
+      ],
+      "publishers": [
+        {
+          "id": 1,
+          "name": "KRAFTON, Inc."
+        }
+      ],
+      "website": "https://www.pubg.com",
+      "description_raw": "ATERRISAGEM \n\n \nEntre em uma seleção de mapas que está em constante crescimento e sempre mudando  \npara manter o desafio fresco. Você escolherá os arredores mais seguros e correrá o risco de  \nnão conseguir saques suficientes ou cairá nas cidades densas e lutará desde o momento em  \nque chegar ao chão? Cada descida é diferente, e cabe a você fazer o melhor com o que  \nencontrar. \n\nSAQUE \n\n  \n\nCom armas exclusivas, uma variedade de suprimentos e ferramentas especiais para superar seus adversários, você é quem decide como se equipar! Equipe suas armas favoritas com acessórios poderosos ou se arrisque a ir atrás dos disputadíssimos Pacotes de Ajuda para obter itens exclusivos que darão a vantagem que você precisa para vencer. \n\nSOBREVIVÊNCIA \n\n  \n\nEstocar é apenas o começo. Com a Zona Segura ficando cada vez menor com o passar do tempo, seu risco de encontrar outros sobreviventes aumenta drasticamente. Se você morrer, estará fora. Você precisará ser mais esperto e mais rápido que seus adversários se quiser ser o último sobrevivente e conquistar a vitória no final. \n\nMUITAS MANEIRAS DE JOGAR \n\n  \n\nFaça um aquecimento no Mata-Mata em Equipe, experimente os modos em constante mudança no Arcade, participe do mais recente evento sazonal ou crie seu próprio lobby personalizado e desafie seus amigos para algo único. \n\nE CADA PARTIDA É ÚNICA \n\n  \n\nNão há duas batalhas iguais; tudo depende das escolhas que você faz para aterrissar, saquear e sobreviver. Entre nos Campos de Batalha, onde a vitória depende de cada movimento e de cada escolha. Lute para ser o último sobrevivente. \n\nCompras opcionais disponíveis no jogo.",
+      "description": "ATERRISAGEM \n\n \nEntre em uma seleção de mapas que está em constante crescimento e sempre mudando  \npara manter o desafio fresco. Você escolherá os arredores mais seguros e correrá o risco de  \nnão conseguir saques suficientes ou cairá nas cidades densas e lutará desde o momento em  \nque chegar ao chão? Cada descida é diferente, e cabe a você fazer o melhor com o que  \nencontrar. \n\nSAQUE \n\n  \n\nCom armas exclusivas, uma variedade de suprimentos e ferramentas especiais para superar seus adversários, você é quem decide como se equipar! Equipe suas armas favoritas com acessórios poderosos ou se arrisque a ir atrás dos disputadíssimos Pacotes de Ajuda para obter itens exclusivos que darão a vantagem que você precisa para vencer. \n\nSOBREVIVÊNCIA \n\n  \n\nEstocar é apenas o começo. Com a Zona Segura ficando cada vez menor com o passar do tempo, seu risco de encontrar outros sobreviventes aumenta drasticamente. Se você morrer, estará fora. Você precisará ser mais esperto e mais rápido que seus adversários se quiser ser o último sobrevivente e conquistar a vitória no final. \n\nMUITAS MANEIRAS DE JOGAR \n\n  \n\nFaça um aquecimento no Mata-Mata em Equipe, experimente os modos em constante mudança no Arcade, participe do mais recente evento sazonal ou crie seu próprio lobby personalizado e desafie seus amigos para algo único. \n\nE CADA PARTIDA É ÚNICA \n\n  \n\nNão há duas batalhas iguais; tudo depende das escolhas que você faz para aterrissar, saquear e sobreviver. Entre nos Campos de Batalha, onde a vitória depende de cada movimento e de cada escolha. Lute para ser o último sobrevivente. \n\nCompras opcionais disponíveis no jogo."
+    },
+    {
+      "id": 252950,
+      "steam_app_id": 252950,
+      "slug": "rocket-league",
+      "name": "Rocket League®",
+      "released": "2015-07-07",
+      "metacritic": 86,
+      "rating": 4.3,
+      "background_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252950/3abd9ab079c8896a4762dbe34a853d89b7f704df/header_alt_assets_17.jpg?t=1791210513",
+      "short_screenshots": [
+        {
+          "id": -1,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252950/3abd9ab079c8896a4762dbe34a853d89b7f704df/header_alt_assets_17.jpg?t=1791210513"
+        },
+        {
+          "id": 0,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252950/4fa01c320d22f31d78fd9fcb27dbd3bd8871b903/ss_4fa01c320d22f31d78fd9fcb27dbd3bd8871b903.1920x1080.jpg?t=1791210513"
+        },
+        {
+          "id": 1,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252950/23e7d4fcf10475923be9078e55b449b7fc9792d9/ss_23e7d4fcf10475923be9078e55b449b7fc9792d9.1920x1080.jpg?t=1791210513"
+        },
+        {
+          "id": 2,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252950/41bd974bde088dc623fae68db333f5b8bb42700e/ss_41bd974bde088dc623fae68db333f5b8bb42700e.1920x1080.jpg?t=1791210513"
+        },
+        {
+          "id": 3,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252950/c63c0fca3829cc9977efcc7d3402809592c27e16/ss_c63c0fca3829cc9977efcc7d3402809592c27e16.1920x1080.jpg?t=1791210513"
+        },
+        {
+          "id": 4,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252950/94c1a6af68435a14550fa4e40e6f98c3e44d29a4/ss_94c1a6af68435a14550fa4e40e6f98c3e44d29a4.1920x1080.jpg?t=1791210513"
+        },
+        {
+          "id": 5,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252950/e98f1fa5f2ac54b30c010c34b238e882847fa45b/ss_e98f1fa5f2ac54b30c010c34b238e882847fa45b.1920x1080.jpg?t=1791210513"
+        }
+      ],
+      "parent_platforms": [
+        {
+          "platform": {
+            "id": 1,
+            "name": "PC"
+          }
+        },
+        {
+          "platform": {
+            "id": 2,
+            "name": "PlayStation"
+          }
+        },
+        {
+          "platform": {
+            "id": 3,
+            "name": "Xbox"
+          }
+        }
+      ],
+      "genres": [
+        {
+          "id": 1,
+          "name": "Racing"
+        },
+        {
+          "id": 2,
+          "name": "Sports"
+        }
+      ],
+      "developers": [
+        {
+          "id": 1,
+          "name": "Psyonix LLC"
+        }
+      ],
+      "publishers": [
+        {
+          "id": 1,
+          "name": "Psyonix LLC"
+        }
+      ],
+      "website": "http://www.rocketleague.com/",
+      "description_raw": "Futebol e pilotagem se encontram mais uma vez na aguardada sequência do jogo clássico de arena baseado em física tão amado pelos fãs, o Supersonic Acrobatic Rocket-Powered Battle-Cars!\n\nUm jogo de ação automobilística futurista, Rocket League®, permite que os jogadores dirijam veículos turbinados que acertam bolas para marcarem gols incríveis e realizarem defesas épicas em arenas variadas e altamente detalhadas. Usando um sistema de física avançado para simular interações realistas, Rocket League® usa massa e momento para dar aos jogadores uma sensação completa de controle intuitivo nesta incrível e criativa abordagem de futebol de alta octanagem.\n\nSuas funcionalidades fantásticas incluem:\n\nNovo Modo de Temporada que permite que os jogadores tenham uma experiência de jogo individual completa\nInúmeras personalizações de carros com mais de 10 bilhões de combinações possíveis\nItens e veículos desbloqueáveis, estatísticas, classificações e muito mais\nJogo de ação de 8 jogadores online viciante com equipes de tamanho e configurações variáveis\nModo de tela dividida para 2, 3 e 4 jogadores que pode ser jogado localmente ou online contra outros jogadores com tela dividida\nReplay de alta qualidade que permite que você avance, retroceda ou assista à ação de qualquer lugar da arena\nJogo competitivo multiplataforma com usuários de PlayStation®4, Xbox One e Nintendo Switch\n\nAVISO: Devido a acordos com nosso provedor de serviço online, há certas regiões que não podem se conectar ao componente multijogador online do Rocket League®. Como resultado, o acesso ao servidor é restrito na China, Crimeia, Cuba, Irã, Coreia do Norte, Sudão e Síria. Pedimos desculpas a nossos clientes destas regiões.\n\nVersões Beta para SteamOS e Mac Beta\nNa medida em que continuamos a melhorar o Rocket League com novas tecnologias, como DirectX 11 e cliente de 64 bits, não é mais viável manter suporte para as plataformas macOS e Linux (SteamOS). Como resultado, a atualização final para as versões macOS e Linux do Rocket League foi lançada dia 10 de março de 2020. Esta atualização desabilitou a funcionalidade online (como listas de partida competitivas e casuais) para jogadores em macOS e Linux, mas funcionalidades offline, incluindo partidas locais e jogo com tela dividida, ainda estão disponíveis.\n\nConfira os Termos de Uso do Rocket League® em",
+      "description": "Futebol e pilotagem se encontram mais uma vez na aguardada sequência do jogo clássico de arena baseado em física tão amado pelos fãs, o Supersonic Acrobatic Rocket-Powered Battle-Cars!\n\nUm jogo de ação automobilística futurista, Rocket League®, permite que os jogadores dirijam veículos turbinados que acertam bolas para marcarem gols incríveis e realizarem defesas épicas em arenas variadas e altamente detalhadas. Usando um sistema de física avançado para simular interações realistas, Rocket League® usa massa e momento para dar aos jogadores uma sensação completa de controle intuitivo nesta incrível e criativa abordagem de futebol de alta octanagem.\n\nSuas funcionalidades fantásticas incluem:\n\nNovo Modo de Temporada que permite que os jogadores tenham uma experiência de jogo individual completa\nInúmeras personalizações de carros com mais de 10 bilhões de combinações possíveis\nItens e veículos desbloqueáveis, estatísticas, classificações e muito mais\nJogo de ação de 8 jogadores online viciante com equipes de tamanho e configurações variáveis\nModo de tela dividida para 2, 3 e 4 jogadores que pode ser jogado localmente ou online contra outros jogadores com tela dividida\nReplay de alta qualidade que permite que você avance, retroceda ou assista à ação de qualquer lugar da arena\nJogo competitivo multiplataforma com usuários de PlayStation®4, Xbox One e Nintendo Switch\n\nAVISO: Devido a acordos com nosso provedor de serviço online, há certas regiões que não podem se conectar ao componente multijogador online do Rocket League®. Como resultado, o acesso ao servidor é restrito na China, Crimeia, Cuba, Irã, Coreia do Norte, Sudão e Síria. Pedimos desculpas a nossos clientes destas regiões.\n\nVersões Beta para SteamOS e Mac Beta\nNa medida em que continuamos a melhorar o Rocket League com novas tecnologias, como DirectX 11 e cliente de 64 bits, não é mais viável manter suporte para as plataformas macOS e Linux (SteamOS). Como resultado, a atualização final para as versões macOS e Linux do Rocket League foi lançada dia 10 de março de 2020. Esta atualização desabilitou a funcionalidade online (como listas de partida competitivas e casuais) para jogadores em macOS e Linux, mas funcionalidades offline, incluindo partidas locais e jogo com tela dividida, ainda estão disponíveis.\n\nConfira os Termos de Uso do Rocket League® em"
+    },
+    {
+      "id": 359550,
+      "steam_app_id": 359550,
+      "slug": "tom-clancy-s-rainbow-six-siege",
+      "name": "Tom Clancy's Rainbow Six Siege",
+      "released": "2015-12-01",
+      "metacritic": 79,
+      "rating": 3.95,
+      "background_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/359550/1c7b1ea3405a69c54429e2aa3dc31f3cbbeaa456/header_alt_assets_28.jpg?t=1792001976",
+      "short_screenshots": [
+        {
+          "id": -1,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/359550/1c7b1ea3405a69c54429e2aa3dc31f3cbbeaa456/header_alt_assets_28.jpg?t=1792001976"
+        },
+        {
+          "id": 0,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/359550/2efed3587d876f560cbf3f25d9a72fbd387b74e6/ss_2efed3587d876f560cbf3f25d9a72fbd387b74e6.1920x1080.jpg?t=1792001976"
+        },
+        {
+          "id": 1,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/359550/ee34a63203916d39dc50d96c14aefc24dc3ff34e/ss_ee34a63203916d39dc50d96c14aefc24dc3ff34e.1920x1080.jpg?t=1792001976"
+        },
+        {
+          "id": 2,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/359550/00fb4ac1f236cfd2e364ebfecb599a30b72560fe/ss_00fb4ac1f236cfd2e364ebfecb599a30b72560fe.1920x1080.jpg?t=1792001976"
+        },
+        {
+          "id": 3,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/359550/0fa7bb7203d3839f29861c4b5e2436cd2694291b/ss_0fa7bb7203d3839f29861c4b5e2436cd2694291b.1920x1080.jpg?t=1792001976"
+        },
+        {
+          "id": 4,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/359550/7dbe5772037723a59c11ad381e0d6a3b6bc6aaf7/ss_7dbe5772037723a59c11ad381e0d6a3b6bc6aaf7.1920x1080.jpg?t=1792001976"
+        },
+        {
+          "id": 5,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/359550/122463fa746a1b4f3839d01beead0f9a43ce9e47/ss_122463fa746a1b4f3839d01beead0f9a43ce9e47.1920x1080.jpg?t=1792001976"
+        }
+      ],
+      "parent_platforms": [
+        {
+          "platform": {
+            "id": 1,
+            "name": "PC"
+          }
+        },
+        {
+          "platform": {
+            "id": 2,
+            "name": "PlayStation"
+          }
+        },
+        {
+          "platform": {
+            "id": 3,
+            "name": "Xbox"
+          }
+        }
+      ],
+      "genres": [
+        {
+          "id": 1,
+          "name": "Shooter"
+        }
+      ],
+      "developers": [
+        {
+          "id": 1,
+          "name": "Ubisoft Montreal"
+        }
+      ],
+      "publishers": [
+        {
+          "id": 1,
+          "name": "Ubisoft"
+        }
+      ],
+      "website": "http://rainbow6.ubi.com/",
+      "description_raw": "Year 11 Season 3 Overview\n\nYear 11 Roadmap\n\nAcesso Gratuito\n\nElite Edition\n\nUltimate Edition\n\nPC Specifications\n\nSobre o jogoTom Clancy's Rainbow Six Siege é a referência incontestável em jogos de tiro táticos. Triunfa quem planejar e executar melhor a estratégia.\n\nAproveite o Acesso Gratuito aos modos de jogo Partida Rápida e Sem Colocação, com uma seleção de agentes.\n\nAlguns recursos, como condições de jogo Por Colocação, Copa Siege, agentes adicionais e cosméticos, requerem pagamento para ser desbloqueados.\n\n5v5 ELETRIZANTE DE ATAQUE CONTRA DEFESAAlterne entre ataque e defesa, adaptando sua abordagem a cada agente e mapa. Sinta a emoção e a intensidade da ação, e utilize a destruição e os gadgets de última geração para passar a perna nos seus oponentes e superá-los em cada rodada.\n\nNa defesa, transforme os cenários em fortalezas reforçadas. Reforce paredes, monte barricadas e instale armadilhas para controlar o movimento inimigo. Use ferramentas de vigilância para recolher informações e prever a abordagem do oponente. Mantenha sua posição, adapte-se às táticas inimigas e supere os atacantes a cada jogada.\n\nNo ataque, reúna informações sobre as posições inimigas e a área de bomba usando seus drones de observação. Coordene-se com sua equipe para romper defesas reforçadas, contornar armadilhas e criar aberturas inesperadas. Surpreenda seus inimigos com jogadas verticais: ataque de cima, de baixo ou chegue chegando de rapel pela janela. Planeje seu ataque, execute o plano e resolva cada situação.\n\nFERRAMENTAS DA DESTRUIÇÃO\n\nA destruição é mais do que caos: é uma ferramenta essencial para o seu sucesso. Use o ambiente a seu favor: transforme paredes em oportunidades. Use tecnologia de ponta para rastrear os movimentos inimigos, quebrar paredes para criar novas linhas de visão e manipular os cenários para garantir a vantagem tática.\n\nDE RECRUTA A ELITEUma excelente jornada de integração para jogadores novos, incluindo um novo percurso de níveis de acesso que ajuda você a aprender o básico progressivamente e a desenvolver as habilidades e a confiança necessárias antes de entrar na ação tática.\n\nEVOLUÇÃO CONSTANTECada temporada traz grandes atualizações, com novos conteúdos e recursos para manter as táticas e a jogabilidade sempre renovadas.\n\nALTAMENTE COMPETITIVOJunte-se a uma imensa comunidade online de mais de 80 milhões de jogadores. Assista às melhores equipes profissionais lutarem pela supremacia na prestigiada competição de Rainbow Six Siege Esports.\n\nO acesso ao jogo é gratuito; alguns recursos, incluindo modos de jogo competitivos, agentes e cosméticos, requerem pagamento para que sejam desbloqueados.",
+      "description": "Year 11 Season 3 Overview\n\nYear 11 Roadmap\n\nAcesso Gratuito\n\nElite Edition\n\nUltimate Edition\n\nPC Specifications\n\nSobre o jogoTom Clancy's Rainbow Six Siege é a referência incontestável em jogos de tiro táticos. Triunfa quem planejar e executar melhor a estratégia.\n\nAproveite o Acesso Gratuito aos modos de jogo Partida Rápida e Sem Colocação, com uma seleção de agentes.\n\nAlguns recursos, como condições de jogo Por Colocação, Copa Siege, agentes adicionais e cosméticos, requerem pagamento para ser desbloqueados.\n\n5v5 ELETRIZANTE DE ATAQUE CONTRA DEFESAAlterne entre ataque e defesa, adaptando sua abordagem a cada agente e mapa. Sinta a emoção e a intensidade da ação, e utilize a destruição e os gadgets de última geração para passar a perna nos seus oponentes e superá-los em cada rodada.\n\nNa defesa, transforme os cenários em fortalezas reforçadas. Reforce paredes, monte barricadas e instale armadilhas para controlar o movimento inimigo. Use ferramentas de vigilância para recolher informações e prever a abordagem do oponente. Mantenha sua posição, adapte-se às táticas inimigas e supere os atacantes a cada jogada.\n\nNo ataque, reúna informações sobre as posições inimigas e a área de bomba usando seus drones de observação. Coordene-se com sua equipe para romper defesas reforçadas, contornar armadilhas e criar aberturas inesperadas. Surpreenda seus inimigos com jogadas verticais: ataque de cima, de baixo ou chegue chegando de rapel pela janela. Planeje seu ataque, execute o plano e resolva cada situação.\n\nFERRAMENTAS DA DESTRUIÇÃO\n\nA destruição é mais do que caos: é uma ferramenta essencial para o seu sucesso. Use o ambiente a seu favor: transforme paredes em oportunidades. Use tecnologia de ponta para rastrear os movimentos inimigos, quebrar paredes para criar novas linhas de visão e manipular os cenários para garantir a vantagem tática.\n\nDE RECRUTA A ELITEUma excelente jornada de integração para jogadores novos, incluindo um novo percurso de níveis de acesso que ajuda você a aprender o básico progressivamente e a desenvolver as habilidades e a confiança necessárias antes de entrar na ação tática.\n\nEVOLUÇÃO CONSTANTECada temporada traz grandes atualizações, com novos conteúdos e recursos para manter as táticas e a jogabilidade sempre renovadas.\n\nALTAMENTE COMPETITIVOJunte-se a uma imensa comunidade online de mais de 80 milhões de jogadores. Assista às melhores equipes profissionais lutarem pela supremacia na prestigiada competição de Rainbow Six Siege Esports.\n\nO acesso ao jogo é gratuito; alguns recursos, incluindo modos de jogo competitivos, agentes e cosméticos, requerem pagamento para que sejam desbloqueados."
+    },
+    {
+      "id": 814380,
+      "steam_app_id": 814380,
+      "slug": "sekiro-shadows-die-twice-goty-edition",
+      "name": "Sekiro™: Shadows Die Twice - GOTY Edition",
+      "released": "2019-03-22",
+      "metacritic": 88,
+      "rating": 4.4,
+      "background_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/814380/header.jpg?t=1762888662",
+      "short_screenshots": [
+        {
+          "id": -1,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/814380/header.jpg?t=1762888662"
+        },
+        {
+          "id": 0,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/814380/ss_0f7b0f8ed9ffc49aba26f9328caa9a1d59ad60f0.1920x1080.jpg?t=1762888662"
+        },
+        {
+          "id": 1,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/814380/ss_2685dd844a2a523b6c7ec207d46a538db6a908cd.1920x1080.jpg?t=1762888662"
+        },
+        {
+          "id": 2,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/814380/ss_15f0e9982621aed44900215ad283811af0779b1d.1920x1080.jpg?t=1762888662"
+        },
+        {
+          "id": 3,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/814380/ss_1e6f5540866a5564d65df915c22fe1e57e336a6f.1920x1080.jpg?t=1762888662"
+        },
+        {
+          "id": 4,
+          "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/814380/ss_3d6b38c382c0eafb02dc90d22f33fd292e4e5cf3.1920x1080.jpg?t=1762888662"
+        }
+      ],
+      "parent_platforms": [
+        {
+          "platform": {
+            "id": 1,
+            "name": "PC"
+          }
+        }
+      ],
+      "genres": [
+        {
+          "id": 1,
+          "name": "Action"
+        },
+        {
+          "id": 2,
+          "name": "Adventure"
+        }
+      ],
+      "developers": [
+        {
+          "id": 1,
+          "name": "FromSoftware, Inc."
+        }
+      ],
+      "publishers": [
+        {
+          "id": 1,
+          "name": "Activision (Excluding Japan and Asia)"
+        },
+        {
+          "id": 2,
+          "name": "FromSoftware, Inc. (Japan)"
+        },
+        {
+          "id": 3,
+          "name": "方块游戏 (Asia)"
+        }
+      ],
+      "website": "http://www.sekirothegame.com/",
+      "description_raw": "Esta Edição Jogo do Ano inclui conteúdo bônus*:\n\r\n\n\r\n- Reflexão e desafio de força - novos modos de desafio de chefe\n\r\n- Vestígios - deixe mensagens e registros de suas ações, que outros jogadores podem visualizar e avaliar\n\r\n- 3 visuais cosméticos desbloqueáveis\n\r\n\n\r\nJogo do Ano - The Game Awards 2019\n\r\nMelhor Jogo de Ação de 2019 - IGN\n\r\nMais de 50 prêmios e indicações\n\r\n\n\r\nTrilhe seu próprio caminho de vingança nesta premiada aventura da FromSoftware, os criadores da franquia Dark Souls.\n\r\n\n\r\nEm Sekiro™: Shadows Die Twice, você é o 'lobo de um braço só', um guerreiro desfigurado e desgraçado, resgatado da beira da morte. Jurado para proteger um jovem lorde descendente de uma antiga linhagem de sangue, você vira alvo de muitos inimigos perigosos, incluindo o temido clã Ashina. Quando o jovem lorde é capturado, você parte em uma jornada de redenção onde nada impedirá você, nem mesmo a própria morte.\n\r\n\n\r\nExplore o Japão no final dos anos 1500, um período brutal de conflitos mortais constantes, enquanto enfrenta inimigos épicos em um mundo sombrio e distorcido. Use um arsenal de ferramentas prostéticas mortais e habilidades ninjas poderosas ao mesmo tempo em que alterna furtividade, travessia vertical e combate direto visceral em um confronto sangrento.\n\r\n\n\r\nObtenha vingança. Retome sua honra. Mate astuciosamente.\n\r\n\n\r\n*Requer download.\n\r\n\n\r\nRequer conexão à internet para modo de Multijogador assíncrono.",
+      "description": "Esta Edição Jogo do Ano inclui conteúdo bônus*:\n\r\n\n\r\n- Reflexão e desafio de força - novos modos de desafio de chefe\n\r\n- Vestígios - deixe mensagens e registros de suas ações, que outros jogadores podem visualizar e avaliar\n\r\n- 3 visuais cosméticos desbloqueáveis\n\r\n\n\r\nJogo do Ano - The Game Awards 2019\n\r\nMelhor Jogo de Ação de 2019 - IGN\n\r\nMais de 50 prêmios e indicações\n\r\n\n\r\nTrilhe seu próprio caminho de vingança nesta premiada aventura da FromSoftware, os criadores da franquia Dark Souls.\n\r\n\n\r\nEm Sekiro™: Shadows Die Twice, você é o 'lobo de um braço só', um guerreiro desfigurado e desgraçado, resgatado da beira da morte. Jurado para proteger um jovem lorde descendente de uma antiga linhagem de sangue, você vira alvo de muitos inimigos perigosos, incluindo o temido clã Ashina. Quando o jovem lorde é capturado, você parte em uma jornada de redenção onde nada impedirá você, nem mesmo a própria morte.\n\r\n\n\r\nExplore o Japão no final dos anos 1500, um período brutal de conflitos mortais constantes, enquanto enfrenta inimigos épicos em um mundo sombrio e distorcido. Use um arsenal de ferramentas prostéticas mortais e habilidades ninjas poderosas ao mesmo tempo em que alterna furtividade, travessia vertical e combate direto visceral em um confronto sangrento.\n\r\n\n\r\nObtenha vingança. Retome sua honra. Mate astuciosamente.\n\r\n\n\r\n*Requer download.\n\r\n\n\r\nRequer conexão à internet para modo de Multijogador assíncrono."
+    },
+    {
+      "id": 22511,
+      "steam_app_id": null,
+      "slug": "the-legend-of-zelda-breath-of-the-wild",
+      "name": "The Legend of Zelda: Breath of the Wild",
+      "released": "2017-03-03",
+      "metacritic": 97,
+      "rating": 4.85,
+      "background_image": "https://media.rawg.io/media/games/cc1/cc196a5ad763955d6532cdba236f730c.jpg",
+      "short_screenshots": [
+        {
+          "id": 0,
+          "image": "https://media.rawg.io/media/games/cc1/cc196a5ad763955d6532cdba236f730c.jpg"
+        },
+        {
+          "id": 1,
+          "image": "https://media.rawg.io/media/screenshots/b77/b771adc0585c655f8a747d3160e5325a.jpg"
+        }
+      ],
+      "parent_platforms": [
+        {
+          "platform": {
+            "id": 7,
+            "name": "Nintendo"
+          }
+        }
+      ],
+      "genres": [
+        {
+          "id": 1,
+          "name": "Action"
+        },
+        {
+          "id": 2,
+          "name": "Adventure"
+        }
+      ],
+      "developers": [
+        {
+          "id": 1,
+          "name": "Nintendo EPD"
+        }
+      ],
+      "publishers": [
+        {
+          "id": 1,
+          "name": "Nintendo"
+        }
+      ],
+      "website": "https://www.zelda.com/breath-of-the-wild/",
+      "description_raw": "Link desperta após cem anos em um Hyrule devastado e precisa derrotar Calamity Ganon antes que a catástrofe se complete.\n\nO mapa aberto pode ser explorado em qualquer ordem: torres revelam o terreno, santuários ensinam as regras do mundo e o clima altera combate, escalada e navegação. Física, química, fogo, gelo, eletricidade e magnetismo permitem resolver enigmas e chefes de formas distintas, sem um caminho único imposto.\n\nA liberdade de chegar ao Castelo de Hyrule do seu jeito, o uso criativo do ambiente e a densidade de descobertas fizeram de Breath of the Wild uma referência de design de mundo aberto — ainda hoje citada como modelo de exploração emergente.",
+      "description": "Link desperta após cem anos em um Hyrule devastado e precisa derrotar Calamity Ganon antes que a catástrofe se complete.\n\nO mapa aberto pode ser explorado em qualquer ordem: torres revelam o terreno, santuários ensinam as regras do mundo e o clima altera combate, escalada e navegação. Física, química, fogo, gelo, eletricidade e magnetismo permitem resolver enigmas e chefes de formas distintas, sem um caminho único imposto.\n\nA liberdade de chegar ao Castelo de Hyrule do seu jeito, o uso criativo do ambiente e a densidade de descobertas fizeram de Breath of the Wild uma referência de design de mundo aberto — ainda hoje citada como modelo de exploração emergente."
+    },
+    {
+      "id": 22509,
+      "steam_app_id": null,
+      "slug": "minecraft",
+      "name": "Minecraft",
+      "released": "2011-11-18",
+      "metacritic": 93,
+      "rating": 4.65,
+      "background_image": "https://media.rawg.io/media/games/b4e/b4e4c73d5aa4ec66bbf75375c4847a2b.jpg",
+      "short_screenshots": [
+        {
+          "id": 0,
+          "image": "https://media.rawg.io/media/games/b4e/b4e4c73d5aa4ec66bbf75375c4847a2b.jpg"
+        },
+        {
+          "id": 1,
+          "image": "https://media.rawg.io/media/screenshots/324/32454b11adde40d87c046f310f0d710d.jpg"
+        }
+      ],
+      "parent_platforms": [
+        {
+          "platform": {
+            "id": 1,
+            "name": "PC"
+          }
+        },
+        {
+          "platform": {
+            "id": 2,
+            "name": "PlayStation"
+          }
+        },
+        {
+          "platform": {
+            "id": 3,
+            "name": "Xbox"
+          }
+        },
+        {
+          "platform": {
+            "id": 7,
+            "name": "Nintendo"
+          }
+        }
+      ],
+      "genres": [
+        {
+          "id": 1,
+          "name": "Adventure"
+        },
+        {
+          "id": 2,
+          "name": "Indie"
+        }
+      ],
+      "developers": [
+        {
+          "id": 1,
+          "name": "Mojang Studios"
+        }
+      ],
+      "publishers": [
+        {
+          "id": 1,
+          "name": "Mojang Studios"
+        },
+        {
+          "id": 2,
+          "name": "Xbox Game Studios"
+        }
+      ],
+      "website": "https://www.minecraft.net/",
+      "description_raw": "Minecraft é um sandbox de blocos gerado proceduralmente para explorar, minerar, combater, cultivar e construir sem um objetivo único obrigatório.\n\nNo modo sobrevivência você gerencia fome, recursos e criaturas hostis enquanto avança até dimensões mais perigosas. No criativo, o inventário é infinito e a construção vira o foco. Servidores multiplayer sustentam cidades, minigames e comunidades inteiras.\n\nCom um dos maiores ecossistemas de mods, mapas e servidores da indústria, o jogo continua entre os títulos mais jogados do planeta, recebendo atualizações regulares da Mojang que expandem biomas, mobs e ferramentas de criação.",
+      "description": "Minecraft é um sandbox de blocos gerado proceduralmente para explorar, minerar, combater, cultivar e construir sem um objetivo único obrigatório.\n\nNo modo sobrevivência você gerencia fome, recursos e criaturas hostis enquanto avança até dimensões mais perigosas. No criativo, o inventário é infinito e a construção vira o foco. Servidores multiplayer sustentam cidades, minigames e comunidades inteiras.\n\nCom um dos maiores ecossistemas de mods, mapas e servidores da indústria, o jogo continua entre os títulos mais jogados do planeta, recebendo atualizações regulares da Mojang que expandem biomas, mobs e ferramentas de criação."
+    }
+  ]
+}

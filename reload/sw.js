@@ -2,7 +2,6 @@
 
 const CACHE_NAME = 'loading-shell-v6';
 const API_CACHE_NAME = 'loading-api-v6';
-const IMG_CACHE_NAME = 'loading-img-v6';
 
 const PRECACHE_URLS = [
   './',
@@ -26,6 +25,8 @@ const PRECACHE_URLS = [
 ];
 
 self.addEventListener('install', (event) => {
+  // Ativa na hora: versões antigas interceptavam CDN e quebravam capas (net::ERR_FAILED).
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return Promise.all(
@@ -44,7 +45,7 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((keys) => {
       return Promise.all(
         keys.map((key) => {
-          if (![CACHE_NAME, API_CACHE_NAME, IMG_CACHE_NAME].includes(key)) {
+          if (![CACHE_NAME, API_CACHE_NAME].includes(key)) {
             return caches.delete(key);
           }
         })
@@ -65,8 +66,17 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(req.url);
 
-  // NUNCA cachear ou interceptar Supabase, tradução ou CDN externa que não seja mídia
-  if (url.hostname.includes('supabase.co') || url.pathname.startsWith('/api/translate')) {
+  // NUNCA interceptar Supabase, tradução ou CDN de capas.
+  // Interceptar media.rawg.io / images.igdb.com / Steam no SW faz o Chrome falhar
+  // as <img> com net::ERR_FAILED (resposta opaca / no-cors), mesmo com HTTP 200.
+  if (
+    url.hostname.includes('supabase.co')
+    || url.pathname.startsWith('/api/translate')
+    || url.hostname === 'media.rawg.io'
+    || url.hostname === 'images.igdb.com'
+    || url.hostname === 'shared.akamai.steamstatic.com'
+    || url.hostname.endsWith('.steamstatic.com')
+  ) {
     return;
   }
 
@@ -80,27 +90,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 2. Capas e mídias de jogos (RAWG / IGDB): cache-first
-  if (url.hostname === 'media.rawg.io' || url.hostname === 'images.igdb.com') {
-    event.respondWith(
-      caches.open(IMG_CACHE_NAME).then(async (cache) => {
-        const cached = await cache.match(req);
-        if (cached) return cached;
-        try {
-          const res = await fetch(req);
-          if (res.status === 200 || res.type === 'opaque') {
-            cache.put(req, res.clone());
-          }
-          return res;
-        } catch (_) {
-          return cached;
-        }
-      })
-    );
-    return;
-  }
-
-  // 3. Catálogo unificado (/api/catalog e alias /api/rawg): stale-while-revalidate
+  // 2. Catálogo unificado (/api/catalog e alias /api/rawg): stale-while-revalidate
   if (url.pathname.startsWith('/api/catalog') || url.pathname.startsWith('/api/rawg')) {
     event.respondWith(
       caches.open(API_CACHE_NAME).then(async (cache) => {
@@ -117,7 +107,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 4. Arquivos estáticos do próprio site (same-origin): stale-while-revalidate no shell
+  // 3. Arquivos estáticos do próprio site (same-origin): stale-while-revalidate no shell
   if (url.origin === self.location.origin) {
     event.respondWith(
       caches.match(req).then((cached) => {

@@ -223,7 +223,28 @@ const rewritten = upstream.rewriteRawgPaging('https://api.rawg.io/api/games?key=
 if (!rewritten || rewritten.includes('key=') || !rewritten.startsWith('/api/rawg/games?')) {
   fail('paginação da RAWG ainda pode devolver a chave');
 }
-ok('Proxy da RAWG recusa caminhos e tira a chave da paginação');
+const upstreamSource = fs.readFileSync(path.join(ROOT, 'lib', 'upstream.js'), 'utf8');
+if (!upstreamSource.includes('AbortSignal.timeout')) {
+  fail('proxy RAWG/tradução deve cortar fetch com AbortSignal.timeout');
+}
+const catalogFacadeSource = fs.readFileSync(path.join(ROOT, 'lib', 'catalog.js'), 'utf8');
+if (!catalogFacadeSource.includes('catalogFallback') || !catalogFacadeSource.includes('tryIgdb')) {
+  fail('facade do catálogo deve orquestrar IGDB + reserva local');
+}
+const catalogData = JSON.parse(fs.readFileSync(path.join(ROOT, 'lib', 'catalog-data.json'), 'utf8'));
+if (!Array.isArray(catalogData.games) || catalogData.games.length < 10) {
+  fail('catalog-data.json precisa de pelo menos 10 jogos');
+}
+const catalogLocal = require(path.join(ROOT, 'lib', 'catalog-local'));
+const listed = catalogLocal.listGames(new URLSearchParams('page_size=5&ordering=-metacritic'));
+if (listed.status !== 200 || !listed.body.results || listed.body.results.length < 1) {
+  fail('catálogo local não listou jogos');
+}
+const detail = catalogLocal.getGame(String(listed.body.results[0].id));
+if (detail.status !== 200 || !(detail.body.description_raw || '').trim()) {
+  fail('ficha do catálogo local sem description_raw');
+}
+ok('Proxy da RAWG com timeout + fallback de catálogo local');
 
 const catalog = require(path.join(ROOT, 'lib', 'catalog'));
 const igdb = require(path.join(ROOT, 'lib', 'igdb'));
@@ -250,6 +271,9 @@ if (!String(igdb.igdbImage('abc')).includes('images.igdb.com')) {
 }
 if (igdb.mapOrdering('-released') !== 'first_release_date desc') {
   fail('mapOrdering IGDB incorreto');
+}
+if (typeof catalog.proxyCatalog !== 'function' || typeof catalog.catalogFallback !== 'function') {
+  fail('facade do catálogo deve exportar proxyCatalog e catalogFallback');
 }
 ok('Camada catalog/IGDB valida ids e normalização básica');
 
@@ -317,6 +341,25 @@ if (swContent.includes('cache.put(req, res)') && !swContent.includes('supabase.c
   fail('sw.js deve isolar o Supabase de cache offline');
 }
 ok('sw.js não intercepta chamadas de autenticação e dados do Supabase');
+
+// Capas em CDN externa NÃO podem passar por event.respondWith no SW:
+// no Chrome isso gera net::ERR_FAILED nas <img> mesmo com HTTP 200.
+if (!swContent.includes("url.hostname === 'media.rawg.io'")) {
+  fail('sw.js deve reconhecer media.rawg.io para bypass');
+}
+if (swContent.includes('loading-img-') || /isGameMedia[\s\S]{0,200}event\.respondWith/.test(swContent)) {
+  fail('sw.js não deve interceptar CDN de capas (loading-img / respondWith em mídia)');
+}
+if (!/loading-shell-v\d+/.test(swContent) || !swContent.includes('skipWaiting()')) {
+  fail('sw.js precisa de cache versionado + skipWaiting para substituir o SW que quebrava capas');
+}
+if (swContent.includes("hostname === 'media.rawg.io'") && swContent.includes('caches.open(IMG_CACHE_NAME)')) {
+  fail('sw.js não deve interceptar CDN de capas (media.rawg.io)');
+}
+if (!swContent.includes('images.igdb.com')) {
+  fail('sw.js deve ignorar explicitamente images.igdb.com (não interceptar)');
+}
+ok('sw.js não intercepta CDN de capas (RAWG/Steam)');
 
 const manifestContent = JSON.parse(fs.readFileSync(path.join(ROOT, 'reload/manifest.webmanifest'), 'utf8'));
 if (!manifestContent.name || !manifestContent.icons || manifestContent.icons.length < 3) {

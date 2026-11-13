@@ -24,11 +24,16 @@ module.exports = async function rawgHandler(req, res) {
   const result = await proxyCatalog(segments, url.searchParams, { basePath: '/api/rawg' });
   if (result.headers && result.headers['Cache-Control']) {
     res.setHeader('Cache-Control', result.headers['Cache-Control']);
+  } else {
+    res.setHeader('Cache-Control', 'no-store');
   }
   if (result.provider) {
     res.setHeader(PROVIDER_HEADER, result.provider);
   } else if (result.headers && result.headers[PROVIDER_HEADER]) {
     res.setHeader(PROVIDER_HEADER, result.headers[PROVIDER_HEADER]);
+  }
+  if (result.headers && result.headers['X-Catalog-Fallback']) {
+    res.setHeader('X-Catalog-Fallback', result.headers['X-Catalog-Fallback']);
   }
   res.status(result.status).json(result.body);
 };
