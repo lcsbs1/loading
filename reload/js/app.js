@@ -6,14 +6,14 @@
   const API = (typeof CONFIG !== 'undefined' && CONFIG.API_BASE_URL) ? CONFIG.API_BASE_URL : '/api/rawg';
   const LS = (typeof CONFIG !== 'undefined' && CONFIG.STORAGE_KEYS) ? {
     ...CONFIG.STORAGE_KEYS,
-    // v3 invalida cache semanal/session corrompido enquanto a RAWG está fora.
-    featuredData: 'loading.featured.data.v3',
-    featuredTime: 'loading.featured.timestamp.v3',
+    // v4: featured passa a preferir catálogo reserva quando o filtro de datas esvazia.
+    featuredData: 'loading.featured.data.v4',
+    featuredTime: 'loading.featured.timestamp.v4',
   } : {
     key: 'loading.rawgKey',
     theme: 'loading.theme',
-    featuredData: 'loading.featured.data.v3',
-    featuredTime: 'loading.featured.timestamp.v3',
+    featuredData: 'loading.featured.data.v4',
+    featuredTime: 'loading.featured.timestamp.v4',
   };
 
   const getSb = () => (typeof LoadingSupabase !== 'undefined' ? LoadingSupabase.getClient() : null);
@@ -157,42 +157,42 @@
       image: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/730/header.jpg',
       imageHover: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/730/ss_e15a9ff866ec8f51a89c3db6f8ab51a80c98f8b8.600x338.jpg',
       screenshots: ["https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/730/ss_95ecce886a1170aa5a48d88e09f583aa1e8f533a.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/730/ss_e15a9ff866ec8f51a89c3db6f8ab51a80c98f8b8.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/730/ss_a599292c3066324d9c7336cecfdb325dfd6efdf8.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/730/ss_d8c47eb5cf77a28e93899532fe5ba60195ec47ee.600x338.jpg"],
-      description: 'Maior jogo de tiro tático em primeira pessoa do mundo, com nova engine Source 2, física de fumaça volumétrica responsiva e taxa de tique sub-tick.' },
+      description: 'Maior jogo de tiro tático em primeira pessoa do mundo.\n\nFeito na engine Source 2, o Counter-Strike 2 traz fumaça volumétrica responsiva, mapas reformulados e taxa de tique sub-tick — mantendo a disputa por bombas e reféns que define a série desde 1999.' },
     { id: 't2', name: 'Elden Ring', released: '2022-02-25', metacritic: 96, platforms: ['PC', 'PlayStation', 'Xbox'], genres: ['Ação', 'RPG'], developers: ['FromSoftware'], publishers: ['Bandai Namco Entertainment'], tags: [1, 2, 3],
       image: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1245620/header.jpg',
       imageHover: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1245620/ss_943bf6fe62352757d9070c1d33e50b92fe8539f1.600x338.jpg',
       screenshots: ["https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1245620/ss_d397c88b90c05763a83f983a54b3834da465bf19.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1245620/ss_5471d2b78d21dfbc28e1d5300f898308bf3f6da2.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1245620/ss_3d98eb6c2f7ff0d0ea37ca3ff7b7194f4a38ff6a.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1245620/ss_943bf6fe62352757d9070c1d33e50b92fe8539f1.600x338.jpg"],
-      description: 'RPG de ação em mundo aberto nas Terras Intermédias com expansão recente Shadow of the Erdtree, mantendo recordes de jogadores simultâneos.' },
+      description: 'RPG de ação em mundo aberto nas Terras Intermédias, com lore em colaboração com George R. R. Martin.\n\nCombate exigente, montaria, multiplayer eventual e liberdade para enfrentar chefes em rotas próprias. A expansão Shadow of the Erdtree amplia o mapa e a demanda de build.' },
     { id: 't3', name: 'Cyberpunk 2077', released: '2020-12-10', metacritic: 86, platforms: ['PC', 'PlayStation', 'Xbox'], genres: ['RPG', 'Ação'], developers: ['CD Projekt Red'], publishers: ['CD Projekt'], tags: [1, 2, 3],
       image: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1091500/header.jpg',
       imageHover: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1091500/ss_ff63f82fcdd82f256086f6eb8035850ab85aeeb8.600x338.jpg',
       screenshots: ["https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1091500/ss_bf5df18e38d06ee29f44f51e0ff05e60d2e85a6a.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1091500/ss_7e937d94cf75f34cf33db6ef9ec23f3640243403.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1091500/ss_6db033a8e4df4c1851e504cf66672c723f982181.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1091500/ss_ff63f82fcdd82f256086f6eb8035850ab85aeeb8.600x338.jpg"],
-      description: 'RPG de ação futurista em Night City, totalmente revitalizado com a atualização 2.0 e expansão Phantom Liberty.' },
+      description: 'Em Night City, você é V — mercenário em busca de um implante que promete a vida eterna.\n\nRPG de ação em mundo aberto com builds de corpo, rede e armas. Após a atualização 2.0 e Phantom Liberty, combate, tráfego e missões foram profundamente revisados.' },
     { id: 't4', name: 'Baldur\'s Gate 3', released: '2023-08-03', metacritic: 96, platforms: ['PC', 'PlayStation', 'Xbox'], genres: ['RPG', 'Estratégia'], developers: ['Larian Studios'], publishers: ['Larian Studios'], tags: [1, 2, 3],
       image: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/header.jpg',
       imageHover: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/ss_d6dd85785f75c4046d3e81ad8fec3b59b02a98e3.600x338.jpg',
       screenshots: ["https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/ss_16315ecbe5e6382069cc88a6d4ee292215c2cebb.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/ss_a39fc4159501a35794833dd72464b0f94605e554.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/ss_bf13b5d275ceea158971f112e8cb769a91702e7a.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/ss_d6dd85785f75c4046d3e81ad8fec3b59b02a98e3.600x338.jpg"],
-      description: 'RPG premiado no universo de Dungeons & Dragons com liberdade sem precedentes, narrativa ramificada e combate tático profundo.' },
+      description: 'RPG nos Reinos Esquecidos com um parasita devourador de mentes e liberdade radical de abordagem.\n\nCombate tático, romance, cooperação para até quatro jogadores e escolhas que remodelam alianças e finais no universo de Dungeons & Dragons.' },
     { id: 't5', name: 'Grand Theft Auto V', released: '2013-09-17', metacritic: 97, platforms: ['PC', 'PlayStation', 'Xbox'], genres: ['Ação'], developers: ['Rockstar North'], publishers: ['Rockstar Games'], tags: [1, 2, 3],
       image: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/271590/header.jpg',
       imageHover: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/271590/ss_32aa18ab3175e3002217862dd5917646d298ab6b.600x338.jpg',
       screenshots: ["https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/271590/ss_8e70908c6a61fb232c45163b9ef77366d2146908.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/271590/ss_7be5bc656fc384ccad3d9c84e27f12e2df5ef79b.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/271590/ss_32aa18ab3175e3002217862dd5917646d298ab6b.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/271590/ss_6919a3b83c483a91b269ecfae15f6ee48cfb17d9.600x338.jpg"],
-      description: 'Fenômeno constante de audiência e jogadores ativos em Los Santos e GTA Online com atualizações de conteúdo frequentes.' },
+      description: 'Três criminosos cruzam caminhos em Los Santos, sátira da Califórnia contemporânea.\n\nA campanha solo mistura assaltos, humor negro e liberdade de direção. O pacote inclui GTA Online, com sessões persistentes e atualizações contínuas.' },
     { id: 't6', name: 'The Witcher 3: Wild Hunt', released: '2015-05-19', metacritic: 93, platforms: ['PC', 'PlayStation', 'Xbox', 'Nintendo'], genres: ['RPG'], developers: ['CD Projekt Red'], publishers: ['CD Projekt'], tags: [1, 2, 3, 7],
       image: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/header.jpg',
       imageHover: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/f7f564ecedd09b3e503b071a637aeefdedbeedd8/ss_f7f564ecedd09b3e503b071a637aeefdedbeedd8.600x338.jpg',
       screenshots: ["https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/ss_107600c1337231660f50f52ba71477c3c66b2d00.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/ss_8e762c2f42a0f8bfd463d1cb53f1f7e0bc27e3cc.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/ss_75e01c0db721d7b0559eb431a478330ee0f4c084.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/ss_c7df0e4d084eeec286dbdb9db8a7ba1e78687258.600x338.jpg"],
-      description: 'A jornada de Geralt de Rívia com versão next-gen atualizada, permanecendo entre os RPGs mais jogados do mundo.' },
+      description: 'Geralt de Rívia procura Ciri, perseguida pela Caçada Selvagem.\n\nCombate com espadas e sinais, escolhas morais e missões secundárias densas. As expansões Hearts of Stone e Blood and Wine ampliam o mundo e fecham o arco do bruxo.' },
     { id: 't7', name: 'Red Dead Redemption 2', released: '2018-10-26', metacritic: 97, platforms: ['PC', 'PlayStation', 'Xbox'], genres: ['Ação', 'Aventura'], developers: ['Rockstar Games'], publishers: ['Rockstar Games'], tags: [1, 2, 3],
       image: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1174180/header.jpg',
       imageHover: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1174180/ss_66b553f4c209476d3e4ce25fa4714002cc914c4f.600x338.jpg',
       screenshots: ["https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1174180/ss_fb2896fd2cf1cb82c5a1ecba840dd67ec927b2e3.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1174180/ss_f8df2d475ef21e6be794c4ec9d924045f86ce5b1.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1174180/ss_495ee8cbe7bbcf156dd3d61b6c006437d042ec7d.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1174180/ss_66b553f4c209476d3e4ce25fa4714002cc914c4f.600x338.jpg"],
-      description: 'Obra-prima de mundo aberto narrando a queda da gangue de Dutch van der Linde, com comunidades ativas e gráficos de referência.' },
+      description: 'Em 1899, Arthur Morgan e a gangue de Dutch van der Linde fogem pelo oeste americano em declínio.\n\nO mundo aberto prioriza atmosfera, caça, acampamento e encontros densos. A narrativa acompanha lealdade, violência e o fim de uma era.' },
     { id: 't8', name: 'Helldivers 2', released: '2024-02-08', metacritic: 82, platforms: ['PC', 'PlayStation'], genres: ['Tiro', 'Ação'], developers: ['Arrowhead Game Studios'], publishers: ['Sony Interactive Entertainment'], tags: [1, 2],
       image: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/553850/header.jpg',
       imageHover: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/553850/ss_8e72750e50e95c4e97669d0dbe9a81f8f3b7d727.600x338.jpg',
       screenshots: ["https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/553850/ss_2b724580fb354d2e7ca856942ad3eb74044be8d1.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/553850/ss_fa9740b2f483c7ce422bc7d8c7c941784ca1f76f.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/553850/ss_bf83a45c61266d9c6c5ea3e9c52feea36ee5144b.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/553850/ss_8e72750e50e95c4e97669d0dbe9a81f8f3b7d727.600x338.jpg"],
-      description: 'Shooter cooperativo de ação galáctica em terceira pessoa contra Terminídios e Autômatos na luta pela Super Terra.' },
+      description: 'Shooter cooperativo em terceira pessoa pela Super Terra.\n\nAté quatro Helldivers caem em missões contra Terminídios e Autômatos — com fogo amigo, estratagemas orbitais e humor satírico de guerra galáctica.' },
     { id: 't9', name: 'Minecraft', released: '2011-11-18', metacritic: 93, platforms: ['PC', 'PlayStation', 'Xbox', 'Nintendo'], genres: ['Sandbox', 'Sobrevivência'], developers: ['Mojang Studios'], publishers: ['Mojang Studios'], tags: [1, 2, 3, 7],
       image: 'https://media.rawg.io/media/games/b4e/b4e4c73d5aa4ec66bbf75375c4847a2b.jpg',
       imageHover: 'https://media.rawg.io/media/screenshots/324/32454b11adde40d87c046f310f0d710d.jpg',
@@ -212,7 +212,7 @@
       image: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/620/header.jpg',
       imageHover: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/620/ss_f3f6787d74739d3b2ec8a484b5c994b3d31ef325.600x338.jpg',
       screenshots: ["https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/620/ss_6a12b670d80c6534608db1426477e68c8b417e3f.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/620/ss_bb936453664fa41a9d5926ecdbd0c722aebbe39c.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/620/ss_3ab634c05cc7fef7bca458f2d5733d9942a00c63.600x338.jpg","https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/620/ss_f3f6787d74739d3b2ec8a484b5c994b3d31ef325.600x338.jpg"],
-      description: 'Um dos quebra-cabeças em primeira pessoa mais celebrados da história, com modo cooperativo atemporal.' },
+      description: 'Chell volta ao Aperture Science e enfrenta GLaDOS e Wheatley.\n\nQuebra-cabeças com portais, gel e lasers em câmaras cada vez mais inventivas, mais um modo cooperativo com Atlas e P-Body.' },
   ];
 
   const $ = (s, r = document) => r.querySelector(s);
@@ -564,19 +564,25 @@
       return;
     }
 
-    // Cache expirado ou ausente: buscar jogos do momento na RAWG ou rotacionar seed
+    // Cache expirado ou ausente: RAWG primeiro; se filtrar por datas esvaziar (ex.: catálogo reserva), tenta sem datas.
     let trendingGames = null;
+
+    const fetchTrending = async (url) => {
+      const res = await fetch(url, { signal: AbortSignal.timeout(9000) });
+      if (!res.ok) return null;
+      const json = await res.json();
+      if (json.results && json.results.length >= 6) return json.results.map(fromRawg);
+      return null;
+    };
 
     try {
       const todayStr = new Date().toISOString().slice(0, 10);
       const past120Str = new Date(now - 120 * 86400000).toISOString().slice(0, 10);
-      const url = `${API}/games?dates=${past120Str},${todayStr}&ordering=-added&page_size=6`;
-      const res = await fetch(url);
-      if (res.ok) {
-        const json = await res.json();
-        if (json.results && json.results.length >= 6) {
-          trendingGames = json.results.map(fromRawg);
-        }
+      trendingGames = await fetchTrending(
+        `${API}/games?dates=${past120Str},${todayStr}&ordering=-added&page_size=6`
+      );
+      if (!trendingGames) {
+        trendingGames = await fetchTrending(`${API}/games?ordering=-metacritic&page_size=6`);
       }
     } catch (_) {}
 
